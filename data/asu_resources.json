@@ -1,0 +1,216 @@
+[
+  {
+    "id": "resource-tutoring",
+    "slug": "tutoring",
+    "name": "ASU Tutoring",
+    "category": "Academic Support",
+    "description": "Free academic help in writing, math, science, business and other subjects through peer tutors online and across ASU campuses.",
+    "location": "In-person support centers across ASU campuses and online tutoring spaces.",
+    "hours": "Hours vary by subject and campus. Check the tutoring schedule for the latest openings.",
+    "signUpSummary": "Most tutoring is drop-in. Writing support and some specialty services use scheduled appointments.",
+    "url": "https://tutoring.asu.edu/about-us",
+    "previewPath": "/simulate/tutoring",
+    "flowSteps": [
+      {
+        "title": "Open tutoring.asu.edu",
+        "description": "Start on the Academic Support Network site and pick the tutoring option that matches your course."
+      },
+      {
+        "title": "Choose your subject or tutoring type",
+        "description": "Look for your class, writing support, or the online tutoring menu."
+      },
+      {
+        "title": "Pick a time or drop-in option",
+        "description": "Some services are scheduled and some are open drop-in while the center is running."
+      },
+      {
+        "title": "Bring your class materials",
+        "description": "Show up with your homework, notes, or draft so the tutor can meet you where you are."
+      },
+      {
+        "title": "Join the session",
+        "description": "You will work with a peer tutor and leave with a clearer next step for the assignment."
+      }
+    ]
+  },
+  {
+    "id": "resource-advising",
+    "slug": "advising",
+    "name": "Academic Advising",
+    "category": "Planning Support",
+    "description": "Academic advisors help with class schedules, degree requirements, major questions, and planning your next semester.",
+    "location": "Appointments happen through your college advising office in MyASU, often online or on your campus.",
+    "hours": "Most advising offices keep weekday appointment times. Check MyASU for your college's schedule.",
+    "signUpSummary": "Use MyASU or your advising office page to schedule an appointment, then bring your questions and degree concerns.",
+    "url": "https://students.asu.edu/academic-advising",
+    "previewPath": "/simulate/advising",
+    "flowSteps": [
+      {
+        "title": "Go to MyASU or the advising page",
+        "description": "Open your advising link from MyASU or your college's advising website."
+      },
+      {
+        "title": "Select an advising appointment",
+        "description": "Pick the reason for the visit, like schedule planning, changing majors, or registration questions."
+      },
+      {
+        "title": "Choose a date and format",
+        "description": "Book the time that works for you and confirm whether it is virtual, phone, or in person."
+      },
+      {
+        "title": "Show up with your questions",
+        "description": "Bring your current schedule, goals, and any confusing holds or deadlines you want explained."
+      }
+    ]
+  },
+  {
+    "id": "resource-counseling",
+    "slug": "counseling",
+    "name": "ASU Counseling Services",
+    "category": "Wellness Support",
+    "description": "Confidential counseling and crisis support for stress, anxiety, overwhelm, transitions, and other concerns affecting school or life.",
+    "location": "Counseling support is available across ASU campuses, with phone support for urgent concerns.",
+    "hours": "Appointment windows vary by campus. Check the counseling site for current clinic and crisis support details.",
+    "signUpSummary": "Start through the counseling website or contact options, answer a few intake questions, and get matched to the right next step.",
+    "url": "https://eoss.asu.edu/counseling/about-us",
+    "previewPath": "/flow/counseling",
+    "flowSteps": [
+      {
+        "title": "Open the counseling services site",
+        "description": "Review the counseling overview and find the contact or appointment option that fits your need."
+      },
+      {
+        "title": "Choose urgent or routine support",
+        "description": "If it is an emergency, use crisis support. Otherwise start the regular appointment process."
+      },
+      {
+        "title": "Complete intake details",
+        "description": "Share basic information about what is going on so the team can route you appropriately."
+      },
+      {
+        "title": "Attend your first conversation",
+        "description": "Your first session focuses on what you need and what kind of support would feel useful next."
+      }
+    ]
+  },
+  {
+    "id": "resource-financial-aid",
+    "slug": "financial-aid",
+    "name": "Financial Aid",
+    "category": "Money Support",
+    "description": "ASU financial aid explains FAFSA, aid eligibility, contributor requirements, and the follow-up steps that show up in MyASU.",
+    "location": "Start online through ASU Tuition and MyASU. Additional help is available through ASU financial aid contacts.",
+    "hours": "Most online guidance is always available. Office contact and advising hours vary by term and office.",
+    "signUpSummary": "Complete the FAFSA or CSS Profile if needed, then watch MyASU for tasks, verification, and award updates.",
+    "url": "https://tuition.asu.edu/financial-aid/fafsa",
+    "previewPath": "/flow/financial-aid",
+    "flowSteps": [
+      {
+        "title": "Read the FAFSA guidance",
+        "description": "Start on ASU's FAFSA page so you know which form applies to your situation."
+      },
+      {
+        "title": "Go to StudentAid.gov",
+        "description": "Complete the FAFSA and gather the tax, income, and contributor information you need."
+      },
+      {
+        "title": "Submit and monitor MyASU",
+        "description": "After filing, check your ASU tasks regularly for verification requests or missing documents."
+      },
+      {
+        "title": "Review your award steps",
+        "description": "Accept aid, complete remaining tasks, and follow the timing ASU gives you for disbursement or follow-up."
+      }
+    ]
+  },
+  {
+    "id": "resource-scholarship-search",
+    "slug": "scholarship-search",
+    "name": "ASU Scholarship Search",
+    "category": "Money Support",
+    "description": "ASU scholarship search tools help students look for merit, need-based, major-specific, and school-level scholarship opportunities.",
+    "location": "Online only through ASU scholarship and tuition pages.",
+    "hours": "Available online anytime. Application deadlines depend on each scholarship.",
+    "signUpSummary": "Search available scholarships, read the criteria carefully, and apply before each individual deadline.",
+    "url": "https://students.asu.edu/scholarships",
+    "previewPath": "/scholarships",
+    "flowSteps": [
+      {
+        "title": "Open the scholarship search page",
+        "description": "Start from ASU's scholarships overview and review the options tied to your college or student profile."
+      },
+      {
+        "title": "Filter by fit",
+        "description": "Look for awards that match your major, residency, year, and financial need status."
+      },
+      {
+        "title": "Check each deadline",
+        "description": "Every scholarship has its own date and application requirements, so note those before you start."
+      },
+      {
+        "title": "Submit the application",
+        "description": "Complete the scholarship application or portal step for the opportunities that match you best."
+      }
+    ]
+  },
+  {
+    "id": "resource-career-services",
+    "slug": "career-services",
+    "name": "Career and Professional Development Services",
+    "category": "Career Support",
+    "description": "Career support helps with resumes, internships, part-time jobs, interviews, Handshake listings, and making a career plan.",
+    "location": "Career and student employment support is offered online and across ASU campuses.",
+    "hours": "Appointment times and employer events vary. Check the current career services schedule online.",
+    "signUpSummary": "Start with the jobs and careers pages, then use career services or Handshake for appointments, postings, and next steps.",
+    "url": "https://students.asu.edu/admitted/jobs-careers",
+    "previewPath": "/flow/career-services",
+    "flowSteps": [
+      {
+        "title": "Open the jobs and careers page",
+        "description": "Review the options for internships, part-time work, resume help, and career planning."
+      },
+      {
+        "title": "Choose the support you need",
+        "description": "Decide whether you are looking for job listings, a resume review, interview prep, or a career appointment."
+      },
+      {
+        "title": "Use the matching platform",
+        "description": "That may mean Handshake, a career center appointment, or the student employment process."
+      },
+      {
+        "title": "Follow through on the next action",
+        "description": "Upload your materials, book the meeting, or apply to the role directly from the listed system."
+      }
+    ]
+  },
+  {
+    "id": "resource-student-success-center",
+    "slug": "student-success-center",
+    "name": "Student Success Center",
+    "category": "Coaching Support",
+    "description": "Student Success Center coaching helps students build routines, stay organized, and connect with support before small problems turn into big ones.",
+    "location": "Student Success Center coaching is offered across ASU campuses, online, and through pop-up coaching events.",
+    "hours": "Coaching hours and event times vary by campus and semester.",
+    "signUpSummary": "Find a coaching option or event on the Student Success Center site and choose the format that feels easiest to try.",
+    "url": "https://success.asu.edu",
+    "previewPath": "/simulate/first-day",
+    "flowSteps": [
+      {
+        "title": "Open success.asu.edu",
+        "description": "Review coaching, events, and pop-up support options from the Student Success Center home page."
+      },
+      {
+        "title": "Pick a support style",
+        "description": "Choose between a coaching appointment, event, or low-pressure pop-up conversation."
+      },
+      {
+        "title": "Register or note the event details",
+        "description": "Save the location, time, or meeting link so you know exactly what happens next."
+      },
+      {
+        "title": "Show up and talk it through",
+        "description": "The first conversation usually focuses on your routine, stress points, and the campus tools that could help most."
+      }
+    ]
+  }
+]

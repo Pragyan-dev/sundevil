@@ -1,0 +1,98 @@
+{
+  "scenarios": [
+    {
+      "slug": "tutoring",
+      "title": "Tutoring Walkthrough",
+      "summary": "A calm preview of what tutoring feels like from the first click to walking out.",
+      "accent": "academic",
+      "steps": [
+        {
+          "title": "You open the tutoring website.",
+          "description": "You land on the ASU tutoring page and see subject areas, tutoring options, and a simple menu for where to start.",
+          "icon": "💻"
+        },
+        {
+          "title": "You pick your subject and a time slot.",
+          "description": "You choose the class you need help with and look at the option that fits your schedule, whether that is online, in person, or drop-in.",
+          "icon": "🗓️"
+        },
+        {
+          "title": "You show up and the room is normal.",
+          "description": "There is a tutor, a couple of other students, and a regular study-space vibe. It feels more like working together than being put on the spot.",
+          "icon": "🏫"
+        },
+        {
+          "title": "The tutor asks what you are working on.",
+          "description": "You can show your homework, notes, or even say, 'I do not know where to start.' That is enough to begin.",
+          "icon": "📝"
+        },
+        {
+          "title": "You work through it together.",
+          "description": "The tutor helps break the problem down. Nobody expects you to be polished or already understand everything.",
+          "icon": "🤝"
+        },
+        {
+          "title": "You leave. That is it.",
+          "description": "You got help, nothing dramatic happened, and it becomes much easier to imagine going back next time.",
+          "icon": "✅"
+        }
+      ]
+    },
+    {
+      "slug": "advising",
+      "title": "Advising Walkthrough",
+      "summary": "What it feels like to sit down with an advisor when your schedule or degree path is confusing.",
+      "accent": "planning",
+      "steps": [
+        {
+          "title": "You book the appointment in MyASU.",
+          "description": "The page asks what kind of help you need, and you choose the slot that works for your week.",
+          "icon": "📲"
+        },
+        {
+          "title": "You arrive with questions, not perfect answers.",
+          "description": "It is normal to bring uncertainty: a confusing hold, class list, major question, or graduation concern.",
+          "icon": "❓"
+        },
+        {
+          "title": "The advisor helps map the next move.",
+          "description": "They explain requirements in plain language and help you sort what matters now versus later.",
+          "icon": "🧭"
+        },
+        {
+          "title": "You leave with a plan.",
+          "description": "Usually that means a cleaner schedule, fewer unknowns, and a short list of next actions you can actually do.",
+          "icon": "📚"
+        }
+      ]
+    },
+    {
+      "slug": "first-day",
+      "title": "First Support Visit",
+      "summary": "A general first-day preview for coaching and other support spaces that can feel intimidating before you try them.",
+      "accent": "community",
+      "steps": [
+        {
+          "title": "You walk in and do not need a polished story.",
+          "description": "Most support spaces start with a simple check-in about what has been hard lately.",
+          "icon": "🚪"
+        },
+        {
+          "title": "Someone helps narrow the problem.",
+          "description": "Instead of solving your whole semester at once, you focus on the next useful step.",
+          "icon": "🎯"
+        },
+        {
+          "title": "They connect you to the right resource.",
+          "description": "That might be coaching, tutoring, financial aid, counseling, or an advisor depending on what you need.",
+          "icon": "🔗"
+        },
+        {
+          "title": "You leave knowing what happens next.",
+          "description": "The biggest change is usually clarity: what to click, who to email, where to go, and why it is worth trying.",
+          "icon": "🌞"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,442 @@
+[
+  {
+    "id": "scholarship-nam-u",
+    "name": "New American University Scholarship",
+    "amount": "$2,000-$15,500 per year",
+    "deadlineLabel": "Priority timing varies with admission and renewal cycles",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "ASU merit scholarship support for high-achieving undergraduate students.",
+    "eligibility": {
+      "years": [
+        "first-year"
+      ],
+      "majors": [
+        "any"
+      ],
+      "gpaRanges": [
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-obama",
+    "name": "Obama Scholars Program",
+    "amount": "Varies based on financial need",
+    "deadlineLabel": "Align with FAFSA and ASU aid deadlines",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "Support for Arizona first-year students with high financial need.",
+    "eligibility": {
+      "years": [
+        "first-year"
+      ],
+      "majors": [
+        "any"
+      ],
+      "gpaRanges": [
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no"
+      ],
+      "residency": [
+        "in-state"
+      ],
+      "aidStatus": [
+        "fafsa-filed"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-general-clas",
+    "name": "The College Scholarship Pool",
+    "amount": "$1,000-$5,000",
+    "deadlineLabel": "Spring application cycle",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "General ASU college-level scholarship opportunities for a wide range of majors.",
+    "eligibility": {
+      "years": [
+        "first-year",
+        "second-year",
+        "third-year",
+        "fourth-year-plus"
+      ],
+      "majors": [
+        "arts-humanities",
+        "business",
+        "education",
+        "engineering",
+        "health",
+        "science",
+        "social-sciences",
+        "undeclared",
+        "other"
+      ],
+      "gpaRanges": [
+        "2.5-2.99",
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state",
+        "international"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-first-gen-zone",
+    "name": "First-Generation Student Support Scholarship",
+    "amount": "$1,500",
+    "deadlineLabel": "Late spring",
+    "applicationUrl": "https://success.asu.edu",
+    "description": "A curated demo scholarship for first-generation students engaged with success programming.",
+    "eligibility": {
+      "years": [
+        "first-year",
+        "second-year"
+      ],
+      "majors": [
+        "any"
+      ],
+      "gpaRanges": [
+        "2.5-2.99",
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-fulton",
+    "name": "Fulton Schools Undergraduate Scholarship",
+    "amount": "$2,500",
+    "deadlineLabel": "February",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "Scholarship opportunities for undergraduate engineering students.",
+    "eligibility": {
+      "years": [
+        "first-year",
+        "second-year",
+        "third-year",
+        "fourth-year-plus"
+      ],
+      "majors": [
+        "engineering"
+      ],
+      "gpaRanges": [
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state",
+        "international"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-business",
+    "name": "W. P. Carey Undergraduate Scholarship",
+    "amount": "$1,500-$4,000",
+    "deadlineLabel": "February",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "Scholarship pool for students pursuing business-related majors.",
+    "eligibility": {
+      "years": [
+        "second-year",
+        "third-year",
+        "fourth-year-plus"
+      ],
+      "majors": [
+        "business"
+      ],
+      "gpaRanges": [
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state",
+        "international"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-teachers",
+    "name": "Mary Lou Fulton Future Educator Scholarship",
+    "amount": "$2,000",
+    "deadlineLabel": "February",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "Support for students preparing for careers in education.",
+    "eligibility": {
+      "years": [
+        "first-year",
+        "second-year",
+        "third-year",
+        "fourth-year-plus"
+      ],
+      "majors": [
+        "education"
+      ],
+      "gpaRanges": [
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-health",
+    "name": "Health Solutions Student Scholarship",
+    "amount": "$1,000-$3,500",
+    "deadlineLabel": "Spring",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "Support for students in health-related programs.",
+    "eligibility": {
+      "years": [
+        "second-year",
+        "third-year",
+        "fourth-year-plus"
+      ],
+      "majors": [
+        "health"
+      ],
+      "gpaRanges": [
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state",
+        "international"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-science",
+    "name": "STEM Persistence Scholarship",
+    "amount": "$2,000",
+    "deadlineLabel": "Rolling while funds last",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "A demo STEM-focused scholarship for students continuing in science and technology fields.",
+    "eligibility": {
+      "years": [
+        "second-year",
+        "third-year"
+      ],
+      "majors": [
+        "engineering",
+        "science"
+      ],
+      "gpaRanges": [
+        "2.5-2.99",
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-transfer",
+    "name": "Transfer Achievement Award",
+    "amount": "$3,000",
+    "deadlineLabel": "Admission cycle",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "Merit support for students transferring into ASU.",
+    "eligibility": {
+      "years": [
+        "third-year",
+        "fourth-year-plus"
+      ],
+      "majors": [
+        "any"
+      ],
+      "gpaRanges": [
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-filed",
+        "not-sure"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-resident",
+    "name": "Arizona Resident Need Scholarship",
+    "amount": "$1,250",
+    "deadlineLabel": "After FAFSA review",
+    "applicationUrl": "https://tuition.asu.edu/financial-aid/fafsa",
+    "description": "A demo need-based award modeled for Arizona residents with FAFSA on file.",
+    "eligibility": {
+      "years": [
+        "first-year",
+        "second-year",
+        "third-year",
+        "fourth-year-plus"
+      ],
+      "majors": [
+        "any"
+      ],
+      "gpaRanges": [
+        "2.5-2.99",
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state"
+      ],
+      "aidStatus": [
+        "fafsa-filed"
+      ]
+    }
+  },
+  {
+    "id": "scholarship-community",
+    "name": "Community Impact Scholarship",
+    "amount": "$1,000",
+    "deadlineLabel": "March",
+    "applicationUrl": "https://students.asu.edu/scholarships",
+    "description": "A demo award for students active in service, leadership, or peer support communities.",
+    "eligibility": {
+      "years": [
+        "second-year",
+        "third-year",
+        "fourth-year-plus"
+      ],
+      "majors": [
+        "arts-humanities",
+        "education",
+        "health",
+        "social-sciences",
+        "other"
+      ],
+      "gpaRanges": [
+        "2.5-2.99",
+        "3.0-3.49",
+        "3.5-4.0"
+      ],
+      "firstGen": [
+        "yes",
+        "no",
+        "not-sure"
+      ],
+      "residency": [
+        "in-state",
+        "out-of-state",
+        "international"
+      ],
+      "aidStatus": [
+        "fafsa-filed",
+        "not-filed",
+        "not-sure"
+      ]
+    }
+  }
+]

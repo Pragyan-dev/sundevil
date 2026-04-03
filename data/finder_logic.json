@@ -1,0 +1,134 @@
+{
+  "questions": {
+    "concerns": [
+      { "label": "Struggling in a class", "value": "class" },
+      { "label": "Need money", "value": "money" },
+      { "label": "Feeling overwhelmed", "value": "overwhelmed" },
+      { "label": "Confused about schedule", "value": "schedule" },
+      { "label": "Something else", "value": "something-else" }
+    ],
+    "years": [
+      { "label": "First year", "value": "first-year" },
+      { "label": "Second year", "value": "second-year" },
+      { "label": "Third year", "value": "third-year" },
+      { "label": "Fourth year+", "value": "fourth-year-plus" }
+    ],
+    "experience": [
+      { "label": "Yes", "value": "yes" },
+      { "label": "No", "value": "no" },
+      { "label": "Not sure", "value": "not-sure" }
+    ]
+  },
+  "lookup": {
+    "class": {
+      "first-year": {
+        "yes": ["tutoring", "student-success-center", "advising", "counseling"],
+        "no": ["tutoring", "advising", "student-success-center", "counseling"],
+        "not-sure": ["tutoring", "advising", "student-success-center", "counseling"]
+      },
+      "second-year": {
+        "yes": ["tutoring", "advising", "student-success-center", "counseling"],
+        "no": ["tutoring", "advising", "student-success-center", "financial-aid"],
+        "not-sure": ["tutoring", "advising", "student-success-center", "counseling"]
+      },
+      "third-year": {
+        "yes": ["tutoring", "advising", "career-services", "counseling"],
+        "no": ["tutoring", "advising", "student-success-center", "counseling"],
+        "not-sure": ["tutoring", "advising", "career-services", "student-success-center"]
+      },
+      "fourth-year-plus": {
+        "yes": ["tutoring", "advising", "career-services", "counseling"],
+        "no": ["tutoring", "advising", "career-services", "student-success-center"],
+        "not-sure": ["tutoring", "advising", "career-services", "counseling"]
+      }
+    },
+    "money": {
+      "first-year": {
+        "yes": ["financial-aid", "scholarship-search", "student-success-center", "advising"],
+        "no": ["financial-aid", "scholarship-search", "student-success-center", "advising"],
+        "not-sure": ["financial-aid", "scholarship-search", "student-success-center", "advising"]
+      },
+      "second-year": {
+        "yes": ["financial-aid", "scholarship-search", "career-services", "student-success-center"],
+        "no": ["financial-aid", "scholarship-search", "career-services", "advising"],
+        "not-sure": ["financial-aid", "scholarship-search", "student-success-center", "advising"]
+      },
+      "third-year": {
+        "yes": ["financial-aid", "scholarship-search", "career-services", "advising"],
+        "no": ["financial-aid", "scholarship-search", "career-services", "student-success-center"],
+        "not-sure": ["financial-aid", "scholarship-search", "career-services", "advising"]
+      },
+      "fourth-year-plus": {
+        "yes": ["financial-aid", "scholarship-search", "career-services", "advising"],
+        "no": ["financial-aid", "scholarship-search", "career-services", "student-success-center"],
+        "not-sure": ["financial-aid", "scholarship-search", "career-services", "advising"]
+      }
+    },
+    "overwhelmed": {
+      "first-year": {
+        "yes": ["counseling", "student-success-center", "advising", "tutoring"],
+        "no": ["counseling", "student-success-center", "advising", "tutoring"],
+        "not-sure": ["counseling", "student-success-center", "advising", "financial-aid"]
+      },
+      "second-year": {
+        "yes": ["counseling", "student-success-center", "advising", "financial-aid"],
+        "no": ["counseling", "student-success-center", "advising", "tutoring"],
+        "not-sure": ["counseling", "student-success-center", "advising", "financial-aid"]
+      },
+      "third-year": {
+        "yes": ["counseling", "advising", "career-services", "student-success-center"],
+        "no": ["counseling", "student-success-center", "advising", "financial-aid"],
+        "not-sure": ["counseling", "student-success-center", "advising", "career-services"]
+      },
+      "fourth-year-plus": {
+        "yes": ["counseling", "career-services", "advising", "student-success-center"],
+        "no": ["counseling", "advising", "financial-aid", "student-success-center"],
+        "not-sure": ["counseling", "student-success-center", "career-services", "advising"]
+      }
+    },
+    "schedule": {
+      "first-year": {
+        "yes": ["advising", "student-success-center", "tutoring", "counseling"],
+        "no": ["advising", "student-success-center", "tutoring", "counseling"],
+        "not-sure": ["advising", "student-success-center", "tutoring", "counseling"]
+      },
+      "second-year": {
+        "yes": ["advising", "tutoring", "student-success-center", "career-services"],
+        "no": ["advising", "student-success-center", "tutoring", "financial-aid"],
+        "not-sure": ["advising", "student-success-center", "tutoring", "career-services"]
+      },
+      "third-year": {
+        "yes": ["advising", "career-services", "tutoring", "student-success-center"],
+        "no": ["advising", "student-success-center", "career-services", "financial-aid"],
+        "not-sure": ["advising", "career-services", "student-success-center", "tutoring"]
+      },
+      "fourth-year-plus": {
+        "yes": ["advising", "career-services", "student-success-center", "financial-aid"],
+        "no": ["advising", "career-services", "student-success-center", "tutoring"],
+        "not-sure": ["advising", "career-services", "student-success-center", "financial-aid"]
+      }
+    },
+    "something-else": {
+      "first-year": {
+        "yes": ["student-success-center", "advising", "counseling", "career-services"],
+        "no": ["student-success-center", "advising", "counseling", "tutoring"],
+        "not-sure": ["student-success-center", "advising", "career-services", "counseling"]
+      },
+      "second-year": {
+        "yes": ["student-success-center", "advising", "career-services", "counseling"],
+        "no": ["student-success-center", "advising", "counseling", "financial-aid"],
+        "not-sure": ["student-success-center", "advising", "career-services", "counseling"]
+      },
+      "third-year": {
+        "yes": ["advising", "career-services", "student-success-center", "counseling"],
+        "no": ["student-success-center", "advising", "financial-aid", "counseling"],
+        "not-sure": ["advising", "career-services", "student-success-center", "counseling"]
+      },
+      "fourth-year-plus": {
+        "yes": ["advising", "career-services", "financial-aid", "counseling"],
+        "no": ["advising", "student-success-center", "career-services", "financial-aid"],
+        "not-sure": ["advising", "career-services", "counseling", "student-success-center"]
+      }
+    }
+  }
+}
