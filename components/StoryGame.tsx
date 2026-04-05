@@ -1,58 +1,49 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { RefObject } from "react";
 
-import { ScholarshipMatcher } from "@/components/ScholarshipMatcher";
+import { CharacterAvatar } from "@/components/SketchCharacters";
+import { SketchNotation } from "@/components/SketchNotation";
 import {
   ALEX_STORY_STORAGE_KEY,
   applyStoryEffect,
   createDefaultStoryState,
   createPreviewStoryState,
   getEndingForConfidence,
+  getLineText,
+  getOverlay,
   getScene,
   isValidPersistedStoryState,
+  markOverlaySeen,
   sceneHasPendingEffect,
+  storyArchetypeById,
+  storyArchetypes,
   storyBadgeById,
   storyBadges,
+  storyCharacterById,
   storyDays,
   storyJumpInBySlug,
 } from "@/lib/alex-story";
 import type {
-  BadgeDefinition,
+  ArchetypeDefinition,
+  ArchetypeId,
+  ChoiceOption,
   JumpInSlug,
   PersistedStoryState,
-  StoryChoice,
-  StoryScene,
+  ResourceOverlayDefinition,
+  SceneFrame,
+  StoryLine,
 } from "@/lib/types";
-
-const dayById = Object.fromEntries(storyDays.map((day) => [day.id, day]));
-
-const backdropLabels: Record<string, string> = {
-  "campus-arrival": "Tempe arrival",
-  "python-classroom": "Python lecture",
-  "math-classroom": "Math classroom",
-  "chemistry-classroom": "Chemistry lecture",
-  "advising-center": "Academic advising",
-  "canvas-night": "Canvas and syllabi",
-  "office-hours-room": "Office hours",
-  "myasu-dashboard": "MyASU dashboard",
-  "dorm-night": "Late-night reset",
-  "phone-glow": "Phone and schedule",
-  "campus-walk": "Between classes",
-  inbox: "Email draft",
-  sunrise: "Week one wrap",
-};
-
-const focusableSelector =
-  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
-const initialStoryState = createDefaultStoryState();
 
 interface StoryGameProps {
   mode?: "main" | "preview";
   previewSlug?: JumpInSlug;
 }
+
+const focusableSelector =
+  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 function useFocusTrap(ref: RefObject<HTMLElement | null>, enabled: boolean) {
   useEffect(() => {
@@ -60,32 +51,27 @@ function useFocusTrap(ref: RefObject<HTMLElement | null>, enabled: boolean) {
       return;
     }
 
-    const container = ref.current;
-    const previousActive = document.activeElement as HTMLElement | null;
-
-    function getFocusableElements() {
-      return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).filter(
-        (element) => !element.hasAttribute("disabled") && element.tabIndex !== -1,
-      );
-    }
-
-    const focusable = getFocusableElements();
+    const node = ref.current;
+    const previous = document.activeElement as HTMLElement | null;
+    const focusable = Array.from(node.querySelectorAll<HTMLElement>(focusableSelector));
     focusable[0]?.focus();
 
-    function onKeyDown(event: KeyboardEvent) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key !== "Tab") {
         return;
       }
 
-      const nodes = getFocusableElements();
+      const items = Array.from(node.querySelectorAll<HTMLElement>(focusableSelector)).filter(
+        (item) => !item.hasAttribute("disabled"),
+      );
 
-      if (!nodes.length) {
+      if (!items.length) {
         event.preventDefault();
         return;
       }
 
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
+      const first = items[0];
+      const last = items[items.length - 1];
       const active = document.activeElement as HTMLElement | null;
 
       if (event.shiftKey && active === first) {
@@ -97,389 +83,532 @@ function useFocusTrap(ref: RefObject<HTMLElement | null>, enabled: boolean) {
       }
     }
 
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      previousActive?.focus();
+      document.removeEventListener("keydown", handleKeyDown);
+      previous?.focus();
     };
   }, [enabled, ref]);
 }
 
 function hasMeaningfulProgress(state: PersistedStoryState) {
   return (
-    state.currentSceneId !== initialStoryState.currentSceneId ||
-    state.confidence !== 50 ||
+    state.currentSceneId !== createDefaultStoryState().currentSceneId ||
+    state.archetypeId !== null ||
     state.xp !== 0 ||
-    state.unlockedBadgeIds.length > 0 ||
+    state.confidence !== 50 ||
     state.choiceHistory.length > 0 ||
-    state.appliedSceneIds.length > 0
+    state.unlockedBadgeIds.length > 0
   );
 }
 
-function buildNextState(current: PersistedStoryState, nextSceneId: string) {
-  const nextScene = getScene(nextSceneId);
-
-  if (!nextScene) {
-    return current;
-  }
-
-  let nextState: PersistedStoryState = {
+function buildSceneState(current: PersistedStoryState, scene: SceneFrame) {
+  let next: PersistedStoryState = {
     ...current,
-    currentDayId: nextScene.dayId,
-    currentSceneId: nextScene.id,
-    endingId: null,
+    currentSceneId: scene.id,
+    currentLineIndex: 0,
+    currentDayId: scene.dayId,
+    endingId: scene.type === "ending" ? getEndingForConfidence(current.confidence).id : null,
   };
 
-  if (
-    nextScene.kind !== "resource" &&
-    nextScene.effects &&
-    !nextState.appliedSceneIds.includes(nextScene.id)
-  ) {
-    nextState = applyStoryEffect(nextState, nextScene, nextScene.effects);
+  if (scene.type === "dialogue" && sceneHasPendingEffect(current, scene)) {
+    next = applyStoryEffect(next, scene.id, scene.effects);
   }
 
-  return {
-    ...nextState,
-    endingId: nextScene.kind === "ending" ? getEndingForConfidence(nextState.confidence).id : null,
-  };
+  next.endingId = scene.type === "ending" ? getEndingForConfidence(next.confidence).id : null;
+  return next;
 }
 
-function StoryLink({
-  href,
-  label,
-  external = false,
-  className,
-}: {
-  href: string;
-  label: string;
-  external?: boolean;
-  className?: string;
-}) {
-  const classes = className ?? "button-secondary";
-
-  if (external) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={classes}>
-        {label}
-      </a>
-    );
-  }
-
+function DoodleStrip() {
   return (
-    <Link href={href} className={classes}>
-      {label}
-    </Link>
+    <div className="sim-ground-doodles" aria-hidden="true">
+      <span>⌇</span>
+      <span>✦</span>
+      <span>⌇⌇</span>
+      <span>◌</span>
+      <span>⌇</span>
+      <span>∿</span>
+      <span>✳</span>
+      <span>⌇</span>
+      <span>◦</span>
+      <span>⌇⌇</span>
+    </div>
   );
 }
 
-function getVideoMimeType(src: string) {
-  if (src.endsWith(".mov")) {
-    return "video/quicktime";
-  }
-
-  if (src.endsWith(".webm")) {
-    return "video/webm";
-  }
-
-  return "video/mp4";
-}
-
-function SceneIllustration({
-  scene,
-  confidence,
+function BubbleText({
+  line,
+  archetypeId,
 }: {
-  scene: StoryScene;
-  confidence: number;
+  line: StoryLine;
+  archetypeId: PersistedStoryState["archetypeId"];
 }) {
-  const sceneFacts = [
-    scene.courseLabel,
-    scene.buildingLabel ? `Building: ${scene.buildingLabel}` : null,
-    scene.roomLabel ? `Room: ${scene.roomLabel}` : null,
-  ].filter(Boolean) as string[];
+  const text = getLineText(line, archetypeId);
+
+  if (!line.annotation) {
+    return <p className="sim-bubble-copy">{text}</p>;
+  }
 
   return (
-    <section className="story-visual-panel">
-      <div className="story-visual-meta">
-        <div>
-          <p className="story-overline">{backdropLabels[scene.backdrop] ?? "Your first week"}</p>
-          <h2 className="story-visual-title">{scene.location}</h2>
-        </div>
-        <div className="story-visual-score">
-          <span>Campus Confidence</span>
-          <strong>{confidence}%</strong>
-        </div>
+    <p className="sim-bubble-copy">
+      <SketchNotation
+        type={line.annotation}
+        color={line.annotation === "highlight" ? "#FFC627" : "#8C1D40"}
+        padding={3}
+        multiline
+      >
+        {text}
+      </SketchNotation>
+    </p>
+  );
+}
+
+function TitleScreen({
+  scene,
+  onStart,
+}: {
+  scene: Extract<SceneFrame, { type: "title" }>;
+  onStart: () => void;
+}) {
+  return (
+    <section className="sim-title-screen">
+      <div className="sim-title-doodle sim-title-doodle-left">✦ ⌇ ☆</div>
+      <div className="sim-title-doodle sim-title-doodle-right">⌇⌇ ☼ ∿</div>
+
+      <p className="sim-title-kicker">hand-drawn first-week survival story</p>
+      <h1 className="sim-title-mark">
+        <SketchNotation type="underline" color="#FFC627" padding={10}>
+          {scene.title}
+        </SketchNotation>
+      </h1>
+      <p className="sim-title-subtitle">{scene.subtitle}</p>
+
+      <div className="sim-preview-row">
+        {scene.previewCharacterIds.map((characterId) => {
+          const character = storyCharacterById[characterId];
+
+          return (
+            <article key={character.id} className="sim-preview-card">
+              <div className="sim-preview-avatar">
+                <CharacterAvatar characterId={character.id} size="small" />
+              </div>
+              <strong>{character.name}</strong>
+              <span>{character.previewLabel}</span>
+            </article>
+          );
+        })}
       </div>
 
-      <div className="story-illustration-card">
-        {scene.videoSrc ? (
-          <div className="story-media-card">
-            <div className="story-video-shell">
-              <video
-                className="story-scene-video"
-                controls
-                muted
-                playsInline
-                preload="metadata"
-                poster={scene.videoPoster}
-              >
-                <source src={scene.videoSrc} type={getVideoMimeType(scene.videoSrc)} />
-                {scene.videoFallbackSrc ? (
-                  <source
-                    src={scene.videoFallbackSrc}
-                    type={getVideoMimeType(scene.videoFallbackSrc)}
-                  />
-                ) : null}
-                Your browser does not support inline video previews.
-              </video>
-            </div>
-
-            <div className="story-media-caption">
-              <p className="story-overline">Video preview</p>
-              <h3>{scene.videoTitle ?? scene.title}</h3>
-              {scene.videoCaption ? <p>{scene.videoCaption}</p> : null}
-            </div>
-          </div>
-        ) : (
-          <div className="story-illustration-frame">
-            <div className="story-illustration-topline" />
-            <div className="story-illustration-grid">
-              <div className="story-illustration-panel story-illustration-panel-wide" />
-              <div className="story-illustration-panel story-illustration-panel-accent" />
-              <div className="story-illustration-panel" />
-              <div className="story-illustration-panel story-illustration-panel-deep" />
-            </div>
-            <div className="story-illustration-orb story-illustration-orb-gold" />
-            <div className="story-illustration-orb story-illustration-orb-maroon" />
-            <div className="story-illustration-caption">
-              <p>{scene.title}</p>
-              <span>{scene.kind === "resource" ? "Support scene" : "Story scene"}</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {sceneFacts.length ? (
-        <div className="story-fact-row">
-          {sceneFacts.map((fact) => (
-            <span key={fact} className="story-fact-pill">
-              {fact}
-            </span>
-          ))}
-        </div>
-      ) : null}
-
-      {scene.routeSteps?.length ? (
-        <div className="story-route-card">
-          <p className="story-overline">How To Find It</p>
-          <ol>
-            {scene.routeSteps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
-        </div>
-      ) : null}
+      <button type="button" className="sim-action-button sim-action-button-gold" onClick={onStart}>
+        {scene.startLabel}
+      </button>
     </section>
   );
 }
 
-function ResourceSceneBody({ scene }: { scene: StoryScene }) {
-  const badge = scene.badgeId ? storyBadgeById[scene.badgeId] : null;
+function ArchetypeCard({
+  archetype,
+  selected,
+  onSelect,
+}: {
+  archetype: ArchetypeDefinition;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <div className="story-resource-stack">
-      {badge ? (
-        <div className="story-badge-callout">
-          <span className="story-badge-callout-label">Milestone reward</span>
-          <strong>{badge.title}</strong>
-          <p>Finish this scene to unlock it in your milestone tray.</p>
-        </div>
-      ) : null}
+    <button
+      type="button"
+      className={`sim-archetype-card ${selected ? "sim-archetype-card-selected" : ""}`}
+      onClick={onSelect}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+    >
+      <div className="sim-archetype-art">
+        <CharacterAvatar characterId="you" size="small" className={`sim-archetype-avatar sim-archetype-avatar-${archetype.id}`} />
+      </div>
+      <h3>
+        <SketchNotation
+          type="circle"
+          color={selected || hovered ? "#FFC627" : "transparent"}
+          padding={10}
+          animate={selected || hovered}
+          show={selected || hovered}
+        >
+          {archetype.title}
+        </SketchNotation>
+      </h3>
+      <p>{archetype.description}</p>
+      <span>Starting Confidence: {archetype.startingConfidence}%</span>
+    </button>
+  );
+}
 
-      {scene.cards?.length ? (
-        <div className="story-info-grid">
-          {scene.cards.map((card) => (
-            <article key={card.title} className="story-info-card">
-              <p className="story-overline">{card.title}</p>
-              <p className="story-info-card-body">{card.body}</p>
+function CharacterSelectScreen({
+  scene,
+  selectedArchetypeId,
+  onSelectArchetype,
+  onBack,
+  onNext,
+}: {
+  scene: Extract<SceneFrame, { type: "character-select" }>;
+  selectedArchetypeId: ArchetypeId | null;
+  onSelectArchetype: (archetypeId: ArchetypeId) => void;
+  onBack: () => void;
+  onNext: () => void;
+}) {
+  return (
+    <section className="sim-select-screen">
+      <div className="sim-select-header">
+        <span>{scene.title}</span>
+      </div>
+      <p className="sim-select-copy">{scene.subtitle}</p>
+
+      <div className="sim-archetype-grid">
+        {storyArchetypes.map((archetype) => (
+          <ArchetypeCard
+            key={archetype.id}
+            archetype={archetype}
+            selected={selectedArchetypeId === archetype.id}
+            onSelect={() => onSelectArchetype(archetype.id)}
+          />
+        ))}
+      </div>
+
+      <div className="sim-screen-actions">
+        <button type="button" className="sim-action-button" onClick={onBack}>
+          Back
+        </button>
+        <button
+          type="button"
+          className="sim-action-button sim-action-button-gold"
+          onClick={onNext}
+          disabled={!selectedArchetypeId}
+        >
+          Next
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function BadgeDrawer({
+  open,
+  unlockedBadgeIds,
+  onClose,
+}: {
+  open: boolean;
+  unlockedBadgeIds: string[];
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(ref, open);
+
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="sim-modal-backdrop">
+      <aside ref={ref} className="sim-badge-drawer">
+        <div className="sim-badge-drawer-header">
+          <div>
+            <p className="sim-small-label">Badge tray</p>
+            <h3>Every resource you surfaced this week</h3>
+          </div>
+          <button type="button" className="sim-icon-button" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+
+        <div className="sim-badge-drawer-grid">
+          {storyBadges.map((badge) => {
+            const unlocked = unlockedBadgeIds.includes(badge.id);
+            return (
+              <article
+                key={badge.id}
+                className={`sim-badge-card ${unlocked ? "sim-badge-card-unlocked" : ""}`}
+              >
+                <div className="sim-badge-icon">{badge.shortLabel}</div>
+                <strong>{badge.title}</strong>
+                <p>{badge.description}</p>
+                <Link href={badge.ctaHref} className="sim-text-link">
+                  {badge.ctaLabel}
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function BadgeUnlockModal({
+  badgeId,
+  onClose,
+}: {
+  badgeId: string | null;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(ref, Boolean(badgeId));
+
+  if (!badgeId) {
+    return null;
+  }
+
+  const badge = storyBadgeById[badgeId];
+
+  if (!badge) {
+    return null;
+  }
+
+  return (
+    <div className="sim-modal-backdrop">
+      <div ref={ref} className="sim-badge-unlock-card">
+        <div className="sim-badge-burst" aria-hidden="true">
+          ✦ ✳ ! ✦
+        </div>
+        <div className="sim-badge-icon sim-badge-icon-large">{badge.shortLabel}</div>
+        <p className="sim-small-label">BADGE UNLOCKED</p>
+        <h3>{badge.title}</h3>
+        <p>{badge.description}</p>
+        <button type="button" className="sim-action-button sim-action-button-gold" onClick={onClose}>
+          Nice!
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ResourceOverlayModal({
+  overlay,
+  onClose,
+}: {
+  overlay: ResourceOverlayDefinition | null;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(ref, Boolean(overlay));
+
+  if (!overlay) {
+    return null;
+  }
+
+  return (
+    <div className="sim-modal-backdrop">
+      <div ref={ref} className="sim-overlay-card">
+        <div className="sim-overlay-header">
+          <div>
+            <p className="sim-small-label">Real-world overlay</p>
+            <h3>{overlay.title}</h3>
+            <p>{overlay.subtitle}</p>
+          </div>
+          <button type="button" className="sim-icon-button" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+
+        {overlay.videoSrc ? (
+          <div className="sim-overlay-video-shell">
+            <video controls muted playsInline preload="metadata" poster={overlay.videoPoster}>
+              <source src={overlay.videoSrc} type={overlay.videoSrc.endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
+              {overlay.videoFallbackSrc ? (
+                <source
+                  src={overlay.videoFallbackSrc}
+                  type={overlay.videoFallbackSrc.endsWith(".mov") ? "video/quicktime" : "video/mp4"}
+                />
+              ) : null}
+            </video>
+            {overlay.videoTitle || overlay.videoCaption ? (
+              <div className="sim-overlay-video-caption">
+                {overlay.videoTitle ? <strong>{overlay.videoTitle}</strong> : null}
+                {overlay.videoCaption ? <p>{overlay.videoCaption}</p> : null}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        <p className="sim-overlay-description">{overlay.description}</p>
+
+        <div className="sim-overlay-card-grid">
+          {overlay.cards.map((card) => (
+            <article key={card.title} className="sim-overlay-info-card">
+              <p className="sim-small-label">{card.title}</p>
+              <p>{card.body}</p>
             </article>
           ))}
         </div>
-      ) : null}
 
-      {scene.emailMock ? (
-        <div className="story-mock-card">
-          <p className="story-overline">What the email looks like</p>
-          <div className="story-email-block">
-            <p>
-              <strong>Subject:</strong> {scene.emailMock.subject}
-            </p>
-            <p>
-              <strong>From:</strong> {scene.emailMock.from}
-            </p>
-            <p>
-              <strong>To:</strong> {scene.emailMock.to}
-            </p>
-            <p className="story-email-body">{scene.emailMock.body}</p>
-          </div>
-          {scene.emailMock.replySubject && scene.emailMock.replyFrom && scene.emailMock.replyBody ? (
-            <div className="story-email-block story-email-block-reply">
-              <p>
-                <strong>Subject:</strong> {scene.emailMock.replySubject}
-              </p>
-              <p>
-                <strong>From:</strong> {scene.emailMock.replyFrom}
-              </p>
-              <p className="story-email-body">{scene.emailMock.replyBody}</p>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      {scene.messageMock ? (
-        <div className="story-mock-card">
-          <p className="story-overline">Message preview</p>
-          <div className="story-message-block">
-            <p className="story-message-sender">{scene.messageMock.sender}</p>
-            <h3>{scene.messageMock.title}</h3>
-            <p>{scene.messageMock.body}</p>
-          </div>
-        </div>
-      ) : null}
-
-      {scene.taskChecklist?.length ? (
-        <div className="story-task-card">
-          <p className="story-overline">Priority Tasks</p>
-          <div className="story-task-grid">
-            {scene.taskChecklist.map((item) => (
-              <article key={item.title} className="story-task-item">
-                <h3>{item.title}</h3>
-                <p>{item.detail}</p>
+        {overlay.taskChecklist?.length ? (
+          <div className="sim-task-list">
+            {overlay.taskChecklist.map((task) => (
+              <article key={task.title} className="sim-task-card">
+                <strong>{task.title}</strong>
+                <p>{task.detail}</p>
               </article>
             ))}
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      {scene.bullets?.length ? (
-        <ul className="story-bullet-list">
-          {scene.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
-          ))}
-        </ul>
-      ) : null}
-
-      {scene.embedScholarshipChecker ? (
-        <div className="story-scholarship-overlay">
-          <ScholarshipMatcher variant="overlay" />
+        <div className="sim-screen-actions">
+          {overlay.ctaHref ? (
+            overlay.ctaExternal ? (
+              <a
+                href={overlay.ctaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sim-action-button"
+              >
+                {overlay.ctaLabel ?? "Open link"}
+              </a>
+            ) : (
+              <Link href={overlay.ctaHref} className="sim-action-button">
+                {overlay.ctaLabel ?? "Open link"}
+              </Link>
+            )
+          ) : null}
+          <button type="button" className="sim-action-button sim-action-button-gold" onClick={onClose}>
+            Back to story
+          </button>
         </div>
-      ) : null}
+      </div>
     </div>
+  );
+}
+
+function ResumeDialog({
+  onResume,
+  onRestart,
+}: {
+  onResume: () => void;
+  onRestart: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(ref, true);
+
+  return (
+    <div className="sim-modal-backdrop">
+      <div ref={ref} className="sim-resume-card">
+        <p className="sim-small-label">Saved story found</p>
+        <h3>Resume your sketchbook week?</h3>
+        <p>You already started ASU Unlocked. Pick up where you left off or start over from the title screen.</p>
+        <div className="sim-screen-actions">
+          <button type="button" className="sim-action-button sim-action-button-gold" onClick={onResume}>
+            Resume
+          </button>
+          <button type="button" className="sim-action-button" onClick={onRestart}>
+            Restart
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ChoiceCard({
+  choice,
+  onSelect,
+}: {
+  choice: ChoiceOption;
+  onSelect: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <button
+      type="button"
+      className="sim-choice-card"
+      onClick={onSelect}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+    >
+      <span className="sim-choice-icon">{choice.icon}</span>
+      <div>
+        <strong>
+          <SketchNotation
+            type="circle"
+            color={hovered ? "#FFC627" : "transparent"}
+            padding={8}
+            show={hovered}
+            animate={hovered}
+          >
+            {choice.label}
+          </SketchNotation>
+        </strong>
+        <span>{choice.caption}</span>
+      </div>
+    </button>
   );
 }
 
 function EndingScene({
   state,
   onRestart,
-  previewMode,
 }: {
   state: PersistedStoryState;
   onRestart: () => void;
-  previewMode: boolean;
 }) {
   const ending = getEndingForConfidence(state.confidence);
-  const unlockedBadges = storyBadges.filter((badge) => state.unlockedBadgeIds.includes(badge.id));
-  const missedBadges = storyBadges.filter((badge) => !state.unlockedBadgeIds.includes(badge.id));
+  const archetype = state.archetypeId ? storyArchetypeById[state.archetypeId] : null;
 
   return (
-    <div className="story-ending-stack">
-      <div className="story-ending-hero">
-        <p className="story-overline">Week-One Result</p>
-        <h3>{ending.title}</h3>
+    <section className="sim-ending-screen">
+      <div className="sim-ending-character">
+        <CharacterAvatar characterId="you" size="large" className={`sim-archetype-avatar-${state.archetypeId ?? "overwhelmed-one"}`} />
+      </div>
+
+      <div className="sim-ending-copy">
+        <h2>{ending.title}</h2>
         <p>{ending.summary}</p>
-      </div>
+        {archetype ? <span className="sim-ending-tag">{archetype.title}</span> : null}
 
-      <div className="story-ending-stats">
-        <div className="story-ending-stat">
-          <span>Campus Confidence</span>
-          <strong>{state.confidence}%</strong>
-        </div>
-        <div className="story-ending-stat">
-          <span>Momentum</span>
-          <strong>{state.xp}</strong>
-        </div>
-        <div className="story-ending-stat">
-          <span>Milestones unlocked</span>
-          <strong>{unlockedBadges.length}</strong>
-        </div>
-      </div>
-
-      <div className="story-ending-section">
-        <p className="story-overline">Milestones You Hit This Week</p>
-        {unlockedBadges.length ? (
-          <div className="story-badge-grid">
-            {unlockedBadges.map((badge) => (
-              <BadgeCard key={badge.id} badge={badge} unlocked />
-            ))}
+        <div className="sim-ending-stats">
+          <div>
+            <span>Confidence</span>
+            <strong>{state.confidence}%</strong>
           </div>
-        ) : (
-          <div className="story-muted-card">
-            You did not unlock any first-week milestones this time. The doors are still open.
+          <div>
+            <span>XP</span>
+            <strong>{state.xp}</strong>
           </div>
-        )}
-      </div>
+          <div>
+            <span>Badges</span>
+            <strong>
+              {state.unlockedBadgeIds.length}/{storyBadges.length}
+            </strong>
+          </div>
+        </div>
 
-      <div className="story-ending-section">
-        <p className="story-overline">
-          {ending.id === "adjusting" ? "These are still here for you" : "Milestones still waiting"}
-        </p>
-        <p className="story-ending-copy">
-          {ending.id === "adjusting"
-            ? "Nothing here closed because the week was hard. These support moves are still available whenever you want to try them."
-            : "These next steps are still available if you want to make week two feel easier than week one did."}
-        </p>
-        <div className="story-badge-grid">
-          {missedBadges.map((badge) => (
-            <BadgeCard key={badge.id} badge={badge} unlocked={false} />
+        <div className="sim-ending-badges">
+          {storyBadges.map((badge) => (
+            <Link
+              key={badge.id}
+              href={badge.ctaHref}
+              className={`sim-ending-badge ${
+                state.unlockedBadgeIds.includes(badge.id) ? "sim-ending-badge-unlocked" : ""
+              }`}
+            >
+              <span>{badge.shortLabel}</span>
+            </Link>
           ))}
         </div>
-      </div>
 
-      <div className="story-ending-actions">
-        <button type="button" onClick={onRestart} className="button-gold">
-          {previewMode ? "Replay this preview" : "Restart your first week"}
+        <button type="button" className="sim-action-button sim-action-button-gold" onClick={onRestart}>
+          Play Again
         </button>
-        {previewMode ? (
-          <Link href="/simulate" className="button-secondary">
-            Play the full story
-          </Link>
-        ) : null}
+        <p className="sim-ending-note">
+          Every resource mentioned in this game is real. Tap any badge to learn more.
+        </p>
       </div>
-    </div>
-  );
-}
-
-function BadgeCard({
-  badge,
-  unlocked,
-}: {
-  badge: BadgeDefinition;
-  unlocked: boolean;
-}) {
-  return (
-    <article className={`story-badge-card ${unlocked ? "story-badge-card-unlocked" : ""}`}>
-      <div>
-        <p className="story-overline">{unlocked ? "Unlocked this week" : "Still available"}</p>
-        <h4>{badge.title}</h4>
-        <p>{badge.description}</p>
-      </div>
-      <StoryLink
-        href={badge.ctaHref}
-        label={badge.ctaLabel}
-        external={badge.ctaExternal}
-        className={unlocked ? "button-secondary" : "button-primary"}
-      />
-    </article>
+    </section>
   );
 }
 
@@ -487,44 +616,121 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   const previewPreset = previewSlug ? storyJumpInBySlug[previewSlug] : undefined;
   const previewMode = mode === "preview" && Boolean(previewPreset);
 
-  const [storyState, setStoryState] = useState<PersistedStoryState>(() => {
-    if (previewPreset) {
-      return createPreviewStoryState(previewPreset);
-    }
-
-    return createDefaultStoryState();
-  });
+  const [storyState, setStoryState] = useState<PersistedStoryState>(() =>
+    previewPreset ? createPreviewStoryState(previewPreset) : createDefaultStoryState(),
+  );
+  const [resumeCandidate, setResumeCandidate] = useState<PersistedStoryState | null>(null);
   const [isReady, setIsReady] = useState(previewMode);
   const [storageReady, setStorageReady] = useState(previewMode);
-  const [resumeCandidate, setResumeCandidate] = useState<PersistedStoryState | null>(null);
-  const [badgeTrayOpen, setBadgeTrayOpen] = useState(false);
-  const [recentBadgeId, setRecentBadgeId] = useState<string | null>(null);
+  const [badgeDrawerOpen, setBadgeDrawerOpen] = useState(false);
+  const [badgeModalId, setBadgeModalId] = useState<string | null>(null);
+  const [overlayId, setOverlayId] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [ttsAvailable, setTtsAvailable] = useState(true);
 
-  const badgeTrayRef = useRef<HTMLDivElement>(null);
-  const resumeDialogRef = useRef<HTMLDivElement>(null);
-
-  useFocusTrap(badgeTrayRef, badgeTrayOpen);
-  useFocusTrap(resumeDialogRef, Boolean(resumeCandidate));
+  const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const audioAbortRef = useRef<AbortController | null>(null);
+  const audioCacheRef = useRef<Map<string, string>>(new Map());
+  const unlockedBadgeCountRef = useRef(storyState.unlockedBadgeIds.length);
 
   const currentScene = getScene(storyState.currentSceneId);
-  const currentDay = currentScene ? dayById[currentScene.dayId] : undefined;
-  const currentDayIndex = currentDay
-    ? storyDays.findIndex((day) => day.id === currentDay.id)
-    : 0;
-  const unlockedBadges = storyBadges.filter((badge) => storyState.unlockedBadgeIds.includes(badge.id));
+  const currentDay = storyDays.find((day) => day.id === storyState.currentDayId) ?? storyDays[0];
+  const currentDialogue =
+    currentScene?.type === "dialogue" ? currentScene.lines[storyState.currentLineIndex] : null;
+  const currentOverlay = overlayId ? getOverlay(overlayId) : null;
+  const activeSpeakerId =
+    currentScene?.type === "choice"
+      ? currentScene.prompt.speakerId
+      : currentDialogue?.speakerId ?? "you";
+  const activeSpeaker = storyCharacterById[activeSpeakerId];
+  const ending = currentScene?.type === "ending" ? getEndingForConfidence(storyState.confidence) : null;
+  const previewTitle = previewPreset?.title;
+
+  const navigateToScene = useCallback((nextSceneId: string, choiceId?: string) => {
+    const nextScene = getScene(nextSceneId);
+
+    if (!nextScene) {
+      return;
+    }
+
+    setOverlayId(null);
+    setSettingsOpen(false);
+    setStoryState((current) =>
+      buildSceneState(
+        {
+          ...current,
+          choiceHistory: choiceId ? [...current.choiceHistory, choiceId] : current.choiceHistory,
+        },
+        nextScene,
+      ),
+    );
+  }, []);
+
+  const playCurrentLineAudio = useCallback(async () => {
+    if (!currentScene || currentScene.type !== "dialogue" || !currentDialogue || !storyState.archetypeId) {
+      return;
+    }
+
+    const cacheKey = `${currentScene.id}:${currentDialogue.id}:${storyState.archetypeId}`;
+    const cachedUrl = audioCacheRef.current.get(cacheKey);
+
+    audioAbortRef.current?.abort();
+    activeAudioRef.current?.pause();
+
+    if (cachedUrl) {
+      const audio = new Audio(cachedUrl);
+      audio.volume = 1;
+      activeAudioRef.current = audio;
+      await audio.play().catch(() => undefined);
+      return;
+    }
+
+    const controller = new AbortController();
+    audioAbortRef.current = controller;
+
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sceneId: currentScene.id,
+          lineId: currentDialogue.id,
+          archetypeId: storyState.archetypeId,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        setTtsAvailable(false);
+        return;
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      audioCacheRef.current.set(cacheKey, objectUrl);
+      const audio = new Audio(objectUrl);
+      activeAudioRef.current = audio;
+      await audio.play().catch(() => undefined);
+    } catch {
+      setTtsAvailable(false);
+    }
+  }, [currentDialogue, currentScene, storyState.archetypeId]);
 
   useEffect(() => {
     if (previewMode) {
       return;
     }
 
-    const timeoutId = window.setTimeout(() => {
+    const frameId = window.requestAnimationFrame(() => {
       const rawState = window.localStorage.getItem(ALEX_STORY_STORAGE_KEY);
 
       if (!rawState) {
-        setStoryState(createDefaultStoryState());
         setStorageReady(true);
         setIsReady(true);
+        unlockedBadgeCountRef.current = storyState.unlockedBadgeIds.length;
         return;
       }
 
@@ -533,7 +739,6 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
 
         if (!isValidPersistedStoryState(parsed) || !getScene(parsed.currentSceneId)) {
           window.localStorage.removeItem(ALEX_STORY_STORAGE_KEY);
-          setStoryState(createDefaultStoryState());
           setStorageReady(true);
           setIsReady(true);
           return;
@@ -543,29 +748,18 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
           setResumeCandidate(parsed);
           setStorageReady(false);
         } else {
-          setStoryState(createDefaultStoryState());
           setStorageReady(true);
         }
       } catch {
         window.localStorage.removeItem(ALEX_STORY_STORAGE_KEY);
-        setStoryState(createDefaultStoryState());
         setStorageReady(true);
       }
 
       setIsReady(true);
-    }, 0);
+    });
 
-    return () => window.clearTimeout(timeoutId);
-  }, [previewMode]);
-
-  useEffect(() => {
-    if (!recentBadgeId) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => setRecentBadgeId(null), 2600);
-    return () => window.clearTimeout(timeoutId);
-  }, [recentBadgeId]);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [previewMode, storyState.unlockedBadgeIds.length]);
 
   useEffect(() => {
     if (previewMode || !isReady || !storageReady) {
@@ -576,63 +770,127 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   }, [isReady, previewMode, storageReady, storyState]);
 
   useEffect(() => {
-    if (!badgeTrayOpen) {
-      return;
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setBadgeTrayOpen(false);
+    if (storyState.unlockedBadgeIds.length > unlockedBadgeCountRef.current) {
+      const newestBadge = storyState.unlockedBadgeIds.at(-1);
+      if (newestBadge) {
+        const frameId = window.requestAnimationFrame(() => {
+          setBadgeModalId(newestBadge);
+        });
+        unlockedBadgeCountRef.current = storyState.unlockedBadgeIds.length;
+        return () => window.cancelAnimationFrame(frameId);
       }
     }
 
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [badgeTrayOpen]);
+    unlockedBadgeCountRef.current = storyState.unlockedBadgeIds.length;
+  }, [storyState.unlockedBadgeIds]);
 
-  function handleChoice(choice: StoryChoice) {
-    setBadgeTrayOpen(false);
-    setStoryState((current) =>
-      buildNextState(
-        { ...current, choiceHistory: [...current.choiceHistory, choice.id] },
-        choice.resultSceneId,
-      ),
-    );
-  }
+  useEffect(() => {
+    if (currentScene?.type !== "day-transition" || overlayId || badgeModalId || resumeCandidate) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      if (currentScene.nextSceneId) {
+        navigateToScene(currentScene.nextSceneId);
+      }
+    }, currentScene.autoAdvanceMs ?? 2000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [badgeModalId, currentScene, navigateToScene, overlayId, resumeCandidate]);
+
+  useEffect(() => {
+    const cachedAudio = audioCacheRef.current;
+
+    return () => {
+      audioAbortRef.current?.abort();
+      activeAudioRef.current?.pause();
+      cachedAudio.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
+
+  const currentLineKey = useMemo(() => {
+    if (currentScene?.type !== "dialogue" || !currentDialogue || !storyState.archetypeId) {
+      return null;
+    }
+
+    return `${currentScene.id}:${currentDialogue.id}:${storyState.archetypeId}`;
+  }, [currentDialogue, currentScene, storyState.archetypeId]);
+
+  useEffect(() => {
+    if (
+      !ttsAvailable ||
+      isMuted ||
+      !currentLineKey ||
+      !storyState.archetypeId ||
+      currentScene?.type !== "dialogue" ||
+      currentDialogue?.bubbleType !== "speech"
+    ) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      void playCurrentLineAudio();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [
+    currentDialogue,
+    currentLineKey,
+    currentScene,
+    isMuted,
+    playCurrentLineAudio,
+    storyState.archetypeId,
+    ttsAvailable,
+  ]);
 
   function handleContinue() {
-    if (!currentScene?.nextSceneId) {
+    if (!currentScene) {
       return;
     }
 
-    if (
-      currentScene.kind === "resource" &&
-      currentScene.effects?.unlockBadgeIds?.length &&
-      sceneHasPendingEffect(storyState, currentScene)
-    ) {
-      setRecentBadgeId(currentScene.effects.unlockBadgeIds[0]);
-    }
-
-    setBadgeTrayOpen(false);
-    setStoryState((current) => {
-      let nextState = current;
-
-      if (currentScene.kind === "resource" && sceneHasPendingEffect(current, currentScene)) {
-        nextState = applyStoryEffect(current, currentScene, currentScene.effects!);
+    if (currentScene.type === "dialogue") {
+      if (storyState.currentLineIndex < currentScene.lines.length - 1) {
+        setStoryState((current) => ({ ...current, currentLineIndex: current.currentLineIndex + 1 }));
+        return;
       }
 
-      return buildNextState(nextState, currentScene.nextSceneId!);
-    });
-  }
-
-  function handleResume() {
-    if (!resumeCandidate) {
+      if (currentScene.nextSceneId) {
+        navigateToScene(currentScene.nextSceneId);
+      }
       return;
     }
 
-    setStoryState(resumeCandidate);
-    setResumeCandidate(null);
-    setStorageReady(true);
+    if (currentScene.type === "title") {
+      navigateToScene(currentScene.nextSceneId);
+      return;
+    }
+
+    if (currentScene.type === "day-transition") {
+      navigateToScene(currentScene.nextSceneId);
+    }
+  }
+
+  function handleArchetypeSelect(archetypeId: ArchetypeId) {
+    const archetype = storyArchetypeById[archetypeId];
+
+    setStoryState((current) => ({
+      ...current,
+      archetypeId,
+      confidence: archetype.startingConfidence,
+    }));
+  }
+
+  function handleBeginStory() {
+    const currentSceneValue = currentScene;
+    if (!currentSceneValue || currentSceneValue.type !== "character-select" || !storyState.archetypeId) {
+      return;
+    }
+
+    navigateToScene(currentSceneValue.nextSceneId);
+  }
+
+  function handleChoice(choice: ChoiceOption) {
+    navigateToScene(choice.resultSceneId, choice.id);
   }
 
   function handleRestart() {
@@ -640,227 +898,216 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
 
     if (!previewMode) {
       window.localStorage.removeItem(ALEX_STORY_STORAGE_KEY);
-      setStorageReady(true);
       setResumeCandidate(null);
+      setStorageReady(true);
     }
 
-    setBadgeTrayOpen(false);
-    setRecentBadgeId(null);
+    setOverlayId(null);
+    setBadgeModalId(null);
+    setBadgeDrawerOpen(false);
+    setSettingsOpen(false);
+    unlockedBadgeCountRef.current = nextState.unlockedBadgeIds.length;
     setStoryState(nextState);
   }
 
-  if (!isReady || !currentScene || !currentDay) {
-    return (
-      <div className="story-shell" data-backdrop="sunrise">
-        <div className="story-loading">
-          <p className="story-overline">Loading story</p>
-          <h1>Getting your first week ready.</h1>
-        </div>
-      </div>
-    );
+  function handleResume() {
+    if (!resumeCandidate) {
+      return;
+    }
+
+    unlockedBadgeCountRef.current = resumeCandidate.unlockedBadgeIds.length;
+    setStoryState(resumeCandidate);
+    setResumeCandidate(null);
+    setStorageReady(true);
   }
 
+  function openOverlay(overlayIdValue: string) {
+    setOverlayId(overlayIdValue);
+    setStoryState((current) => markOverlaySeen(current, overlayIdValue));
+  }
+
+  if (!currentScene) {
+    return null;
+  }
+
+  const confidenceWidth = `${storyState.confidence}%`;
+
   return (
-    <div className="story-shell" data-backdrop={currentScene.backdrop}>
-      <div className="story-shell-grain" />
+    <div className="story-shell">
+      <div className="sim-paper-noise" />
 
-      <div className="story-hud">
-        <div className="story-hud-row">
-          <div>
-            <p className="story-overline story-overline-gold">Your First Week at ASU</p>
-            <h1 className="story-hud-title">
-              {currentDay.label}: {currentDay.title}
-            </h1>
-            <p className="story-hud-copy">{currentDay.subtitle}</p>
-          </div>
-
-          <div className="story-hud-actions">
-            {previewMode ? (
-              <Link href="/simulate" className="button-secondary">
-                Open full story
-              </Link>
-            ) : (
-              <button type="button" onClick={handleRestart} className="button-secondary">
-                Restart week
-              </button>
-            )}
-            <button type="button" onClick={() => setBadgeTrayOpen(true)} className="button-gold">
-              Milestone tray ({unlockedBadges.length}/{storyBadges.length})
-            </button>
-          </div>
-        </div>
-
-        <div className="story-hud-row story-hud-row-stats">
-          <div className="story-meter-card">
-            <div className="story-meter-copy">
-              <span>Campus Confidence</span>
-              <strong>{storyState.confidence}%</strong>
-            </div>
-            <div className="story-meter-shell" aria-label={`Campus Confidence ${storyState.confidence}%`}>
-              <span className="story-meter-fill" style={{ width: `${storyState.confidence}%` }} />
-            </div>
-          </div>
-
-          <div className="story-stat-card">
-            <span>Momentum</span>
-            <strong>{storyState.xp}</strong>
-          </div>
-        </div>
-
-        <div className="story-day-track" aria-label="Story progress">
-          {storyDays.map((day, index) => (
-            <div
-              key={day.id}
-              className={`story-day-pill ${
-                index < currentDayIndex
-                  ? "story-day-pill-complete"
-                  : index === currentDayIndex
-                    ? "story-day-pill-current"
-                    : ""
-              }`}
-            >
-              <span>{day.label}</span>
-              <strong>{day.title}</strong>
-            </div>
-          ))}
-        </div>
-
-        {previewPreset ? (
-          <div className="story-preview-banner">
-            <p className="story-overline story-overline-gold">{previewPreset.title}</p>
-            <p>{previewPreset.recap} This preview does not overwrite the saved full playthrough.</p>
-          </div>
-        ) : null}
-      </div>
-
-      <div className="story-body">
-        <div key={currentScene.id} className="story-scene-frame">
-          <SceneIllustration scene={currentScene} confidence={storyState.confidence} />
-
-          <section className={`story-dialogue-card story-dialogue-card-${currentScene.kind}`}>
-            <div className="story-dialogue-meta">
-              <div>
-                <p className="story-overline">{currentScene.speaker}</p>
-                <span>{currentScene.location}</span>
-              </div>
-              <div className="story-dialogue-kind">{currentScene.kind}</div>
-            </div>
-
-            <div className="story-dialogue-copy">
-              <h2>{currentScene.title}</h2>
-              <p>{currentScene.body}</p>
-            </div>
-
-            {currentScene.kind === "choice" ? (
-              <div className="story-choice-grid">
-                {currentScene.choices?.map((choice) => (
-                  <button
-                    key={choice.id}
-                    type="button"
-                    className="story-choice-card"
-                    onClick={() => handleChoice(choice)}
-                  >
-                    <strong>{choice.label}</strong>
-                    <span>{choice.caption}</span>
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            {currentScene.kind === "resource" ? <ResourceSceneBody scene={currentScene} /> : null}
-
-            {currentScene.kind === "ending" ? (
-              <EndingScene
-                state={storyState}
-                onRestart={handleRestart}
-                previewMode={previewMode}
-              />
-            ) : null}
-
-            {currentScene.kind !== "choice" && currentScene.kind !== "ending" ? (
-              <div className="story-action-row">
-                {currentScene.ctaHref && currentScene.ctaLabel ? (
-                  <StoryLink
-                    href={currentScene.ctaHref}
-                    label={currentScene.ctaLabel}
-                    external={currentScene.ctaExternal}
-                    className="button-secondary"
-                  />
-                ) : null}
-
-                {currentScene.nextSceneId ? (
-                  <button type="button" onClick={handleContinue} className="button-primary">
-                    {currentScene.continueLabel ?? "Continue"}
-                  </button>
-                ) : null}
-              </div>
-            ) : null}
-          </section>
-        </div>
-      </div>
-
-      {recentBadgeId ? (
-        <div className="story-badge-toast" role="status" aria-live="polite">
-          <p className="story-overline">Milestone unlocked</p>
-          <strong>{storyBadgeById[recentBadgeId]?.title ?? "New milestone"}</strong>
-        </div>
+      {resumeCandidate && !previewMode ? (
+        <ResumeDialog onResume={handleResume} onRestart={handleRestart} />
       ) : null}
 
-      {badgeTrayOpen ? (
-        <div className="story-overlay">
-          <aside ref={badgeTrayRef} className="story-badge-tray" aria-modal="true" role="dialog">
-            <div className="story-badge-tray-header">
+      <BadgeUnlockModal badgeId={badgeModalId} onClose={() => setBadgeModalId(null)} />
+      <ResourceOverlayModal overlay={currentOverlay} onClose={() => setOverlayId(null)} />
+      <BadgeDrawer
+        open={badgeDrawerOpen}
+        unlockedBadgeIds={storyState.unlockedBadgeIds}
+        onClose={() => setBadgeDrawerOpen(false)}
+      />
+
+      {currentScene.type === "title" ? (
+        <TitleScreen scene={currentScene} onStart={handleContinue} />
+      ) : currentScene.type === "character-select" ? (
+        <CharacterSelectScreen
+          scene={currentScene}
+          selectedArchetypeId={storyState.archetypeId}
+          onSelectArchetype={handleArchetypeSelect}
+          onBack={() => navigateToScene(currentScene.backSceneId)}
+          onNext={handleBeginStory}
+        />
+      ) : currentScene.type === "day-transition" ? (
+        <section className="sim-day-transition" onClick={handleContinue}>
+          <SketchNotation type="box" color="#1a1a1a" padding={14}>
+            <span className="sim-day-transition-mark">{currentScene.title}</span>
+          </SketchNotation>
+          <p>{currentScene.subtitle}</p>
+        </section>
+      ) : currentScene.type === "ending" && ending ? (
+        <EndingScene state={storyState} onRestart={handleRestart} />
+      ) : (
+        <div className="sim-stage">
+          <header className="sim-hud">
+            <div className="sim-hud-top">
               <div>
-                <p className="story-overline">Milestone tray</p>
-                <h3>Your first-week map</h3>
+                <p className="sim-small-label">ASU UNLOCKED</p>
+                <h1>ASU UNLOCKED</h1>
               </div>
-              <button
-                type="button"
-                onClick={() => setBadgeTrayOpen(false)}
-                className="story-close-button"
-              >
-                Close
-              </button>
+
+              <div className="sim-hud-actions">
+                <button type="button" className="sim-hud-pill" onClick={() => setBadgeDrawerOpen(true)}>
+                  🏅 {storyState.unlockedBadgeIds.length}/{storyBadges.length}
+                </button>
+                <span className="sim-hud-pill">⚡ XP: {storyState.xp}</span>
+                <button type="button" className="sim-hud-pill" onClick={() => setSettingsOpen((current) => !current)}>
+                  ⚙
+                </button>
+              </div>
             </div>
 
-            <p className="story-badge-tray-copy">
-              Each unlocked milestone marks one part of ASU that now feels less mysterious than it did on Monday.
-            </p>
+            <div className="sim-confidence-shell">
+              <div className="sim-confidence-meta">
+                <span>Confidence</span>
+                <strong>{storyState.confidence}%</strong>
+              </div>
+              <div className="sim-confidence-track">
+                <span className="sim-confidence-fill" style={{ width: confidenceWidth }} />
+              </div>
+            </div>
 
-            <div className="story-badge-grid">
-              {storyBadges.map((badge) => (
-                <BadgeCard
-                  key={badge.id}
-                  badge={badge}
-                  unlocked={storyState.unlockedBadgeIds.includes(badge.id)}
+            {settingsOpen ? (
+              <div className="sim-settings-panel">
+                <button type="button" className="sim-settings-button" onClick={() => setIsMuted((current) => !current)}>
+                  {isMuted ? "Unmute voices" : "Mute voices"}
+                </button>
+                <button
+                  type="button"
+                  className="sim-settings-button"
+                  onClick={() => {
+                    if (!isMuted && ttsAvailable) {
+                      void playCurrentLineAudio();
+                    }
+                  }}
+                  disabled={!ttsAvailable || !currentDialogue}
+                >
+                  Replay line
+                </button>
+                <button type="button" className="sim-settings-button" onClick={handleRestart}>
+                  Restart story
+                </button>
+                {!ttsAvailable ? <span className="sim-settings-note">TTS unavailable</span> : null}
+              </div>
+            ) : null}
+
+            {previewMode && previewTitle ? (
+              <div className="sim-preview-note">
+                <strong>{previewTitle}</strong>
+                <span>{previewPreset?.recap}</span>
+              </div>
+            ) : null}
+          </header>
+
+          <div key={`${currentScene.id}:${storyState.currentLineIndex}`} className="sim-scene-grid">
+            <div className="sim-character-column">
+              <div className="sim-avatar-wrap">
+                <CharacterAvatar
+                  characterId={activeSpeaker.id}
+                  size="large"
+                  className={
+                    activeSpeaker.id === "you" && storyState.archetypeId
+                      ? `sim-archetype-avatar-${storyState.archetypeId}`
+                      : undefined
+                  }
                 />
-              ))}
+              </div>
+              <div className="sim-character-shadow" />
             </div>
-          </aside>
-        </div>
-      ) : null}
 
-      {resumeCandidate ? (
-        <div className="story-overlay">
-          <div ref={resumeDialogRef} className="story-resume-dialog" aria-modal="true" role="dialog">
-            <p className="story-overline">Saved progress found</p>
-            <h2>Resume your first week?</h2>
-            <p>
-              There is a saved playthrough at {dayById[resumeCandidate.currentDayId]?.label ?? "later in the week"} with{" "}
-              {resumeCandidate.xp} Momentum and {resumeCandidate.unlockedBadgeIds.length} milestone
-              {resumeCandidate.unlockedBadgeIds.length === 1 ? "" : "s"} unlocked.
-            </p>
-            <div className="story-action-row">
-              <button type="button" onClick={handleResume} className="button-primary">
-                Resume story
-              </button>
-              <button type="button" onClick={handleRestart} className="button-secondary">
-                Restart from day 1
-              </button>
+            <div className="sim-dialogue-column">
+              {currentScene.type === "dialogue" && currentDialogue ? (
+                <article
+                  className={`sim-bubble ${
+                    currentDialogue.bubbleType === "thought" ? "sim-bubble-thought" : ""
+                  }`}
+                >
+                  <span className="sim-bubble-tag">{activeSpeaker.name}</span>
+                  <div className="sim-bubble-inner">
+                    {currentScene.locationLabel ? (
+                      <p className="sim-location-label">{currentScene.locationLabel}</p>
+                    ) : null}
+                    <BubbleText line={currentDialogue} archetypeId={storyState.archetypeId} />
+                    <div className="sim-bubble-actions">
+                      {currentDialogue.overlayId ? (
+                        <button
+                          type="button"
+                          className="sim-inline-link"
+                          onClick={() => openOverlay(currentDialogue.overlayId!)}
+                        >
+                          {currentScene.overlayPromptLabel ?? "Open overlay"}
+                        </button>
+                      ) : null}
+                      <button type="button" className="sim-next-button" onClick={handleContinue}>
+                        {storyState.currentLineIndex < currentScene.lines.length - 1
+                          ? "Next ►"
+                          : currentScene.continueLabel ?? "Next ►"}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ) : null}
+
+              {currentScene.type === "choice" ? (
+                <article className="sim-choice-panel">
+                  <div className={`sim-bubble ${currentScene.prompt.bubbleType === "thought" ? "sim-bubble-thought" : ""}`}>
+                    <span className="sim-bubble-tag">{activeSpeaker.name}</span>
+                    <div className="sim-bubble-inner">
+                      {currentScene.locationLabel ? (
+                        <p className="sim-location-label">{currentScene.locationLabel}</p>
+                      ) : null}
+                      <BubbleText line={currentScene.prompt} archetypeId={storyState.archetypeId} />
+                    </div>
+                  </div>
+
+                  <div className="sim-choice-stack">
+                    {currentScene.choices.map((choice) => (
+                      <ChoiceCard key={choice.id} choice={choice} onSelect={() => handleChoice(choice)} />
+                    ))}
+                  </div>
+                </article>
+              ) : null}
             </div>
           </div>
+
+          <div className="sim-ground-line" />
+          <DoodleStrip />
+          <div className="sim-day-label">
+            <strong>{currentDay.label}</strong>
+            <span>{currentDay.title}</span>
+          </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

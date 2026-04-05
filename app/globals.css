@@ -1214,3 +1214,1058 @@ body:has(.story-shell) main {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+body:has(.story-shell) {
+  background: #f5f0e8;
+}
+
+body:has(.story-shell)::before {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.34));
+  background-size: 24px 24px, auto;
+  opacity: 0.55;
+}
+
+body:has(.story-shell) header {
+  display: none;
+}
+
+body:has(.story-shell) main {
+  min-height: 100vh;
+}
+
+.story-shell {
+  --sketch-paper: #f5f0e8;
+  --sketch-paper-strong: #fffaf0;
+  --sketch-ink: #1a1a1a;
+  --sketch-gold: #ffc627;
+  --sketch-maroon: #8c1d40;
+  position: relative;
+  min-height: 100vh;
+  overflow: clip;
+  background: var(--sketch-paper);
+  color: var(--sketch-ink);
+  font-family: var(--font-sketch-body), cursive;
+}
+
+.story-shell * {
+  font-family: inherit;
+}
+
+.story-shell h1,
+.story-shell h2,
+.story-shell h3,
+.story-shell p {
+  margin: 0;
+}
+
+.sim-paper-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.018) 0,
+      rgba(0, 0, 0, 0.018) 1px,
+      transparent 1px,
+      transparent 13px
+    ),
+    radial-gradient(circle at 15% 20%, rgba(255, 198, 39, 0.16) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 82% 14%, rgba(140, 29, 64, 0.07) 0 1px, transparent 1px 100%);
+  background-size: auto, 180px 180px, 220px 220px;
+  opacity: 0.38;
+}
+
+.sim-title-screen,
+.sim-select-screen,
+.sim-day-transition,
+.sim-ending-screen {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 2rem 1rem 4.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: sim-paper-slide 360ms ease;
+}
+
+.sim-title-screen {
+  gap: 1.25rem;
+}
+
+.sim-title-doodle {
+  position: absolute;
+  top: 2rem;
+  font-size: 1.25rem;
+  letter-spacing: 0.14em;
+  opacity: 0.72;
+}
+
+.sim-title-doodle-left {
+  left: 1rem;
+}
+
+.sim-title-doodle-right {
+  right: 1rem;
+}
+
+.sim-title-kicker,
+.sim-title-subtitle,
+.sim-select-copy,
+.sim-preview-card span,
+.sim-ending-note,
+.sim-preview-note span,
+.sim-settings-note,
+.sim-location-label,
+.sim-small-label {
+  color: rgba(26, 26, 26, 0.72);
+}
+
+.sim-title-kicker,
+.sim-small-label,
+.sim-location-label {
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sim-title-mark,
+.sim-select-header span,
+.sim-day-transition-mark,
+.sim-ending-copy h2,
+.sim-bubble-tag,
+.sim-action-button,
+.sim-settings-button,
+.sim-preview-card strong,
+.sim-hud h1,
+.sim-badge-unlock-card h3,
+.sim-overlay-header h3,
+.sim-resume-card h3,
+.sim-archetype-card h3,
+.sim-choice-card strong {
+  font-family: var(--font-sketch-display), cursive;
+}
+
+.sim-title-mark {
+  font-size: clamp(3.4rem, 9vw, 5.8rem);
+  line-height: 0.95;
+}
+
+.sim-title-subtitle {
+  max-width: 34rem;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+}
+
+.sim-preview-row {
+  display: grid;
+  width: min(100%, 64rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 0.4rem;
+}
+
+.sim-preview-card,
+.sim-archetype-card,
+.sim-hud,
+.sim-bubble,
+.sim-choice-card,
+.sim-badge-card,
+.sim-badge-unlock-card,
+.sim-overlay-card,
+.sim-resume-card,
+.sim-action-button,
+.sim-settings-panel,
+.sim-day-transition-mark,
+.sim-ending-badge,
+.sim-day-label,
+.sim-select-header,
+.sim-hud-pill,
+.sim-confidence-shell {
+  filter: url(#sketch);
+}
+
+.sim-preview-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  padding: 0.85rem 0.75rem 1rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.5rem;
+  background: rgba(255, 250, 240, 0.88);
+}
+
+.sim-preview-avatar {
+  display: grid;
+  place-items: center;
+  width: 6rem;
+  height: 6rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.sim-preview-card strong {
+  font-size: 0.9rem;
+}
+
+.sim-action-button,
+.sim-settings-button,
+.sim-hud-pill,
+.sim-next-button,
+.sim-inline-link,
+.sim-icon-button {
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.sim-action-button,
+.sim-settings-button,
+.sim-next-button,
+.sim-inline-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.15rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.3rem;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(26, 26, 26, 0.03) 0 5px,
+      transparent 5px 10px
+    ),
+    rgba(255, 250, 240, 0.94);
+  color: var(--sketch-ink);
+  text-align: center;
+}
+
+.sim-action-button:hover,
+.sim-settings-button:hover,
+.sim-next-button:hover,
+.sim-inline-link:hover,
+.sim-hud-pill:hover,
+.sim-icon-button:hover {
+  transform: translateY(-1px);
+}
+
+.sim-action-button-gold {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18) 0 5px,
+      transparent 5px 10px
+    ),
+    var(--sketch-gold);
+}
+
+.sim-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.sim-select-screen {
+  gap: 1.4rem;
+}
+
+.sim-select-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.4rem;
+  padding: 0.8rem 1.35rem;
+  border-radius: 1.1rem;
+  background: var(--sketch-ink);
+  color: #fff;
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+}
+
+.sim-archetype-grid {
+  display: grid;
+  width: min(100%, 72rem);
+  gap: 1rem;
+}
+
+.sim-archetype-card {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+  padding: 1.1rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.6rem;
+  background: rgba(255, 250, 240, 0.95);
+  text-align: left;
+}
+
+.sim-archetype-card-selected {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.12) 0 7px,
+      transparent 7px 14px
+    ),
+    rgba(255, 250, 240, 0.96);
+  box-shadow: 0 0 0 4px rgba(255, 198, 39, 0.22);
+}
+
+.sim-archetype-art {
+  display: grid;
+  place-items: center;
+  min-height: 8.25rem;
+  padding: 0.7rem;
+}
+
+.sim-archetype-card p {
+  font-size: 1.08rem;
+  line-height: 1.45;
+}
+
+.sim-archetype-card span {
+  font-size: 0.96rem;
+  color: rgba(26, 26, 26, 0.7);
+}
+
+.sim-archetype-avatar-shy-one .sim-avatar-svg {
+  transform: rotate(-4deg) translateY(10px);
+}
+
+.sim-archetype-avatar-overwhelmed-one .sim-avatar-svg {
+  transform: rotate(2deg) translateY(2px) scale(1.02);
+}
+
+.sim-archetype-avatar-stubborn-one .sim-avatar-svg {
+  transform: rotate(4deg) translateY(-3px);
+}
+
+.sim-screen-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.sim-stage {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 1rem 1rem 6.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sim-hud {
+  position: relative;
+  z-index: 2;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.8rem;
+  background: rgba(255, 250, 240, 0.96);
+  padding: 0.9rem;
+}
+
+.sim-hud-top,
+.sim-confidence-meta,
+.sim-hud-actions,
+.sim-bubble-actions,
+.sim-overlay-header,
+.sim-badge-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sim-hud-top {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.sim-hud h1 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 0.95;
+}
+
+.sim-hud-actions {
+  flex-wrap: wrap;
+}
+
+.sim-hud-pill,
+.sim-icon-button {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.15rem;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--sketch-ink);
+}
+
+.sim-hud-pill {
+  min-height: 2.8rem;
+  padding: 0.65rem 0.9rem;
+}
+
+.sim-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
+.sim-confidence-shell {
+  margin-top: 0.9rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.45rem;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 0.8rem 0.9rem 0.95rem;
+}
+
+.sim-confidence-meta strong {
+  font-family: var(--font-sketch-display), cursive;
+}
+
+.sim-confidence-track {
+  margin-top: 0.55rem;
+  overflow: hidden;
+  height: 1rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.sim-confidence-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(26, 26, 26, 0.12) 0 6px,
+      transparent 6px 12px
+    ),
+    var(--sketch-gold);
+  transition: width 300ms ease;
+}
+
+.sim-settings-panel,
+.sim-preview-note {
+  margin-top: 0.8rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.8rem;
+}
+
+.sim-settings-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.sim-settings-button {
+  min-height: 2.8rem;
+}
+
+.sim-preview-note {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.sim-scene-grid {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  flex: 1;
+  align-items: end;
+  animation: sim-paper-slide 300ms ease;
+}
+
+.sim-character-column {
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  min-height: 20rem;
+}
+
+.sim-avatar-wrap {
+  position: relative;
+  z-index: 1;
+  animation: sim-idle-bob 3s ease-in-out infinite;
+}
+
+.sim-character-shadow {
+  position: absolute;
+  bottom: 1.2rem;
+  width: min(70%, 16rem);
+  height: 1.35rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.16);
+  filter: blur(1.2px);
+}
+
+.sim-avatar-svg {
+  display: block;
+  width: min(88vw, 22rem);
+  height: auto;
+}
+
+.sim-dialogue-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sim-bubble,
+.sim-choice-card,
+.sim-badge-card,
+.sim-badge-unlock-card,
+.sim-overlay-card,
+.sim-resume-card,
+.sim-day-label,
+.sim-ending-badge {
+  border: 3px solid var(--sketch-ink);
+  background: rgba(255, 250, 240, 0.96);
+}
+
+.sim-bubble {
+  position: relative;
+  width: 100%;
+  max-width: 42rem;
+  border-radius: 2rem;
+  padding: 1.2rem 1rem 1rem;
+  animation: sim-bubble-arrive 240ms ease;
+}
+
+.sim-bubble::before {
+  content: "";
+  position: absolute;
+  left: -1.1rem;
+  top: 42%;
+  width: 2rem;
+  height: 2rem;
+  border-left: 3px solid var(--sketch-ink);
+  border-bottom: 3px solid var(--sketch-ink);
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.sim-bubble-thought {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.08) 0 7px,
+      transparent 7px 14px
+    ),
+    rgba(255, 246, 212, 0.92);
+  border-radius: 2.3rem;
+}
+
+.sim-bubble-thought::before {
+  left: -0.4rem;
+  top: auto;
+  bottom: 1.6rem;
+  width: 1rem;
+  height: 1rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 999px;
+  background: rgba(255, 246, 212, 0.96);
+  transform: none;
+}
+
+.sim-bubble-tag {
+  position: absolute;
+  top: -1rem;
+  left: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 0.9rem;
+  background: var(--sketch-ink);
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+
+.sim-bubble-inner {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sim-location-label {
+  margin-top: 0.35rem;
+}
+
+.sim-bubble-copy {
+  font-size: clamp(1.3rem, 2.3vw, 1.55rem);
+  line-height: 1.55;
+}
+
+.sim-bubble-thought .sim-bubble-copy {
+  font-style: italic;
+}
+
+.sim-bubble-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.sim-next-button,
+.sim-inline-link {
+  min-height: 2.85rem;
+}
+
+.sim-inline-link {
+  margin-right: auto;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.sim-choice-panel {
+  width: 100%;
+  display: grid;
+  gap: 1rem;
+}
+
+.sim-choice-stack {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sim-choice-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: start;
+  border-radius: 1.7rem;
+  padding: 1rem;
+  text-align: left;
+}
+
+.sim-choice-card:hover {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.12) 0 7px,
+      transparent 7px 14px
+    ),
+    rgba(255, 250, 240, 0.98);
+}
+
+.sim-choice-card strong {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.sim-choice-card span {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1.05rem;
+  color: rgba(26, 26, 26, 0.72);
+}
+
+.sim-choice-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.95);
+  font-size: 1.25rem;
+}
+
+.sim-ground-line {
+  position: absolute;
+  right: 1rem;
+  bottom: 5rem;
+  left: 1rem;
+  border-top: 3px solid rgba(26, 26, 26, 0.8);
+}
+
+.sim-ground-doodles {
+  position: absolute;
+  right: 1rem;
+  bottom: 2.9rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: rgba(26, 26, 26, 0.7);
+}
+
+.sim-day-label {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.9rem;
+  display: grid;
+  gap: 0.1rem;
+  border-radius: 1.2rem;
+  padding: 0.7rem 0.95rem;
+}
+
+.sim-day-label strong {
+  font-family: var(--font-sketch-display), cursive;
+}
+
+.sim-day-label span {
+  color: rgba(26, 26, 26, 0.72);
+}
+
+.sim-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(26, 26, 26, 0.28);
+  backdrop-filter: blur(4px);
+}
+
+.sim-badge-drawer,
+.sim-badge-unlock-card,
+.sim-overlay-card,
+.sim-resume-card {
+  width: min(100%, 50rem);
+  border: 3px solid var(--sketch-ink);
+  border-radius: 2rem;
+  background: var(--sketch-paper-strong);
+  animation: sim-modal-rise 220ms ease;
+}
+
+.sim-badge-drawer {
+  width: min(100%, 56rem);
+  max-height: min(88vh, 48rem);
+  overflow: auto;
+  padding: 1.15rem;
+}
+
+.sim-badge-drawer-grid,
+.sim-overlay-card-grid,
+.sim-task-list,
+.sim-ending-badges {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sim-badge-drawer-grid,
+.sim-overlay-card-grid {
+  margin-top: 1rem;
+}
+
+.sim-badge-card,
+.sim-task-card,
+.sim-overlay-info-card {
+  border-radius: 1.4rem;
+  padding: 0.95rem;
+}
+
+.sim-badge-card-unlocked,
+.sim-ending-badge-unlocked {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.14) 0 7px,
+      transparent 7px 14px
+    ),
+    rgba(255, 250, 240, 0.98);
+}
+
+.sim-badge-icon,
+.sim-ending-badge span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 4.2rem;
+  min-height: 4.2rem;
+  padding: 0.4rem 0.55rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.95);
+  font-family: var(--font-sketch-display), cursive;
+}
+
+.sim-badge-icon-large {
+  margin-inline: auto;
+  min-width: 5.5rem;
+  min-height: 5.5rem;
+  font-size: 1.2rem;
+}
+
+.sim-badge-unlock-card,
+.sim-resume-card {
+  text-align: center;
+  padding: 1.4rem 1.15rem;
+}
+
+.sim-badge-burst {
+  margin-bottom: 0.65rem;
+  font-size: 1.3rem;
+}
+
+.sim-overlay-card {
+  max-height: min(90vh, 52rem);
+  overflow: auto;
+  padding: 1.15rem;
+}
+
+.sim-overlay-header {
+  align-items: start;
+}
+
+.sim-overlay-video-shell {
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.6rem;
+  background: #101010;
+}
+
+.sim-overlay-video-shell video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.sim-overlay-video-caption {
+  padding: 0.9rem 1rem;
+  background: rgba(255, 250, 240, 0.96);
+  color: var(--sketch-ink);
+}
+
+.sim-overlay-video-caption strong {
+  font-family: var(--font-sketch-display), cursive;
+}
+
+.sim-overlay-video-caption p,
+.sim-overlay-description,
+.sim-overlay-info-card p,
+.sim-task-card p,
+.sim-badge-card p,
+.sim-resume-card p,
+.sim-badge-unlock-card p,
+.sim-ending-copy p {
+  line-height: 1.5;
+}
+
+.sim-overlay-description {
+  margin-top: 1rem;
+  font-size: 1.08rem;
+}
+
+.sim-overlay-info-card,
+.sim-task-card {
+  border: 3px solid var(--sketch-ink);
+  background: rgba(255, 250, 240, 0.94);
+}
+
+.sim-text-link {
+  display: inline-flex;
+  margin-top: 0.55rem;
+  color: var(--sketch-maroon);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.sim-day-transition {
+  gap: 0.7rem;
+}
+
+.sim-day-transition-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4rem;
+  padding: 0.8rem 1.4rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.2rem;
+  background: rgba(255, 250, 240, 0.96);
+  font-size: clamp(2.4rem, 8vw, 4rem);
+}
+
+.sim-day-transition p {
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+}
+
+.sim-ending-screen {
+  gap: 1.25rem;
+}
+
+.sim-ending-character {
+  display: grid;
+  place-items: center;
+}
+
+.sim-ending-copy {
+  width: min(100%, 44rem);
+  border: 3px solid var(--sketch-ink);
+  border-radius: 2rem;
+  background: rgba(255, 250, 240, 0.96);
+  padding: 1.35rem 1.1rem;
+}
+
+.sim-ending-copy h2 {
+  font-size: clamp(2rem, 6vw, 3.2rem);
+}
+
+.sim-ending-tag {
+  display: inline-flex;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--sketch-ink);
+  color: #fff;
+}
+
+.sim-ending-stats {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sim-ending-stats div {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.3rem;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.sim-ending-stats span {
+  display: block;
+  color: rgba(26, 26, 26, 0.72);
+}
+
+.sim-ending-stats strong {
+  font-family: var(--font-sketch-display), cursive;
+  font-size: 1.25rem;
+}
+
+.sim-ending-badges {
+  margin-top: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sim-ending-badge {
+  display: grid;
+  place-items: center;
+  min-height: 5.4rem;
+  border-radius: 1.5rem;
+  opacity: 0.48;
+}
+
+.sim-ending-badge-unlocked {
+  opacity: 1;
+}
+
+.sim-location-label,
+.sim-small-label {
+  font-weight: 700;
+}
+
+@keyframes sim-idle-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes sim-paper-slide {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sim-bubble-arrive {
+  from {
+    opacity: 0;
+    transform: translateX(16px) rotate(0.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+@keyframes sim-modal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 640px) {
+  .sim-preview-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sim-ending-stats,
+  .sim-overlay-card-grid,
+  .sim-task-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sim-badge-drawer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .sim-stage {
+    padding: 1.25rem 1.5rem 7rem;
+  }
+
+  .sim-preview-row {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .sim-archetype-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sim-scene-grid {
+    grid-template-columns: minmax(18rem, 0.88fr) minmax(22rem, 1.12fr);
+  }
+
+  .sim-character-column {
+    min-height: 28rem;
+  }
+
+  .sim-avatar-svg {
+    width: min(28vw, 24rem);
+  }
+
+  .sim-dialogue-column {
+    justify-content: flex-start;
+  }
+
+  .sim-ending-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sim-ending-badges,
+  .sim-badge-drawer-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

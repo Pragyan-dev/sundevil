@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { StoryGame } from "@/components/StoryGame";
 
 export default function TutoringSimulationPage() {
-  redirect("/simulate/office-hours");
+  return <StoryGame mode="preview" previewSlug="tutoring" />;
 }

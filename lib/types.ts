@@ -111,7 +111,17 @@ export interface ChatMessage {
   content: string;
 }
 
-export type JumpInSlug = "advising" | "first-day" | "office-hours";
+export type JumpInSlug = "advising" | "first-day" | "office-hours" | "tutoring";
+export type ArchetypeId = "shy-one" | "overwhelmed-one" | "stubborn-one";
+export type CharacterId =
+  | "you"
+  | "prof-chen"
+  | "advisor-rivera"
+  | "marcus"
+  | "jordan"
+  | "counselor-park";
+export type BubbleType = "speech" | "thought";
+export type StoryAnnotationType = "underline" | "highlight" | "circle";
 
 export interface StoryEffect {
   confidenceDelta?: number;
@@ -119,8 +129,9 @@ export interface StoryEffect {
   unlockBadgeIds?: string[];
 }
 
-export interface StoryChoice {
+export interface ChoiceOption {
   id: string;
+  icon: string;
   label: string;
   caption: string;
   resultSceneId: string;
@@ -131,20 +142,32 @@ export interface StoryRichCard {
   body: string;
 }
 
-export interface StoryMockEmail {
-  subject: string;
-  from: string;
-  to: string;
-  body: string;
-  replySubject?: string;
-  replyFrom?: string;
-  replyBody?: string;
+export interface ArchetypeDefinition {
+  id: ArchetypeId;
+  title: string;
+  subtitle: string;
+  description: string;
+  startingConfidence: number;
+  accentLabel: string;
 }
 
-export interface StoryMockMessage {
-  sender: string;
-  title: string;
-  body: string;
+export interface CharacterDefinition {
+  id: CharacterId;
+  name: string;
+  role: string;
+  accentColor: string;
+  voiceEnvKey: string;
+  previewLabel: string;
+}
+
+export interface StoryLine {
+  id: string;
+  speakerId: CharacterId;
+  bubbleType: BubbleType;
+  text: string;
+  archetypeText?: Partial<Record<ArchetypeId, string>>;
+  overlayId?: string;
+  annotation?: StoryAnnotationType;
 }
 
 export interface StoryChecklistItem {
@@ -152,33 +175,16 @@ export interface StoryChecklistItem {
   detail: string;
 }
 
-export interface StoryScene {
+export interface ResourceOverlayDefinition {
   id: string;
-  dayId: string;
-  kind: "story" | "choice" | "consequence" | "resource" | "ending";
   title: string;
-  speaker: string;
-  location: string;
-  backdrop: string;
-  body: string;
-  continueLabel?: string;
-  nextSceneId?: string;
-  choices?: StoryChoice[];
-  effects?: StoryEffect;
-  cards?: StoryRichCard[];
-  bullets?: string[];
-  badgeId?: string;
+  subtitle: string;
+  description: string;
+  cards: StoryRichCard[];
+  taskChecklist?: StoryChecklistItem[];
   ctaLabel?: string;
   ctaHref?: string;
   ctaExternal?: boolean;
-  emailMock?: StoryMockEmail;
-  messageMock?: StoryMockMessage;
-  embedScholarshipChecker?: boolean;
-  courseLabel?: string;
-  buildingLabel?: string;
-  roomLabel?: string;
-  routeSteps?: string[];
-  taskChecklist?: StoryChecklistItem[];
   videoSrc?: string;
   videoFallbackSrc?: string;
   videoPoster?: string;
@@ -204,29 +210,103 @@ export interface BadgeDefinition {
 }
 
 export interface EndingDefinition {
-  id: "ready" | "rhythm" | "adjusting";
+  id: "found-way" | "getting-there" | "hard-way";
   title: string;
   summary: string;
   minConfidence: number;
 }
+
+interface StorySceneBase {
+  id: string;
+  dayId: string;
+  type:
+    | "title"
+    | "character-select"
+    | "day-transition"
+    | "dialogue"
+    | "choice"
+    | "ending";
+}
+
+export interface TitleScene extends StorySceneBase {
+  type: "title";
+  title: string;
+  subtitle: string;
+  previewCharacterIds: CharacterId[];
+  startLabel: string;
+  nextSceneId: string;
+}
+
+export interface CharacterSelectScene extends StorySceneBase {
+  type: "character-select";
+  title: string;
+  subtitle: string;
+  backSceneId: string;
+  nextSceneId: string;
+}
+
+export interface DayTransitionDefinition extends StorySceneBase {
+  type: "day-transition";
+  title: string;
+  subtitle: string;
+  autoAdvanceMs?: number;
+  nextSceneId: string;
+}
+
+export interface DialogueScene extends StorySceneBase {
+  type: "dialogue";
+  lines: StoryLine[];
+  nextSceneId?: string;
+  continueLabel?: string;
+  locationLabel?: string;
+  overlayPromptLabel?: string;
+  overlayDescription?: string;
+  effects?: StoryEffect;
+  badgeId?: string;
+}
+
+export interface ChoiceScene extends StorySceneBase {
+  type: "choice";
+  prompt: StoryLine;
+  locationLabel?: string;
+  choices: ChoiceOption[];
+}
+
+export interface EndingSceneDefinition extends StorySceneBase {
+  type: "ending";
+  title: string;
+}
+
+export type SceneFrame =
+  | TitleScene
+  | CharacterSelectScene
+  | DayTransitionDefinition
+  | DialogueScene
+  | ChoiceScene
+  | EndingSceneDefinition;
 
 export interface JumpInPreset {
   slug: JumpInSlug;
   title: string;
   recap: string;
   startSceneId: string;
+  archetypeId: ArchetypeId;
   confidence: number;
   xp: number;
   unlockedBadgeIds: string[];
+  seenOverlayIds: string[];
 }
 
 export interface PersistedStoryState {
   saveVersion: string;
-  currentDayId: string;
+  archetypeId: ArchetypeId | null;
   currentSceneId: string;
+  currentLineIndex: number;
+  currentDayId: string;
   confidence: number;
   xp: number;
   unlockedBadgeIds: string[];
+  seenOverlayIds: string[];
   choiceHistory: string[];
   appliedSceneIds: string[];
   endingId: EndingDefinition["id"] | null;
@@ -234,10 +314,15 @@ export interface PersistedStoryState {
 
 export interface AlexStoryData {
   saveVersion: string;
+  titleSceneId: string;
+  characterSelectSceneId: string;
   startSceneId: string;
   days: StoryDay[];
-  scenes: StoryScene[];
+  archetypes: ArchetypeDefinition[];
+  characters: CharacterDefinition[];
   badges: BadgeDefinition[];
+  overlays: ResourceOverlayDefinition[];
   endings: EndingDefinition[];
+  scenes: SceneFrame[];
   jumpIns: JumpInPreset[];
 }
