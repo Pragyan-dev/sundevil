@@ -2172,6 +2172,186 @@ body:has(.story-shell) main {
   font-weight: 700;
 }
 
+.sim-rewards-drawer,
+.sim-reward-popup-card,
+.sim-reward-card,
+.sim-reward-howto-card,
+.sim-pitchfork-balance {
+  filter: url(#sketch);
+}
+
+.sim-rewards-drawer,
+.sim-reward-popup-card {
+  width: min(100%, 58rem);
+  border: 3px solid var(--sketch-ink);
+  border-radius: 2rem;
+  background: var(--sketch-paper-strong);
+  animation: sim-modal-rise 220ms ease;
+}
+
+.sim-rewards-drawer {
+  max-height: min(88vh, 52rem);
+  overflow: auto;
+  padding: 1.15rem;
+}
+
+.sim-rewards-header,
+.sim-reward-section-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sim-pitchfork-balance {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.4rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.6rem;
+  background:
+    linear-gradient(135deg, rgba(140, 29, 64, 0.94), rgba(255, 198, 39, 0.94)),
+    rgba(255, 250, 240, 0.98);
+  color: #fffdf8;
+  padding: 1rem 1.05rem;
+}
+
+.sim-pitchfork-balance h4,
+.sim-reward-card h4,
+.sim-reward-popup-card h3,
+.sim-reward-howto-card strong {
+  font-family: var(--font-sketch-display), cursive;
+}
+
+.sim-pitchfork-balance h4 {
+  font-size: 1.7rem;
+}
+
+.sim-pitchfork-balance p:last-child {
+  color: rgba(255, 253, 248, 0.84);
+}
+
+.sim-reward-section {
+  margin-top: 1.15rem;
+}
+
+.sim-reward-grid,
+.sim-reward-howto {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.8rem;
+}
+
+.sim-reward-card,
+.sim-reward-howto-card {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.55rem;
+  background: rgba(255, 250, 240, 0.96);
+  padding: 1rem;
+}
+
+.sim-reward-card {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.sim-reward-card-ticket {
+  background:
+    linear-gradient(145deg, rgba(140, 29, 64, 0.12), rgba(255, 198, 39, 0.18)),
+    rgba(255, 250, 240, 0.96);
+}
+
+.sim-reward-card-giveaway {
+  background:
+    linear-gradient(145deg, rgba(255, 198, 39, 0.26), rgba(255, 255, 255, 0.1)),
+    rgba(255, 250, 240, 0.96);
+}
+
+.sim-reward-card-pitchforks {
+  background:
+    linear-gradient(145deg, rgba(26, 26, 26, 0.08), rgba(140, 29, 64, 0.18)),
+    rgba(255, 250, 240, 0.96);
+}
+
+.sim-reward-card-locked {
+  opacity: 0.58;
+}
+
+.sim-reward-card-unlocked {
+  box-shadow: 0 16px 34px rgba(140, 29, 64, 0.12);
+}
+
+.sim-reward-card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.sim-reward-card-kind,
+.sim-disclaimer,
+.sim-reward-card-locked-note,
+.sim-hub-footer {
+  color: rgba(26, 26, 26, 0.7);
+}
+
+.sim-reward-card-kind {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.sim-reward-card-locked-note {
+  font-size: 0.98rem;
+}
+
+.sim-disclaimer,
+.sim-hub-footer {
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.sim-reward-howto-card {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.sim-hub-footer {
+  margin-top: 1rem;
+}
+
+.sim-reward-popup-card {
+  text-align: center;
+  padding: 1.3rem 1.1rem;
+}
+
+.sim-reward-popup-card p {
+  margin-top: 0.55rem;
+}
+
+.sim-reward-popup-bonus {
+  margin: 0.8rem auto 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 999px;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.18) 0 7px,
+      transparent 7px 14px
+    ),
+    rgba(255, 250, 240, 0.98);
+}
+
+.sim-reward-popup-bonus strong {
+  font-family: var(--font-sketch-display), cursive;
+}
+
 @keyframes sim-idle-bob {
   0%,
   100% {
@@ -2229,6 +2409,11 @@ body:has(.story-shell) main {
   .sim-badge-drawer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .sim-reward-grid,
+  .sim-reward-howto {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 960px) {
@@ -2267,5 +2452,9 @@ body:has(.story-shell) main {
   .sim-ending-badges,
   .sim-badge-drawer-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .sim-reward-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

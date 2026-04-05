@@ -126,6 +126,7 @@ export type StoryAnnotationType = "underline" | "highlight" | "circle";
 export interface StoryEffect {
   confidenceDelta?: number;
   xpDelta?: number;
+  pitchforkDelta?: number;
   unlockBadgeIds?: string[];
 }
 
@@ -216,6 +217,26 @@ export interface EndingDefinition {
   minConfidence: number;
 }
 
+export interface RewardDefinition {
+  id: string;
+  title: string;
+  description: string;
+  ctaLabel: string;
+  href: string;
+  external: boolean;
+  rewardKind: "ticket" | "giveaway" | "pitchforks";
+  disclaimer: string;
+}
+
+export interface RewardMilestoneDefinition {
+  id: string;
+  rewardId: string;
+  triggerBadgeId?: string;
+  triggerSceneId?: string;
+  triggerOnEnding?: boolean;
+  pitchforkBonus: number;
+}
+
 interface StorySceneBase {
   id: string;
   dayId: string;
@@ -293,8 +314,11 @@ export interface JumpInPreset {
   archetypeId: ArchetypeId;
   confidence: number;
   xp: number;
+  pitchforks: number;
   unlockedBadgeIds: string[];
+  unlockedRewardIds: string[];
   seenOverlayIds: string[];
+  seenRewardPopupIds: string[];
 }
 
 export interface PersistedStoryState {
@@ -305,8 +329,11 @@ export interface PersistedStoryState {
   currentDayId: string;
   confidence: number;
   xp: number;
+  pitchforks: number;
   unlockedBadgeIds: string[];
+  unlockedRewardIds: string[];
   seenOverlayIds: string[];
+  seenRewardPopupIds: string[];
   choiceHistory: string[];
   appliedSceneIds: string[];
   endingId: EndingDefinition["id"] | null;
@@ -321,6 +348,8 @@ export interface AlexStoryData {
   archetypes: ArchetypeDefinition[];
   characters: CharacterDefinition[];
   badges: BadgeDefinition[];
+  rewards: RewardDefinition[];
+  rewardMilestones: RewardMilestoneDefinition[];
   overlays: ResourceOverlayDefinition[];
   endings: EndingDefinition[];
   scenes: SceneFrame[];

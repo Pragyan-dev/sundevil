@@ -7,6 +7,8 @@ import type {
   EndingDefinition,
   JumpInPreset,
   PersistedStoryState,
+  RewardDefinition,
+  RewardMilestoneDefinition,
   ResourceOverlayDefinition,
   SceneFrame,
   StoryEffect,
@@ -15,12 +17,14 @@ import type {
 
 const storyData = asuUnlockedStory;
 
-export const ALEX_STORY_STORAGE_KEY = "sundevilconnect-asu-unlocked-v1";
+export const ALEX_STORY_STORAGE_KEY = "sundevilconnect-asu-unlocked-v2";
 
 export const storyDays = storyData.days;
 export const storyArchetypes = storyData.archetypes;
 export const storyCharacters = storyData.characters;
 export const storyBadges = storyData.badges;
+export const storyRewards = storyData.rewards;
+export const storyRewardMilestones = storyData.rewardMilestones;
 export const storyOverlays = storyData.overlays;
 export const storyEndings = [...storyData.endings].sort(
   (left, right) => right.minConfidence - left.minConfidence,
@@ -39,6 +43,14 @@ export const storySceneById = Object.fromEntries(
 export const storyBadgeById = Object.fromEntries(
   storyBadges.map((badge) => [badge.id, badge]),
 );
+
+export const storyRewardById = Object.fromEntries(
+  storyRewards.map((reward) => [reward.id, reward]),
+) as Record<string, RewardDefinition>;
+
+export const storyRewardMilestoneByRewardId = Object.fromEntries(
+  storyRewardMilestones.map((milestone) => [milestone.rewardId, milestone]),
+) as Record<string, RewardMilestoneDefinition>;
 
 export const storyOverlayById = Object.fromEntries(
   storyOverlays.map((overlay) => [overlay.id, overlay]),
@@ -67,6 +79,14 @@ export function getDialogueScene(id: string) {
 
 export function getOverlay(id: string) {
   return storyOverlayById[id];
+}
+
+export function getReward(id: string) {
+  return storyRewardById[id];
+}
+
+export function getRewardMilestoneForReward(rewardId: string) {
+  return storyRewardMilestoneByRewardId[rewardId];
 }
 
 export function getEndingForConfidence(confidence: number): EndingDefinition {
@@ -106,8 +126,11 @@ export function createDefaultStoryState(): PersistedStoryState {
     currentDayId: startScene.dayId,
     confidence: 50,
     xp: 0,
+    pitchforks: 0,
     unlockedBadgeIds: [],
+    unlockedRewardIds: [],
     seenOverlayIds: [],
+    seenRewardPopupIds: [],
     choiceHistory: [],
     appliedSceneIds: [],
     endingId: null,
@@ -125,8 +148,11 @@ export function createPreviewStoryState(preset: JumpInPreset): PersistedStorySta
     currentDayId: startScene.dayId,
     confidence: preset.confidence,
     xp: preset.xp,
+    pitchforks: preset.pitchforks,
     unlockedBadgeIds: preset.unlockedBadgeIds,
+    unlockedRewardIds: preset.unlockedRewardIds,
     seenOverlayIds: preset.seenOverlayIds,
+    seenRewardPopupIds: preset.seenRewardPopupIds,
     choiceHistory: [],
     appliedSceneIds: [],
     endingId: null,
@@ -148,8 +174,11 @@ export function isValidPersistedStoryState(value: unknown): value is PersistedSt
     typeof candidate.currentDayId === "string" &&
     typeof candidate.confidence === "number" &&
     typeof candidate.xp === "number" &&
+    typeof candidate.pitchforks === "number" &&
     Array.isArray(candidate.unlockedBadgeIds) &&
+    Array.isArray(candidate.unlockedRewardIds) &&
     Array.isArray(candidate.seenOverlayIds) &&
+    Array.isArray(candidate.seenRewardPopupIds) &&
     Array.isArray(candidate.choiceHistory) &&
     Array.isArray(candidate.appliedSceneIds)
   );
@@ -176,8 +205,33 @@ export function applyStoryEffect(
     ...state,
     confidence: clampConfidence(state.confidence + (effect.confidenceDelta ?? 0)),
     xp: state.xp + (effect.xpDelta ?? 0),
+    pitchforks: state.pitchforks + (effect.pitchforkDelta ?? 0),
     unlockedBadgeIds: mergeIds(state.unlockedBadgeIds, effect.unlockBadgeIds),
     appliedSceneIds: [...state.appliedSceneIds, sceneId],
+  };
+}
+
+export function resolveRewardUnlocks(state: PersistedStoryState, currentSceneId?: string): PersistedStoryState {
+  const unlockedRewardIds = mergeIds(
+    state.unlockedRewardIds,
+    storyRewardMilestones
+      .filter((milestone) => {
+        const badgeMatch = !milestone.triggerBadgeId || state.unlockedBadgeIds.includes(milestone.triggerBadgeId);
+        const sceneMatch = !milestone.triggerSceneId || currentSceneId === milestone.triggerSceneId;
+        const endingMatch = !milestone.triggerOnEnding || state.endingId !== null;
+
+        return badgeMatch && sceneMatch && endingMatch;
+      })
+      .map((milestone) => milestone.rewardId),
+  );
+
+  if (unlockedRewardIds.length === state.unlockedRewardIds.length) {
+    return state;
+  }
+
+  return {
+    ...state,
+    unlockedRewardIds,
   };
 }
 
@@ -189,5 +243,12 @@ export function markOverlaySeen(state: PersistedStoryState, overlayId: string): 
   return {
     ...state,
     seenOverlayIds: mergeIds(state.seenOverlayIds, [overlayId]),
+  };
+}
+
+export function markRewardPopupSeen(state: PersistedStoryState, rewardId: string): PersistedStoryState {
+  return {
+    ...state,
+    seenRewardPopupIds: mergeIds(state.seenRewardPopupIds, [rewardId]),
   };
 }

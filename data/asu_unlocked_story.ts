@@ -1,7 +1,7 @@
 import type { AlexStoryData } from "@/lib/types";
 
 const asuUnlockedStory: AlexStoryData = {
-  saveVersion: "asu-unlocked-v1",
+  saveVersion: "asu-unlocked-v2",
   titleSceneId: "title-screen",
   characterSelectSceneId: "character-select",
   startSceneId: "day1-transition",
@@ -177,6 +177,64 @@ const asuUnlockedStory: AlexStoryData = {
       description: "You named the tasks, clicked the portal, and made the unknown list smaller.",
       ctaLabel: "Open My ASU mock",
       ctaHref: "/myasu",
+    },
+  ],
+  rewards: [
+    {
+      id: "claim-ticket",
+      title: "Claim Your Ticket",
+      description:
+        "You unlocked the game-day card. Use ASU's official student ticket instructions to see how eligible students claim access.",
+      ctaLabel: "Claim your ticket",
+      href: "https://thesundevils.com/news/2015/09/01/student-tickets",
+      external: true,
+      rewardKind: "ticket",
+      disclaimer:
+        "Official ASU link. Availability, eligibility, and giveaways may vary by event.",
+    },
+    {
+      id: "weekly-giveaway",
+      title: "This Week's Giveaway",
+      description:
+        "Check the official 942 Crew feed to see the student giveaway, shirt, or promo attached to the next event.",
+      ctaLabel: "See this week's giveaway",
+      href: "https://www.instagram.com/942crew/",
+      external: true,
+      rewardKind: "giveaway",
+      disclaimer:
+        "Official ASU link. Availability, eligibility, and giveaways may vary by event.",
+    },
+    {
+      id: "sun-devil-rewards",
+      title: "Sun Devil Rewards",
+      description:
+        "Official Sun Devil Rewards lives outside the game. Use it to learn how the real Pitchforks and redemption system works.",
+      ctaLabel: "Redeem Pitchforks",
+      href: "https://sundevilrewards.asu.edu/",
+      external: true,
+      rewardKind: "pitchforks",
+      disclaimer:
+        "Official ASU link. Availability, eligibility, and giveaways may vary by event.",
+    },
+  ],
+  rewardMilestones: [
+    {
+      id: "milestone-claim-ticket",
+      rewardId: "claim-ticket",
+      triggerBadgeId: "advisor-check-in",
+      pitchforkBonus: 150,
+    },
+    {
+      id: "milestone-weekly-giveaway",
+      rewardId: "weekly-giveaway",
+      triggerBadgeId: "tutor-trial",
+      pitchforkBonus: 150,
+    },
+    {
+      id: "milestone-sun-devil-rewards",
+      rewardId: "sun-devil-rewards",
+      triggerOnEnding: true,
+      pitchforkBonus: 0,
     },
   ],
   overlays: [
@@ -386,6 +444,7 @@ const asuUnlockedStory: AlexStoryData = {
       effects: {
         confidenceDelta: 6,
         xpDelta: 10,
+        pitchforkDelta: 100,
         unlockBadgeIds: ["classroom-navigator"],
       },
       badgeId: "classroom-navigator",
@@ -472,6 +531,7 @@ const asuUnlockedStory: AlexStoryData = {
       effects: {
         confidenceDelta: 8,
         xpDelta: 12,
+        pitchforkDelta: 100,
         unlockBadgeIds: ["dars-scout"],
       },
       badgeId: "dars-scout",
@@ -598,6 +658,7 @@ const asuUnlockedStory: AlexStoryData = {
       effects: {
         confidenceDelta: 10,
         xpDelta: 12,
+        pitchforkDelta: 150,
         unlockBadgeIds: ["advisor-check-in"],
       },
       badgeId: "advisor-check-in",
@@ -724,6 +785,7 @@ const asuUnlockedStory: AlexStoryData = {
       effects: {
         confidenceDelta: 10,
         xpDelta: 14,
+        pitchforkDelta: 150,
         unlockBadgeIds: ["tutor-trial"],
       },
       badgeId: "tutor-trial",
@@ -840,6 +902,7 @@ const asuUnlockedStory: AlexStoryData = {
       effects: {
         confidenceDelta: 8,
         xpDelta: 10,
+        pitchforkDelta: 100,
         unlockBadgeIds: ["office-hours-drafted"],
       },
       badgeId: "office-hours-drafted",
@@ -946,6 +1009,7 @@ const asuUnlockedStory: AlexStoryData = {
       effects: {
         confidenceDelta: 9,
         xpDelta: 14,
+        pitchforkDelta: 150,
         unlockBadgeIds: ["office-hours-visited"],
       },
       badgeId: "office-hours-visited",
@@ -1068,6 +1132,7 @@ const asuUnlockedStory: AlexStoryData = {
       effects: {
         confidenceDelta: 8,
         xpDelta: 10,
+        pitchforkDelta: 100,
         unlockBadgeIds: ["wellness-door-open"],
       },
       badgeId: "wellness-door-open",
@@ -1174,6 +1239,7 @@ const asuUnlockedStory: AlexStoryData = {
       effects: {
         confidenceDelta: 8,
         xpDelta: 12,
+        pitchforkDelta: 150,
         unlockBadgeIds: ["myasu-cleanup"],
       },
       badgeId: "myasu-cleanup",
@@ -1219,8 +1285,11 @@ const asuUnlockedStory: AlexStoryData = {
       archetypeId: "overwhelmed-one",
       confidence: 50,
       xp: 0,
+      pitchforks: 0,
       unlockedBadgeIds: [],
+      unlockedRewardIds: [],
       seenOverlayIds: [],
+      seenRewardPopupIds: [],
     },
     {
       slug: "advising",
@@ -1230,8 +1299,11 @@ const asuUnlockedStory: AlexStoryData = {
       archetypeId: "overwhelmed-one",
       confidence: 58,
       xp: 18,
+      pitchforks: 200,
       unlockedBadgeIds: ["classroom-navigator", "dars-scout"],
+      unlockedRewardIds: [],
       seenOverlayIds: ["classroom-tour"],
+      seenRewardPopupIds: [],
     },
     {
       slug: "tutoring",
@@ -1241,8 +1313,11 @@ const asuUnlockedStory: AlexStoryData = {
       archetypeId: "overwhelmed-one",
       confidence: 54,
       xp: 32,
+      pitchforks: 350,
       unlockedBadgeIds: ["classroom-navigator", "dars-scout", "advisor-check-in"],
+      unlockedRewardIds: ["claim-ticket"],
       seenOverlayIds: ["classroom-tour", "advising-tour"],
+      seenRewardPopupIds: ["claim-ticket"],
     },
     {
       slug: "office-hours",
@@ -1252,13 +1327,16 @@ const asuUnlockedStory: AlexStoryData = {
       archetypeId: "overwhelmed-one",
       confidence: 61,
       xp: 48,
+      pitchforks: 500,
       unlockedBadgeIds: [
         "classroom-navigator",
         "dars-scout",
         "advisor-check-in",
         "tutor-trial",
       ],
+      unlockedRewardIds: ["claim-ticket", "weekly-giveaway"],
       seenOverlayIds: ["classroom-tour", "advising-tour", "tutoring-tour"],
+      seenRewardPopupIds: ["claim-ticket", "weekly-giveaway"],
     },
   ],
 };

@@ -14,9 +14,13 @@ import {
   getEndingForConfidence,
   getLineText,
   getOverlay,
+  getReward,
+  getRewardMilestoneForReward,
   getScene,
   isValidPersistedStoryState,
   markOverlaySeen,
+  markRewardPopupSeen,
+  resolveRewardUnlocks,
   sceneHasPendingEffect,
   storyArchetypeById,
   storyArchetypes,
@@ -25,6 +29,7 @@ import {
   storyCharacterById,
   storyDays,
   storyJumpInBySlug,
+  storyRewards,
 } from "@/lib/alex-story";
 import type {
   ArchetypeDefinition,
@@ -32,6 +37,7 @@ import type {
   ChoiceOption,
   JumpInSlug,
   PersistedStoryState,
+  RewardDefinition,
   ResourceOverlayDefinition,
   SceneFrame,
   StoryLine,
@@ -97,9 +103,11 @@ function hasMeaningfulProgress(state: PersistedStoryState) {
     state.currentSceneId !== createDefaultStoryState().currentSceneId ||
     state.archetypeId !== null ||
     state.xp !== 0 ||
+    state.pitchforks !== 0 ||
     state.confidence !== 50 ||
     state.choiceHistory.length > 0 ||
-    state.unlockedBadgeIds.length > 0
+    state.unlockedBadgeIds.length > 0 ||
+    state.unlockedRewardIds.length > 0
   );
 }
 
@@ -117,7 +125,7 @@ function buildSceneState(current: PersistedStoryState, scene: SceneFrame) {
   }
 
   next.endingId = scene.type === "ending" ? getEndingForConfidence(next.confidence).id : null;
-  return next;
+  return resolveRewardUnlocks(next, scene.id);
 }
 
 function DoodleStrip() {
@@ -386,6 +394,188 @@ function BadgeUnlockModal({
   );
 }
 
+function RewardCardLink({
+  reward,
+  className,
+  children,
+}: {
+  reward: RewardDefinition;
+  className: string;
+  children: React.ReactNode;
+}) {
+  if (reward.external) {
+    return (
+      <a href={reward.href} target="_blank" rel="noopener noreferrer" className={className}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={reward.href} className={className}>
+      {children}
+    </Link>
+  );
+}
+
+function RewardsDrawer({
+  open,
+  pitchforks,
+  unlockedRewardIds,
+  onClose,
+}: {
+  open: boolean;
+  pitchforks: number;
+  unlockedRewardIds: string[];
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(ref, open);
+
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="sim-modal-backdrop">
+      <aside ref={ref} className="sim-rewards-drawer">
+        <div className="sim-rewards-header">
+          <div>
+            <p className="sim-small-label">Rewards hub</p>
+            <h3>Game day perks and official ASU links</h3>
+          </div>
+          <button type="button" className="sim-icon-button" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+
+        <section className="sim-pitchfork-balance">
+          <div>
+            <p className="sim-small-label">Pitchforks balance</p>
+            <h4>{pitchforks} Pitchforks</h4>
+          </div>
+          <p>In-game Pitchforks are for this demo only and do not sync to your official Sun Devil Rewards balance.</p>
+        </section>
+
+        <section className="sim-reward-section">
+          <div className="sim-reward-section-header">
+            <p className="sim-small-label">Unlocked now</p>
+            <span>{unlockedRewardIds.length}/{storyRewards.length}</span>
+          </div>
+
+          <div className="sim-reward-grid">
+            {storyRewards.map((reward) => {
+              const unlocked = unlockedRewardIds.includes(reward.id);
+
+              return (
+                <article
+                  key={reward.id}
+                  className={`sim-reward-card sim-reward-card-${reward.rewardKind} ${
+                    unlocked ? "sim-reward-card-unlocked" : "sim-reward-card-locked"
+                  }`}
+                >
+                  <div className="sim-reward-card-topline">
+                    <span className="sim-reward-card-kind">
+                      {reward.rewardKind === "ticket"
+                        ? "Ticket"
+                        : reward.rewardKind === "giveaway"
+                          ? "Giveaway"
+                          : "Pitchforks"}
+                    </span>
+                    <strong>{unlocked ? "Unlocked" : "Keep going"}</strong>
+                  </div>
+                  <h4>{reward.title}</h4>
+                  <p>{reward.description}</p>
+                  {unlocked ? (
+                    <RewardCardLink reward={reward} className="sim-action-button sim-action-button-gold">
+                      {reward.ctaLabel}
+                    </RewardCardLink>
+                  ) : (
+                    <span className="sim-reward-card-locked-note">Earn more badges to reveal this card.</span>
+                  )}
+                  <p className="sim-disclaimer">{reward.disclaimer}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="sim-reward-section">
+          <div className="sim-reward-section-header">
+            <p className="sim-small-label">How to claim</p>
+          </div>
+          <div className="sim-reward-howto">
+            <article className="sim-reward-howto-card">
+              <strong>1. Use the official link</strong>
+              <p>Each unlocked reward opens the real ASU page or official student channel tied to that perk.</p>
+            </article>
+            <article className="sim-reward-howto-card">
+              <strong>2. Check event details</strong>
+              <p>Tickets and giveaways change by game, and student eligibility may depend on current ASU policies.</p>
+            </article>
+            <article className="sim-reward-howto-card">
+              <strong>3. Keep the game separate</strong>
+              <p>In-game Pitchforks are motivational progress only. Real redemption lives in official ASU systems.</p>
+            </article>
+          </div>
+        </section>
+
+        <p className="sim-hub-footer">
+          In-game Pitchforks are for this demo only and do not sync to your official Sun Devil Rewards balance.
+        </p>
+      </aside>
+    </div>
+  );
+}
+
+function RewardUnlockModal({
+  rewardId,
+  pitchforks,
+  onClose,
+}: {
+  rewardId: string | null;
+  pitchforks: number;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(ref, Boolean(rewardId));
+
+  if (!rewardId) {
+    return null;
+  }
+
+  const reward = getReward(rewardId);
+  const milestone = getRewardMilestoneForReward(rewardId);
+
+  if (!reward || !milestone) {
+    return null;
+  }
+
+  return (
+    <div className="sim-modal-backdrop">
+      <div ref={ref} className="sim-reward-popup-card">
+        <p className="sim-small-label">REWARD UNLOCKED</p>
+        <h3>{reward.title}</h3>
+        <p>You unlocked a new official-style game day card.</p>
+        <div className="sim-reward-popup-bonus">
+          {milestone.pitchforkBonus > 0 ? (
+            <strong>+{milestone.pitchforkBonus} Pitchforks</strong>
+          ) : (
+            <strong>{pitchforks} Pitchforks banked</strong>
+          )}
+        </div>
+        <RewardCardLink reward={reward} className="sim-action-button sim-action-button-gold">
+          {reward.ctaLabel}
+        </RewardCardLink>
+        <p className="sim-disclaimer">{reward.disclaimer}</p>
+        <button type="button" className="sim-action-button" onClick={onClose}>
+          Back to story
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function ResourceOverlayModal({
   overlay,
   onClose,
@@ -580,6 +770,10 @@ function EndingScene({
             <strong>{state.xp}</strong>
           </div>
           <div>
+            <span>Pitchforks</span>
+            <strong>{state.pitchforks}</strong>
+          </div>
+          <div>
             <span>Badges</span>
             <strong>
               {state.unlockedBadgeIds.length}/{storyBadges.length}
@@ -623,7 +817,9 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   const [isReady, setIsReady] = useState(previewMode);
   const [storageReady, setStorageReady] = useState(previewMode);
   const [badgeDrawerOpen, setBadgeDrawerOpen] = useState(false);
+  const [rewardDrawerOpen, setRewardDrawerOpen] = useState(false);
   const [badgeModalId, setBadgeModalId] = useState<string | null>(null);
+  const [rewardModalId, setRewardModalId] = useState<string | null>(null);
   const [overlayId, setOverlayId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -655,6 +851,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
     }
 
     setOverlayId(null);
+    setRewardDrawerOpen(false);
     setSettingsOpen(false);
     setStoryState((current) =>
       buildSceneState(
@@ -785,7 +982,27 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   }, [storyState.unlockedBadgeIds]);
 
   useEffect(() => {
-    if (currentScene?.type !== "day-transition" || overlayId || badgeModalId || resumeCandidate) {
+    if (badgeModalId || rewardModalId) {
+      return;
+    }
+
+    const unseenRewardId = storyState.unlockedRewardIds.find(
+      (rewardId) => !storyState.seenRewardPopupIds.includes(rewardId),
+    );
+
+    if (!unseenRewardId) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      setRewardModalId(unseenRewardId);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [badgeModalId, rewardModalId, storyState.seenRewardPopupIds, storyState.unlockedRewardIds]);
+
+  useEffect(() => {
+    if (currentScene?.type !== "day-transition" || overlayId || badgeModalId || rewardModalId || resumeCandidate) {
       return;
     }
 
@@ -796,7 +1013,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
     }, currentScene.autoAdvanceMs ?? 2000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [badgeModalId, currentScene, navigateToScene, overlayId, resumeCandidate]);
+  }, [badgeModalId, currentScene, navigateToScene, overlayId, resumeCandidate, rewardModalId]);
 
   useEffect(() => {
     const cachedAudio = audioCacheRef.current;
@@ -904,7 +1121,9 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
 
     setOverlayId(null);
     setBadgeModalId(null);
+    setRewardModalId(null);
     setBadgeDrawerOpen(false);
+    setRewardDrawerOpen(false);
     setSettingsOpen(false);
     unlockedBadgeCountRef.current = nextState.unlockedBadgeIds.length;
     setStoryState(nextState);
@@ -926,6 +1145,15 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
     setStoryState((current) => markOverlaySeen(current, overlayIdValue));
   }
 
+  function handleRewardClose() {
+    if (!rewardModalId) {
+      return;
+    }
+
+    setStoryState((current) => markRewardPopupSeen(current, rewardModalId));
+    setRewardModalId(null);
+  }
+
   if (!currentScene) {
     return null;
   }
@@ -941,7 +1169,14 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
       ) : null}
 
       <BadgeUnlockModal badgeId={badgeModalId} onClose={() => setBadgeModalId(null)} />
+      <RewardUnlockModal rewardId={rewardModalId} pitchforks={storyState.pitchforks} onClose={handleRewardClose} />
       <ResourceOverlayModal overlay={currentOverlay} onClose={() => setOverlayId(null)} />
+      <RewardsDrawer
+        open={rewardDrawerOpen}
+        pitchforks={storyState.pitchforks}
+        unlockedRewardIds={storyState.unlockedRewardIds}
+        onClose={() => setRewardDrawerOpen(false)}
+      />
       <BadgeDrawer
         open={badgeDrawerOpen}
         unlockedBadgeIds={storyState.unlockedBadgeIds}
@@ -977,6 +1212,10 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
               </div>
 
               <div className="sim-hud-actions">
+                <button type="button" className="sim-hud-pill" onClick={() => setRewardDrawerOpen(true)}>
+                  🎟 Rewards
+                </button>
+                <span className="sim-hud-pill">🔱 {storyState.pitchforks}</span>
                 <button type="button" className="sim-hud-pill" onClick={() => setBadgeDrawerOpen(true)}>
                   🏅 {storyState.unlockedBadgeIds.length}/{storyBadges.length}
                 </button>
