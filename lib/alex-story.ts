@@ -13,7 +13,7 @@ import type {
 
 const alexStory = alexStoryJson as AlexStoryData;
 
-export const ALEX_STORY_STORAGE_KEY = "sundevilconnect-alex-story-v1";
+export const ALEX_STORY_STORAGE_KEY = "sundevilconnect-first-week-story-v2";
 
 export const storyDays = alexStory.days;
 export const storyScenes = alexStory.scenes;

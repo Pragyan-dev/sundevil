@@ -1,14 +1,5 @@
-import { notFound } from "next/navigation";
-
-import { SimulationStep } from "@/components/SimulationStep";
-import { getSimulationBySlug } from "@/lib/data";
+import { StoryGame } from "@/components/StoryGame";
 
 export default function AdvisingSimulationPage() {
-  const scenario = getSimulationBySlug("advising");
-
-  if (!scenario) {
-    notFound();
-  }
-
-  return <SimulationStep scenario={scenario} />;
+  return <StoryGame mode="preview" previewSlug="advising" />;
 }

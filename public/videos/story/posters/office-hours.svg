@@ -1,0 +1,23 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" rx="40" fill="#241018"/>
+  <rect width="1600" height="900" rx="40" fill="url(#paint0_linear)"/>
+  <circle cx="1318" cy="148" r="220" fill="#FFC627" fill-opacity="0.22"/>
+  <circle cx="248" cy="790" r="278" fill="#8C1D40" fill-opacity="0.4"/>
+  <rect x="90" y="88" width="260" height="48" rx="24" fill="#FFC627" fill-opacity="0.18"/>
+  <text x="126" y="120" fill="#FFC627" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="20" letter-spacing="5">DAY 4 PREVIEW</text>
+  <text x="96" y="250" fill="#FFF8EF" font-family="Iowan Old Style, Georgia, serif" font-size="74">Office Hours</text>
+  <text x="96" y="325" fill="#F8D971" font-family="Iowan Old Style, Georgia, serif" font-size="36">Payne Hall · PSH 242</text>
+  <text x="96" y="410" fill="#FFF8EF" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="32">One desk, a couple of chairs, your notes</text>
+  <text x="96" y="458" fill="#FFF8EF" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="32">A real conversation, not a performance</text>
+  <text x="96" y="506" fill="#FFF8EF" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="32">Bring the problem set or screenshot you want to ask about</text>
+  <rect x="96" y="602" width="732" height="172" rx="28" fill="white" fill-opacity="0.06" stroke="white" stroke-opacity="0.12"/>
+  <text x="132" y="658" fill="#FFC627" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="22" letter-spacing="3">HOW TO START</text>
+  <text x="132" y="704" fill="#FFF8EF" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="28">Open your notes and point to the step that stopped making sense.</text>
+  <text x="132" y="746" fill="#FFF8EF" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="28">That is already enough to begin the conversation.</text>
+  <defs>
+    <linearGradient id="paint0_linear" x1="96" y1="52" x2="1438" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#641B39"/>
+      <stop offset="1" stop-color="#14070C"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,14 +1,5 @@
-import { notFound } from "next/navigation";
-
-import { SimulationStep } from "@/components/SimulationStep";
-import { getSimulationBySlug } from "@/lib/data";
+import { StoryGame } from "@/components/StoryGame";
 
 export default function FirstDaySimulationPage() {
-  const scenario = getSimulationBySlug("first-day");
-
-  if (!scenario) {
-    notFound();
-  }
-
-  return <SimulationStep scenario={scenario} />;
+  return <StoryGame mode="preview" previewSlug="first-day" />;
 }

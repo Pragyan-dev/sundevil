@@ -111,7 +111,7 @@ export interface ChatMessage {
   content: string;
 }
 
-export type JumpInSlug = "tutoring" | "advising" | "first-day";
+export type JumpInSlug = "advising" | "first-day" | "office-hours";
 
 export interface StoryEffect {
   confidenceDelta?: number;
@@ -147,6 +147,11 @@ export interface StoryMockMessage {
   body: string;
 }
 
+export interface StoryChecklistItem {
+  title: string;
+  detail: string;
+}
+
 export interface StoryScene {
   id: string;
   dayId: string;
@@ -169,6 +174,16 @@ export interface StoryScene {
   emailMock?: StoryMockEmail;
   messageMock?: StoryMockMessage;
   embedScholarshipChecker?: boolean;
+  courseLabel?: string;
+  buildingLabel?: string;
+  roomLabel?: string;
+  routeSteps?: string[];
+  taskChecklist?: StoryChecklistItem[];
+  videoSrc?: string;
+  videoFallbackSrc?: string;
+  videoPoster?: string;
+  videoTitle?: string;
+  videoCaption?: string;
 }
 
 export interface StoryDay {
@@ -189,7 +204,7 @@ export interface BadgeDefinition {
 }
 
 export interface EndingDefinition {
-  id: "thrives" | "survives" | "struggles";
+  id: "ready" | "rhythm" | "adjusting";
   title: string;
   summary: string;
   minConfidence: number;

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | SunDevilConnect",
   },
   description:
-    "ASU resource confidence for first-generation students with a local resource finder, simulations, scholarships, and chat.",
+    "ASU resource confidence for first-generation students with a first-week story, inline video previews, a local finder, scholarships, and chat.",
 };
 
 export default function RootLayout({

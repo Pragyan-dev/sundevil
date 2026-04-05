@@ -1,774 +1,1044 @@
 {
-  "saveVersion": "v1",
-  "startSceneId": "day1-lecture-intro",
+  "saveVersion": "v2",
+  "startSceneId": "day1-arrival-intro",
   "days": [
     {
       "id": "day1",
       "label": "Day 1",
-      "title": "The First Class",
-      "subtitle": "Alex walks into a packed lecture hall and tries not to look lost."
+      "title": "Three Classes, One Map",
+      "subtitle": "Course codes, room numbers, and walking directions all hit at once."
     },
     {
       "id": "day2",
       "label": "Day 2",
-      "title": "The Bad Grade",
-      "subtitle": "The first quiz comes back rough, and the spiral starts fast."
+      "title": "Academic Advising",
+      "subtitle": "This is where MyASU and DARS stop sounding like secret terms."
     },
     {
       "id": "day3",
       "label": "Day 3",
-      "title": "The Money Problem",
-      "subtitle": "Textbook prices hit harder than Alex expected."
+      "title": "Assignments Start Moving",
+      "subtitle": "Canvas notifications, syllabi, and your first office-hours email show up fast."
     },
     {
       "id": "day4",
       "label": "Day 4",
-      "title": "The Breakdown",
-      "subtitle": "Midterms are close, sleep is bad, and everything feels louder."
+      "title": "Office Hours",
+      "subtitle": "A short email becomes a real conversation with a professor."
     },
     {
       "id": "day5",
       "label": "Day 5",
-      "title": "The Turnaround",
-      "subtitle": "What changed this week was not the pressure. It was whether Alex knew where to go."
+      "title": "Priority Tasks",
+      "subtitle": "No classes today. This is the day to clean up the small admin things before they grow teeth."
     }
   ],
   "badges": [
     {
-      "id": "dars-navigator",
-      "title": "DARS Navigator",
-      "shortLabel": "DARS",
-      "description": "Alex learned that DARS is a degree progress map, not a mystery acronym you are supposed to already know.",
-      "ctaLabel": "Open ASU advising guidance",
+      "id": "classroom-navigator",
+      "title": "Classroom Navigator",
+      "shortLabel": "Classes",
+      "description": "You made it through three different classrooms and the schedule feels less abstract than it did this morning.",
+      "ctaLabel": "Replay the class tour",
+      "ctaHref": "/simulate/first-day",
+      "ctaExternal": false
+    },
+    {
+      "id": "schedule-decoder",
+      "title": "Schedule Decoder",
+      "shortLabel": "MyASU",
+      "description": "You used MyASU to match times, buildings, and the next day instead of hoping memory would do the work.",
+      "ctaLabel": "Open MyASU",
+      "ctaHref": "https://my.asu.edu",
+      "ctaExternal": true
+    },
+    {
+      "id": "advising-check-in",
+      "title": "Advising Check-In",
+      "shortLabel": "Advising",
+      "description": "You saw what academic advising actually looks like and how DARS and MyASU can get translated into plain language.",
+      "ctaLabel": "Open ASU advising",
       "ctaHref": "https://students.asu.edu/academic-advising",
       "ctaExternal": true
     },
     {
-      "id": "tutoring-explorer",
-      "title": "Tutoring Explorer",
-      "shortLabel": "Tutoring",
-      "description": "Alex saw what tutoring actually looks like: normal room, normal students, normal questions.",
-      "ctaLabel": "Open ASU tutoring",
-      "ctaHref": "https://tutoring.asu.edu/about-us",
+      "id": "syllabus-scanner",
+      "title": "Syllabus Scanner",
+      "shortLabel": "Canvas",
+      "description": "You checked the course pages early enough to see deadlines before they turned into surprises.",
+      "ctaLabel": "Open Canvas",
+      "ctaHref": "https://canvas.asu.edu",
       "ctaExternal": true
     },
     {
-      "id": "office-hours-pro",
-      "title": "Office Hours Pro",
-      "shortLabel": "Office Hours",
-      "description": "Alex learned that emailing a professor does not need perfect wording to work.",
-      "ctaLabel": "Open ASU academic support",
-      "ctaHref": "https://tutoring.asu.edu/about-us",
-      "ctaExternal": true
-    },
-    {
-      "id": "financial-coach-found",
-      "title": "Financial Coach Found",
-      "shortLabel": "Money Support",
-      "description": "Alex discovered that money help can be practical, private, and not just for emergencies.",
-      "ctaLabel": "Open ASU money support",
-      "ctaHref": "https://tuition.asu.edu/financial-aid/fafsa",
-      "ctaExternal": true
-    },
-    {
-      "id": "scholarship-hunter",
-      "title": "Scholarship Hunter",
-      "shortLabel": "Scholarships",
-      "description": "Alex stopped assuming no and checked what scholarships might actually fit.",
-      "ctaLabel": "Open scholarship checker",
-      "ctaHref": "/scholarships",
+      "id": "office-hours-drafted",
+      "title": "Office Hours Drafted",
+      "shortLabel": "Email Sent",
+      "description": "You learned that a short honest email is enough to ask for help before confusion gets bigger.",
+      "ctaLabel": "Replay the office-hours prep",
+      "ctaHref": "/simulate/office-hours",
       "ctaExternal": false
     },
     {
-      "id": "wellness-warrior",
-      "title": "Wellness Warrior",
-      "shortLabel": "Counseling",
-      "description": "Alex learned counseling is not only for crisis. It can just be a place to talk before things get worse.",
-      "ctaLabel": "Open ASU counseling",
-      "ctaHref": "https://eoss.asu.edu/counseling/about-us",
+      "id": "office-hours-visited",
+      "title": "Office Hours Visited",
+      "shortLabel": "Office Hours",
+      "description": "You saw that office hours are usually a quiet conversation, not a performance.",
+      "ctaLabel": "Replay the office-hours visit",
+      "ctaHref": "/simulate/office-hours",
+      "ctaExternal": false
+    },
+    {
+      "id": "priority-tasks-handled",
+      "title": "Priority Tasks Handled",
+      "shortLabel": "To-Dos",
+      "description": "You opened MyASU and handled the admin tasks that can quietly trip up a first week.",
+      "ctaLabel": "Open MyASU",
+      "ctaHref": "https://my.asu.edu",
       "ctaExternal": true
     }
   ],
   "endings": [
     {
-      "id": "thrives",
-      "title": "Alex Thrives",
-      "summary": "Alex still has hard days. But now Alex knows where to go. That's the difference.",
+      "id": "ready",
+      "title": "You Feel Ready",
+      "summary": "The week was still a lot. But now the buildings, systems, and people at ASU feel less like a code you were supposed to already know.",
       "minConfidence": 75
     },
     {
-      "id": "survives",
-      "title": "Alex Survives",
-      "summary": "Alex is getting there. Some doors are still closed. But at least Alex knows they exist.",
+      "id": "rhythm",
+      "title": "You're Finding Your Rhythm",
+      "summary": "Some parts of campus are starting to make sense. The rest will come faster now that you know where to look.",
       "minConfidence": 45
     },
     {
-      "id": "struggles",
-      "title": "Alex Struggles",
-      "summary": "Alex is doing it all alone. It's harder than it has to be. But it's not too late.",
+      "id": "adjusting",
+      "title": "You're Still Adjusting",
+      "summary": "The week felt heavy and unclear. That does not mean you are behind. It means this is new, and the support is still here when you want it.",
       "minConfidence": 0
     }
   ],
   "jumpIns": [
     {
-      "slug": "tutoring",
-      "title": "Tutoring Jump-In",
-      "recap": "Alex just got a 52 on the first quiz and is choosing support over silence.",
-      "startSceneId": "day2-tutoring-resource",
-      "confidence": 55,
-      "xp": 20,
-      "unlockedBadgeIds": [
-        "dars-navigator"
-      ]
+      "slug": "first-day",
+      "title": "First-Day Class Tour",
+      "recap": "You are about to move through Intro to Python, Math, and Chemistry on the Tempe campus for the first time.",
+      "startSceneId": "day1-arrival-intro",
+      "confidence": 50,
+      "xp": 0,
+      "unlockedBadgeIds": []
     },
     {
       "slug": "advising",
       "title": "Advising Jump-In",
-      "recap": "Alex is trying to decode degree planning language before it becomes a bigger problem.",
-      "startSceneId": "day1-dars-resource",
-      "confidence": 50,
-      "xp": 0,
-      "unlockedBadgeIds": []
+      "recap": "You already survived the first day of classes. Now you are heading into academic advising with real questions about MyASU and DARS.",
+      "startSceneId": "day2-advising-intro",
+      "confidence": 58,
+      "xp": 15,
+      "unlockedBadgeIds": [
+        "classroom-navigator"
+      ]
     },
     {
-      "slug": "first-day",
-      "title": "First-Day Jump-In",
-      "recap": "Alex has barely found a seat in the lecture hall. Everything is new and moving too fast.",
-      "startSceneId": "day1-lecture-intro",
-      "confidence": 50,
-      "xp": 0,
-      "unlockedBadgeIds": []
+      "slug": "office-hours",
+      "title": "Office Hours Jump-In",
+      "recap": "You sent the email the night before. Now you are walking toward office hours with your notes and one real question.",
+      "startSceneId": "day4-office-hours-intro",
+      "confidence": 62,
+      "xp": 40,
+      "unlockedBadgeIds": [
+        "classroom-navigator",
+        "advising-check-in",
+        "office-hours-drafted"
+      ]
     }
   ],
   "scenes": [
     {
-      "id": "day1-lecture-intro",
+      "id": "day1-arrival-intro",
       "dayId": "day1",
       "kind": "story",
-      "title": "The lecture hall feels enormous.",
+      "title": "Your Monday starts with a map and a stomach drop.",
       "speaker": "Narrator",
-      "location": "CSE 110 lecture • Morning",
-      "backdrop": "lecture-hall",
-      "body": "Alex slips into a seat near the back. Three hundred students, a syllabus full of links, and a professor already talking like everyone knows the system.",
-      "continueLabel": "Listen closer",
-      "nextSceneId": "day1-dars-choice"
+      "location": "Tempe campus • 8:05 a.m.",
+      "backdrop": "campus-arrival",
+      "body": "It is your first week at ASU, and nobody in your family ever handed down a decoder for course codes, room numbers, or which hallways matter. Today you have three classes: Intro to Python, Math, and Chemistry.",
+      "continueLabel": "Start the day",
+      "nextSceneId": "day1-python-class"
     },
     {
-      "id": "day1-dars-choice",
+      "id": "day1-python-class",
       "dayId": "day1",
-      "kind": "choice",
-      "title": "The professor mentions DARS for degree planning.",
-      "speaker": "Professor",
-      "location": "CSE 110 lecture • Morning",
-      "backdrop": "lecture-hall",
-      "body": "Office hours. DARS. Tutoring on the syllabus. Alex catches the words, but not what any of them are supposed to mean.",
-      "choices": [
+      "kind": "resource",
+      "title": "First stop: Intro to Python.",
+      "speaker": "Narrator",
+      "location": "Coor Hall • COOR 174",
+      "backdrop": "python-classroom",
+      "body": "This room is bigger than you expected. Laptops are already open, the syllabus is on the screen, and everyone else somehow looks like they knew what COOR 174 meant before today.",
+      "courseLabel": "CSE 110 • Intro to Programming (Python)",
+      "buildingLabel": "Coor Hall",
+      "roomLabel": "COOR 174",
+      "routeSteps": [
+        "From Palm Walk, head west on Orange Mall toward the Engineering Center.",
+        "Look for Coor Hall just before the main engineering courtyards.",
+        "Room 174 is on the first floor near the large lecture entrances."
+      ],
+      "cards": [
         {
-          "id": "day1-dars-ignore",
-          "label": "\"I'll figure it out later.\"",
-          "caption": "Avoid the confusion for now.",
-          "resultSceneId": "day1-dars-avoid"
+          "title": "What the room feels like",
+          "body": "A large lecture room with rows of seats, bright screens, and a professor moving quickly through the course structure."
         },
         {
-          "id": "day1-dars-open",
-          "label": "\"What's DARS? Let me look it up.\"",
-          "caption": "Take the small uncomfortable step.",
-          "resultSceneId": "day1-dars-resource"
+          "title": "What you actually do",
+          "body": "Match the course number, choose an open seat, and let yourself settle before deciding you are behind."
+        },
+        {
+          "title": "First-gen reality check",
+          "body": "Not knowing building codes on sight is normal. Most students learn them by repetition, not by magic."
+        }
+      ],
+      "bullets": [
+        "Screenshot the room number in MyASU if codes like COOR 174 still feel abstract.",
+        "Look for the course number on the slide before assuming you are in the wrong place.",
+        "The first class is mostly orientation. You are allowed to just take it in."
+      ],
+      "videoSrc": "/videos/story/python-first-week.mp4",
+      "videoFallbackSrc": "/videos/story/python-classroom.mp4",
+      "videoPoster": "/videos/story/posters/python-classroom.svg",
+      "videoTitle": "Python classroom preview",
+      "videoCaption": "Use this short preview to picture the pace, seating, and lecture-room vibe before you walk in.",
+      "continueLabel": "Find math next",
+      "nextSceneId": "day1-math-class"
+    },
+    {
+      "id": "day1-math-class",
+      "dayId": "day1",
+      "kind": "resource",
+      "title": "Math is smaller and quieter.",
+      "speaker": "Narrator",
+      "location": "Payne Hall • PSH 153",
+      "backdrop": "math-classroom",
+      "body": "The math room is not as big as Python. There is a whiteboard across the front, a tighter seating layout, and more room for people to actually notice each other.",
+      "courseLabel": "MAT 170 • College Algebra",
+      "buildingLabel": "Payne Hall",
+      "roomLabel": "PSH 153",
+      "routeSteps": [
+        "Leave Coor Hall and walk east back along Orange Mall toward Palm Walk.",
+        "Pass Hayden Library and keep Payne Hall on your right.",
+        "Room 153 sits in the ground-floor classroom wing, just past the lobby."
+      ],
+      "cards": [
+        {
+          "title": "What the room feels like",
+          "body": "A medium classroom with more eye contact, more board work, and a pace that makes it easier to ask where you are."
+        },
+        {
+          "title": "What helps here",
+          "body": "Sit where you can see the board clearly and write down every time the professor mentions due dates or office hours."
+        },
+        {
+          "title": "Why this matters",
+          "body": "Different classes feel different. Learning the room style is part of learning the course."
+        }
+      ],
+      "bullets": [
+        "Smaller rooms often feel more personal, not more dangerous.",
+        "If you miss one instruction, you can still catch it later in Canvas or the syllabus.",
+        "You do not need to look completely settled to belong there."
+      ],
+      "videoSrc": "/videos/story/math-classroom.mp4",
+      "videoPoster": "/videos/story/posters/math-classroom.svg",
+      "videoTitle": "Math classroom preview",
+      "videoCaption": "This preview is here so the layout and pace feel familiar before you take your seat.",
+      "continueLabel": "Head to chemistry",
+      "nextSceneId": "day1-chemistry-class"
+    },
+    {
+      "id": "day1-chemistry-class",
+      "dayId": "day1",
+      "kind": "resource",
+      "title": "Chemistry feels formal, but not impossible.",
+      "speaker": "Narrator",
+      "location": "Life Sciences A • LSA 104",
+      "backdrop": "chemistry-classroom",
+      "body": "By your third class, you are tired enough to stop pretending this is effortless. The chemistry room has the feel of a real science course: slides, safety reminders, and a lot of new information packed into a normal hour.",
+      "courseLabel": "CHM 113 • General Chemistry I",
+      "buildingLabel": "Life Sciences A",
+      "roomLabel": "LSA 104",
+      "routeSteps": [
+        "From Payne Hall, cross toward Cady Mall and keep moving north into the science buildings.",
+        "Look for Life Sciences A beside the inner science courtyards.",
+        "Room 104 is near the front lobby on the first floor."
+      ],
+      "cards": [
+        {
+          "title": "What the room feels like",
+          "body": "A lecture room with science-course energy: slides moving quickly, reminders about lab expectations, and students trying to capture everything."
+        },
+        {
+          "title": "What to focus on",
+          "body": "Course structure, lab expectations, and where assignments will actually show up after class."
+        },
+        {
+          "title": "What you just proved",
+          "body": "You can move between different buildings, room styles, and course vibes without already knowing the campus by heart."
+        }
+      ],
+      "bullets": [
+        "Three classes in one day is enough to make anyone feel scrambled.",
+        "Getting there counts, even if you still need to look at your phone before every turn.",
+        "The campus will feel smaller by repetition, not by force."
+      ],
+      "badgeId": "classroom-navigator",
+      "videoSrc": "/videos/story/chemistry-classroom.mp4",
+      "videoPoster": "/videos/story/posters/chemistry-classroom.svg",
+      "videoTitle": "Chemistry classroom preview",
+      "videoCaption": "Watch this before class if science-building rooms still feel hard to picture.",
+      "effects": {
+        "confidenceDelta": 5,
+        "xpDelta": 10,
+        "unlockBadgeIds": [
+          "classroom-navigator"
+        ]
+      },
+      "continueLabel": "Make a plan for tomorrow",
+      "nextSceneId": "day1-night-choice"
+    },
+    {
+      "id": "day1-night-choice",
+      "dayId": "day1",
+      "kind": "choice",
+      "title": "That night, what do you do with tomorrow's advising appointment?",
+      "speaker": "You",
+      "location": "Dorm room • Late evening",
+      "backdrop": "dorm-night",
+      "body": "You can either open MyASU now and screenshot the advising details, or tell yourself you will remember one more new system in the morning.",
+      "choices": [
+        {
+          "id": "day1-prep-now",
+          "label": "\"Open MyASU now and save the details.\"",
+          "caption": "Use the calm ten minutes you still have.",
+          "resultSceneId": "day1-prep-tomorrow"
+        },
+        {
+          "id": "day1-wing-it",
+          "label": "\"I'll remember it tomorrow.\"",
+          "caption": "Push the admin stuff off for now.",
+          "resultSceneId": "day1-wing-it-result"
         }
       ]
     },
     {
-      "id": "day1-dars-avoid",
+      "id": "day1-prep-tomorrow",
       "dayId": "day1",
       "kind": "consequence",
-      "title": "Later that night...",
+      "title": "You make tomorrow easier on purpose.",
       "speaker": "Narrator",
-      "location": "Dorm room • Late night",
+      "location": "Dorm room • Late evening",
+      "backdrop": "phone-glow",
+      "body": "You screenshot the appointment time, the building, and the room details. The system feels less hostile when you look at it before the rush starts.",
+      "effects": {
+        "confidenceDelta": 10,
+        "xpDelta": 15,
+        "unlockBadgeIds": [
+          "schedule-decoder"
+        ]
+      },
+      "continueLabel": "Go to advising",
+      "nextSceneId": "day2-advising-intro"
+    },
+    {
+      "id": "day1-wing-it-result",
+      "dayId": "day1",
+      "kind": "consequence",
+      "title": "The details stay fuzzy.",
+      "speaker": "Narrator",
+      "location": "Dorm room • Late evening",
       "backdrop": "dorm-night",
-      "body": "Alex stares at the class planner and still does not know which boxes matter. Nothing exploded. It just stayed unclear.",
+      "body": "Nothing catastrophic happens. But tomorrow still feels blurry because the appointment lives somewhere in MyASU that you have not opened yet.",
       "effects": {
         "confidenceDelta": -5,
         "xpDelta": 5
       },
-      "continueLabel": "Keep going",
-      "nextSceneId": "day1-study-group-choice"
+      "continueLabel": "Go to advising",
+      "nextSceneId": "day2-advising-intro"
     },
     {
-      "id": "day1-dars-resource",
-      "dayId": "day1",
-      "kind": "resource",
-      "title": "DARS is basically a degree progress map.",
-      "speaker": "Alex",
-      "location": "Phone screen • Between classes",
-      "backdrop": "phone-glow",
-      "body": "The acronym stops being intimidating once Alex sees what it actually does: show what counts, what is missing, and what needs a closer look.",
-      "cards": [
+      "id": "day2-advising-intro",
+      "dayId": "day2",
+      "kind": "story",
+      "title": "Day 2 starts with academic advising.",
+      "speaker": "Narrator",
+      "location": "Student Services Building • Mid-morning",
+      "backdrop": "advising-center",
+      "body": "This is one of those ASU things people mention like you should already know what it looks like. In reality, it is a front desk, a waiting area, and a chance to ask the questions you do not want to keep carrying alone.",
+      "continueLabel": "Check in",
+      "nextSceneId": "day2-advising-choice"
+    },
+    {
+      "id": "day2-advising-choice",
+      "dayId": "day2",
+      "kind": "choice",
+      "title": "Before you check in, what do you do?",
+      "speaker": "You",
+      "location": "Student Services Building • Lobby",
+      "backdrop": "advising-center",
+      "body": "Your phone is full of notes, but your brain is louder than the screen.",
+      "choices": [
         {
-          "title": "What it is",
-          "body": "DARS helps students see completed requirements, in-progress classes, and what still needs attention."
+          "id": "day2-advising-prepared-choice",
+          "label": "\"Write down two questions first.\"",
+          "caption": "Give the meeting something concrete to start with.",
+          "resultSceneId": "day2-advising-prepared"
         },
         {
-          "title": "Why it matters",
-          "body": "Alex does not need to memorize every rule on day one. DARS gives the shape of the degree in one place."
+          "id": "day2-advising-quiet-choice",
+          "label": "\"Just walk in and hope the conversation carries me.\"",
+          "caption": "Rely on the advisor to pull the questions out.",
+          "resultSceneId": "day2-advising-quiet"
+        }
+      ]
+    },
+    {
+      "id": "day2-advising-prepared",
+      "dayId": "day2",
+      "kind": "resource",
+      "title": "You walk in with real questions, which helps.",
+      "speaker": "Narrator",
+      "location": "Student Services Building • Advising office",
+      "backdrop": "advising-center",
+      "body": "The front desk checks you in, the waiting room is quieter than you feared, and the advisor starts with the exact questions you wrote down: what DARS shows, what to watch in MyASU, and who to contact when something looks off.",
+      "buildingLabel": "Student Services Building",
+      "roomLabel": "Academic Advising check-in",
+      "routeSteps": [
+        "Enter the Student Services Building and look for advising signage near the front lobby.",
+        "Check in with your name or ASURITE, then wait for your advisor to call you back.",
+        "Bring screenshots of your schedule, MyASU tasks, and anything in DARS that feels confusing."
+      ],
+      "cards": [
+        {
+          "title": "What the space looks like",
+          "body": "A normal office waiting area: front desk, chairs, a few students, low voices, not a test."
+        },
+        {
+          "title": "What comes up",
+          "body": "DARS, your class plan, MyASU holds, and the questions that feel too small to email to five different offices."
+        },
+        {
+          "title": "What to ask",
+          "body": "You can ask what DARS means, whether your classes make sense together, and what office handles the next problem."
+        }
+      ],
+      "bullets": [
+        "Being first-gen does not mean you are behind. It means the hidden steps are actually hidden.",
+        "Bring screenshots if you do not know the exact ASU terms yet.",
+        "Advising is allowed to be practical."
+      ],
+      "badgeId": "advising-check-in",
+      "videoSrc": "/videos/story/student-advising-session.mp4",
+      "videoFallbackSrc": "/videos/story/advising-center.mp4",
+      "videoPoster": "/videos/story/posters/advising-center.svg",
+      "videoTitle": "Academic advising preview",
+      "videoCaption": "This preview shows the kind of front desk, waiting area, and conversation setup you can expect.",
+      "effects": {
+        "confidenceDelta": 12,
+        "xpDelta": 20,
+        "unlockBadgeIds": [
+          "advising-check-in"
+        ]
+      },
+      "continueLabel": "Start day 3",
+      "nextSceneId": "day3-classes-again"
+    },
+    {
+      "id": "day2-advising-quiet",
+      "dayId": "day2",
+      "kind": "resource",
+      "title": "You still get help, even without perfect questions.",
+      "speaker": "Narrator",
+      "location": "Student Services Building • Advising office",
+      "backdrop": "advising-center",
+      "body": "The advisor still helps, but the first few minutes go to translating a stressed feeling into a useful question. It is still worth going. It just takes longer to get specific.",
+      "buildingLabel": "Student Services Building",
+      "roomLabel": "Academic Advising check-in",
+      "routeSteps": [
+        "Enter the Student Services Building and follow the advising signs near the front lobby.",
+        "Check in at the desk even if you still feel unsure what to ask.",
+        "Use the conversation to say what feels confusing in plain language first."
+      ],
+      "cards": [
+        {
+          "title": "What the space looks like",
+          "body": "A regular office waiting area with students doing exactly what you are doing: trying to make the system less confusing."
+        },
+        {
+          "title": "What helps mid-meeting",
+          "body": "Once you say, 'I do not really know what DARS is showing me,' the advisor has something concrete to respond to."
+        },
+        {
+          "title": "What you learn anyway",
+          "body": "You do not need polished language to start a useful advising conversation."
+        }
+      ],
+      "bullets": [
+        "It is okay if the first question sounds rough.",
+        "Advisors are used to translating systems language into something students can actually use.",
+        "Showing up counts."
+      ],
+      "badgeId": "advising-check-in",
+      "videoSrc": "/videos/story/student-advising-session.mp4",
+      "videoFallbackSrc": "/videos/story/advising-center.mp4",
+      "videoPoster": "/videos/story/posters/advising-center.svg",
+      "videoTitle": "Academic advising preview",
+      "videoCaption": "Even if you arrive unsure, this preview helps you picture the room before you walk in.",
+      "effects": {
+        "confidenceDelta": 0,
+        "xpDelta": 8,
+        "unlockBadgeIds": [
+          "advising-check-in"
+        ]
+      },
+      "continueLabel": "Start day 3",
+      "nextSceneId": "day3-classes-again"
+    },
+    {
+      "id": "day3-classes-again",
+      "dayId": "day3",
+      "kind": "story",
+      "title": "By day 3, the campus looks slightly less impossible.",
+      "speaker": "Narrator",
+      "location": "Between classes • Afternoon",
+      "backdrop": "campus-walk",
+      "body": "You still check the building signs twice, but now Intro to Python, Math, and Chemistry feel like real places instead of random codes. The next wave is different: Canvas notifications, syllabi, and small deadlines.",
+      "continueLabel": "Handle the course pages",
+      "nextSceneId": "day3-canvas-choice"
+    },
+    {
+      "id": "day3-canvas-choice",
+      "dayId": "day3",
+      "kind": "choice",
+      "title": "After classes, what do you do first?",
+      "speaker": "You",
+      "location": "Dorm desk • Evening",
+      "backdrop": "canvas-night",
+      "body": "Three courses means three syllabi, three Canvas pages, and three different ways professors say 'this is important.'",
+      "choices": [
+        {
+          "id": "day3-canvas-open",
+          "label": "\"Open Canvas and each syllabus tonight.\"",
+          "caption": "Get ahead of the ambiguity.",
+          "resultSceneId": "day3-canvas-resource"
+        },
+        {
+          "id": "day3-canvas-delay-choice",
+          "label": "\"Tell yourself you'll look tomorrow.\"",
+          "caption": "Buy short-term peace, maybe.",
+          "resultSceneId": "day3-canvas-delay"
+        }
+      ]
+    },
+    {
+      "id": "day3-canvas-delay",
+      "dayId": "day3",
+      "kind": "consequence",
+      "title": "Tomorrow gets louder fast.",
+      "speaker": "Narrator",
+      "location": "Dorm desk • Late night",
+      "backdrop": "canvas-night",
+      "body": "You wake up to more notifications than expected and have to sort deadlines while already moving between classes. Avoiding the syllabus does not make it less real.",
+      "effects": {
+        "confidenceDelta": -8,
+        "xpDelta": 5
+      },
+      "continueLabel": "At least open it now",
+      "nextSceneId": "day3-canvas-summary"
+    },
+    {
+      "id": "day3-canvas-resource",
+      "dayId": "day3",
+      "kind": "resource",
+      "title": "Opening Canvas early makes the week easier to read.",
+      "speaker": "Narrator",
+      "location": "Canvas and syllabi • Evening",
+      "backdrop": "canvas-night",
+      "body": "You open each course page before the noise stacks up. Now you know where the Python modules live, what math expects each week, and which chemistry items are tied to lab and lecture.",
+      "cards": [
+        {
+          "title": "Intro to Python",
+          "body": "Find the course modules, the first assignment window, and where announcements will show up."
+        },
+        {
+          "title": "Math",
+          "body": "Look for homework systems, office-hours times, and any line about how questions should be asked."
+        },
+        {
+          "title": "Chemistry",
+          "body": "Check lecture expectations, lab reminders, and anything labeled safety, attendance, or quiz."
+        }
+      ],
+      "bullets": [
+        "You are not supposed to memorize three syllabi at once.",
+        "The goal is to see where information lives before you urgently need it.",
+        "One calm scan now saves panic later."
+      ],
+      "badgeId": "syllabus-scanner",
+      "effects": {
+        "confidenceDelta": 10,
+        "xpDelta": 15,
+        "unlockBadgeIds": [
+          "syllabus-scanner"
+        ]
+      },
+      "continueLabel": "Email about office hours",
+      "nextSceneId": "day3-email-choice"
+    },
+    {
+      "id": "day3-canvas-summary",
+      "dayId": "day3",
+      "kind": "resource",
+      "title": "Even a late check still helps.",
+      "speaker": "Narrator",
+      "location": "Canvas and syllabi • Night",
+      "backdrop": "canvas-night",
+      "body": "Once you finally open the course pages, the confusion becomes more concrete. It is not fun, but it is better than carrying three unnamed worries at once.",
+      "cards": [
+        {
+          "title": "What to look for first",
+          "body": "Assignments due this week, office-hours info, and any note that says where updates will appear."
+        },
+        {
+          "title": "What this changes",
+          "body": "The work is still there, but at least it has names, due dates, and places to click."
+        }
+      ],
+      "bullets": [
+        "Late is still better than never.",
+        "Confusion shrinks once it has labels.",
+        "Tomorrow's version of you will be glad this is no longer invisible."
+      ],
+      "continueLabel": "Email about office hours",
+      "nextSceneId": "day3-email-choice"
+    },
+    {
+      "id": "day3-email-choice",
+      "dayId": "day3",
+      "kind": "choice",
+      "title": "You want to go to office hours tomorrow. What happens tonight?",
+      "speaker": "You",
+      "location": "Dorm desk • Late night",
+      "backdrop": "inbox",
+      "body": "The professor said office hours are open, but the email still feels harder to send than it should.",
+      "choices": [
+        {
+          "id": "day3-email-send",
+          "label": "\"Send the short honest email now.\"",
+          "caption": "You do not need perfect wording.",
+          "resultSceneId": "day3-email-resource-good"
+        },
+        {
+          "id": "day3-email-overthink-choice",
+          "label": "\"Keep rewriting it until it feels embarrassing.\"",
+          "caption": "Overthinking is still a form of delay.",
+          "resultSceneId": "day3-email-overthink"
+        }
+      ]
+    },
+    {
+      "id": "day3-email-overthink",
+      "dayId": "day3",
+      "kind": "consequence",
+      "title": "The email gets longer while your confidence gets smaller.",
+      "speaker": "Narrator",
+      "location": "Inbox draft • Late night",
+      "backdrop": "inbox",
+      "body": "You keep editing the same three sentences like the wrong wording might prove you do not belong here. It never becomes perfect. It just becomes later.",
+      "effects": {
+        "confidenceDelta": -6,
+        "xpDelta": 5
+      },
+      "continueLabel": "Send it anyway",
+      "nextSceneId": "day3-email-resource-late"
+    },
+    {
+      "id": "day3-email-resource-good",
+      "dayId": "day3",
+      "kind": "resource",
+      "title": "A short email is enough.",
+      "speaker": "Narrator",
+      "location": "Inbox draft • Late night",
+      "backdrop": "inbox",
+      "body": "You send a plain, honest email asking about tomorrow's office hours and what to bring. The professor replies like this is normal, because it is.",
+      "emailMock": {
+        "subject": "Question about office hours for MAT 170",
+        "from": "you@asu.edu",
+        "to": "professor@asu.edu",
+        "body": "Hi Professor, I am in your MAT 170 class and I want to come to office hours tomorrow because I am still confused about some of the first homework steps. Is it okay if I bring my notes and ask a few questions? Thank you.",
+        "replySubject": "Re: Question about office hours for MAT 170",
+        "replyFrom": "professor@asu.edu",
+        "replyBody": "Hi, yes, absolutely. Bring your notes or the homework page and come by during office hours tomorrow in PSH 242. We can walk through where you are getting stuck."
+      },
+      "cards": [
+        {
+          "title": "What to say",
+          "body": "Course name, why you are coming, and what you plan to bring are enough."
+        },
+        {
+          "title": "What the reply tells you",
+          "body": "Office hours are for exactly this: confusion early, before it compounds."
+        }
+      ],
+      "bullets": [
+        "You do not need a polished academic email voice.",
+        "Short and honest beats perfect and delayed.",
+        "The room number in the reply matters tomorrow."
+      ],
+      "badgeId": "office-hours-drafted",
+      "effects": {
+        "confidenceDelta": 10,
+        "xpDelta": 15,
+        "unlockBadgeIds": [
+          "office-hours-drafted"
+        ]
+      },
+      "continueLabel": "Go tomorrow",
+      "nextSceneId": "day4-office-hours-intro"
+    },
+    {
+      "id": "day3-email-resource-late",
+      "dayId": "day3",
+      "kind": "resource",
+      "title": "You send it anyway, just later and shakier.",
+      "speaker": "Narrator",
+      "location": "Inbox draft • Late night",
+      "backdrop": "inbox",
+      "body": "The email still goes out. The professor still answers kindly. The important part is that you now have a time, a room number, and permission to show up without pretending you already understand everything.",
+      "emailMock": {
+        "subject": "MAT 170 office hours question",
+        "from": "you@asu.edu",
+        "to": "professor@asu.edu",
+        "body": "Hi Professor, I am sorry if this is obvious, but I am still confused about part of the homework and wanted to ask if I could come to office hours tomorrow. Thank you.",
+        "replySubject": "Re: MAT 170 office hours question",
+        "replyFrom": "professor@asu.edu",
+        "replyBody": "Hi, yes, please come by tomorrow in PSH 242 and bring the homework page or your notes. That is what office hours are for."
+      },
+      "bullets": [
+        "A slightly awkward email still works.",
+        "You do not lose the right to ask because you felt nervous first.",
+        "Now you know where to go tomorrow."
+      ],
+      "badgeId": "office-hours-drafted",
+      "effects": {
+        "confidenceDelta": 0,
+        "xpDelta": 5,
+        "unlockBadgeIds": [
+          "office-hours-drafted"
+        ]
+      },
+      "continueLabel": "Go tomorrow",
+      "nextSceneId": "day4-office-hours-intro"
+    },
+    {
+      "id": "day4-office-hours-intro",
+      "dayId": "day4",
+      "kind": "story",
+      "title": "Office hours are quieter than the phrase makes them sound.",
+      "speaker": "Narrator",
+      "location": "Payne Hall • Before noon",
+      "backdrop": "office-hours-room",
+      "body": "You know the office location because the reply email spelled it out. The hard part now is walking through the door instead of circling the hallway.",
+      "continueLabel": "Walk up to the door",
+      "nextSceneId": "day4-office-hours-choice"
+    },
+    {
+      "id": "day4-office-hours-choice",
+      "dayId": "day4",
+      "kind": "choice",
+      "title": "What do you do when the professor says, 'Come in'?",
+      "speaker": "You",
+      "location": "Payne Hall • Office hallway",
+      "backdrop": "office-hours-room",
+      "body": "This is the part people skip when they only say 'go to office hours' and forget how new it can feel.",
+      "choices": [
+        {
+          "id": "day4-office-hours-open",
+          "label": "\"Show your notes and ask about the first problem.\"",
+          "caption": "Let the conversation start with something real.",
+          "resultSceneId": "day4-office-hours-resource-open"
+        },
+        {
+          "id": "day4-office-hours-hesitate-choice",
+          "label": "\"Hover for a minute and hope you do not sound lost.\"",
+          "caption": "Try to hide the nerves first.",
+          "resultSceneId": "day4-office-hours-hesitate"
+        }
+      ]
+    },
+    {
+      "id": "day4-office-hours-hesitate",
+      "dayId": "day4",
+      "kind": "consequence",
+      "title": "You stall in the hallway for a minute.",
+      "speaker": "Narrator",
+      "location": "Payne Hall • Office hallway",
+      "backdrop": "office-hours-room",
+      "body": "You almost convince yourself to leave. Then you remember the professor already answered your email and literally expects students to show up here.",
+      "effects": {
+        "confidenceDelta": -6,
+        "xpDelta": 5
+      },
+      "continueLabel": "Go in anyway",
+      "nextSceneId": "day4-office-hours-resource-quiet"
+    },
+    {
+      "id": "day4-office-hours-resource-open",
+      "dayId": "day4",
+      "kind": "resource",
+      "title": "This is what office hours actually feels like.",
+      "speaker": "Narrator",
+      "location": "Payne Hall • PSH 242",
+      "backdrop": "office-hours-room",
+      "body": "It is one desk, a couple of chairs, your notes, and a professor who is glad you showed up before the confusion got bigger.",
+      "buildingLabel": "Payne Hall",
+      "roomLabel": "PSH 242",
+      "routeSteps": [
+        "Use the room number from the reply email and head into the second-floor office hallway in Payne Hall.",
+        "Look for the office placard beside the door before you knock.",
+        "Bring the problem set, notes, or screenshot you want to ask about."
+      ],
+      "emailMock": {
+        "subject": "Question about office hours for MAT 170",
+        "from": "you@asu.edu",
+        "to": "professor@asu.edu",
+        "body": "Hi Professor, I am in your MAT 170 class and I want to come to office hours tomorrow because I am still confused about some of the first homework steps. Is it okay if I bring my notes and ask a few questions? Thank you.",
+        "replySubject": "Re: Question about office hours for MAT 170",
+        "replyFrom": "professor@asu.edu",
+        "replyBody": "Hi, yes, absolutely. Bring your notes or the homework page and come by during office hours tomorrow in PSH 242. We can walk through where you are getting stuck."
+      },
+      "cards": [
+        {
+          "title": "What the room looks like",
+          "body": "A normal office or office-adjacent space: desk, chairs, papers, maybe another student waiting, nothing theatrical."
+        },
+        {
+          "title": "How to start talking",
+          "body": "Open your notes and say what part stopped making sense. That is enough to begin."
         },
         {
           "title": "What happens next",
-          "body": "If something looks off, that is when advising becomes useful instead of mysterious."
+          "body": "The professor points to the step you missed, explains what to try next, and turns a vague panic into a smaller problem."
         }
       ],
       "bullets": [
-        "Open DARS from MyASU when schedule planning feels fuzzy.",
-        "Use it to spot missing requirements before registration gets chaotic.",
-        "Pair it with advising when the report raises more questions than it answers."
+        "Office hours are for clarification, not just emergencies.",
+        "Bringing one real question is better than waiting to feel perfectly prepared.",
+        "The conversation is usually shorter and calmer than the fear around it."
       ],
-      "badgeId": "dars-navigator",
+      "badgeId": "office-hours-visited",
+      "videoSrc": "/videos/story/office-hours.mp4",
+      "videoPoster": "/videos/story/posters/office-hours.svg",
+      "videoTitle": "Office-hours preview",
+      "videoCaption": "This is the kind of quiet office setup and conversation pace you can expect on a first visit.",
       "effects": {
-        "confidenceDelta": 10,
+        "confidenceDelta": 12,
         "xpDelta": 20,
         "unlockBadgeIds": [
-          "dars-navigator"
+          "office-hours-visited"
         ]
       },
-      "ctaLabel": "Open ASU advising guidance",
-      "ctaHref": "https://students.asu.edu/academic-advising",
-      "ctaExternal": true,
-      "continueLabel": "Back to the week",
-      "nextSceneId": "day1-study-group-choice"
+      "continueLabel": "Use your free day well",
+      "nextSceneId": "day5-free-day-intro"
     },
     {
-      "id": "day1-study-group-choice",
-      "dayId": "day1",
-      "kind": "choice",
-      "title": "A classmate mentions a study group.",
-      "speaker": "Classmate",
-      "location": "Lecture hall aisle • After class",
-      "backdrop": "lecture-hall",
-      "body": "\"A few of us are meeting later if you want in.\" Alex has known these people for maybe nine minutes.",
-      "choices": [
+      "id": "day4-office-hours-resource-quiet",
+      "dayId": "day4",
+      "kind": "resource",
+      "title": "Even an awkward start becomes a real conversation.",
+      "speaker": "Narrator",
+      "location": "Payne Hall • PSH 242",
+      "backdrop": "office-hours-room",
+      "body": "Your first sentence comes out rough. Then the professor looks at your notes, asks one clarifying question, and the room stops feeling so intimidating.",
+      "buildingLabel": "Payne Hall",
+      "roomLabel": "PSH 242",
+      "routeSteps": [
+        "Use the room number from the reply email and head into the second-floor office hallway in Payne Hall.",
+        "Knock, step in, and let the notes on your page do some of the talking for you.",
+        "You do not need a perfect explanation before the conversation starts."
+      ],
+      "cards": [
         {
-          "id": "day1-study-solo",
-          "label": "\"Nah, I work better alone.\"",
-          "caption": "Stay self-contained.",
-          "resultSceneId": "day1-study-group-solo"
+          "title": "What the room looks like",
+          "body": "A small office conversation, not a performance stage."
         },
         {
-          "id": "day1-study-join",
-          "label": "\"Sure, I'll check it out.\"",
-          "caption": "Leave the door open.",
-          "resultSceneId": "day1-study-group-join"
+          "title": "What matters most",
+          "body": "You still showed up, which gives the professor something real to respond to."
         }
-      ]
-    },
-    {
-      "id": "day1-study-group-solo",
-      "dayId": "day1",
-      "kind": "consequence",
-      "title": "Alex heads back alone.",
-      "speaker": "Narrator",
-      "location": "Palm Walk • Afternoon",
-      "backdrop": "campus-walk",
-      "body": "Nothing dramatic happens. Alex just keeps carrying all the uncertainty without seeing what classmates are also confused about.",
+      ],
+      "badgeId": "office-hours-visited",
+      "videoSrc": "/videos/story/office-hours.mp4",
+      "videoPoster": "/videos/story/posters/office-hours.svg",
+      "videoTitle": "Office-hours preview",
+      "videoCaption": "This preview is here to make the room and conversation format feel familiar before you go.",
       "effects": {
         "confidenceDelta": 0,
-        "xpDelta": 5
-      },
-      "continueLabel": "Next day",
-      "nextSceneId": "day2-quiz-intro"
-    },
-    {
-      "id": "day1-study-group-join",
-      "dayId": "day1",
-      "kind": "consequence",
-      "title": "The group is less awkward than expected.",
-      "speaker": "Narrator",
-      "location": "Dorm lounge • Evening",
-      "backdrop": "study-lounge",
-      "body": "Nobody has everything figured out. That alone makes the campus feel a little less like a place Alex has to decode in secret.",
-      "effects": {
-        "confidenceDelta": 5,
-        "xpDelta": 15
-      },
-      "continueLabel": "Next day",
-      "nextSceneId": "day2-quiz-intro"
-    },
-    {
-      "id": "day2-quiz-intro",
-      "dayId": "day2",
-      "kind": "story",
-      "title": "The quiz comes back with a 52.",
-      "speaker": "Narrator",
-      "location": "Lecture hall • Quiz day",
-      "backdrop": "quiz-drop",
-      "body": "Alex feels the heat rush in fast. It is the kind of grade that makes every fear sound smarter than every plan.",
-      "continueLabel": "What now?",
-      "nextSceneId": "day2-quiz-choice"
-    },
-    {
-      "id": "day2-quiz-choice",
-      "dayId": "day2",
-      "kind": "choice",
-      "title": "What does Alex do?",
-      "speaker": "Alex",
-      "location": "Outside the lecture hall",
-      "backdrop": "quiz-drop",
-      "body": "The campus suddenly feels full of people who probably understand college better than Alex does.",
-      "choices": [
-        {
-          "id": "day2-quiz-self-blame",
-          "label": "\"I'm just dumb. I'll try harder next time.\"",
-          "caption": "Keep the panic private.",
-          "resultSceneId": "day2-quiz-avoid"
-        },
-        {
-          "id": "day2-quiz-tutoring",
-          "label": "\"Maybe I should look into tutoring.\"",
-          "caption": "Try the harder, healthier option.",
-          "resultSceneId": "day2-tutoring-resource"
-        },
-        {
-          "id": "day2-quiz-email",
-          "label": "\"I'll email the professor.\"",
-          "caption": "Ask instead of guessing.",
-          "resultSceneId": "day2-office-hours-resource"
-        }
-      ]
-    },
-    {
-      "id": "day2-quiz-avoid",
-      "dayId": "day2",
-      "kind": "consequence",
-      "title": "Three weeks later...",
-      "speaker": "Narrator",
-      "location": "Dorm desk • Night",
-      "backdrop": "dorm-night",
-      "body": "Alex keeps trying alone, but the grade pattern does not change. Working harder without new help mostly means feeling worse in a quieter room.",
-      "effects": {
-        "confidenceDelta": -15,
-        "xpDelta": 5
-      },
-      "continueLabel": "Keep moving",
-      "nextSceneId": "day3-money-intro"
-    },
-    {
-      "id": "day2-tutoring-resource",
-      "dayId": "day2",
-      "kind": "resource",
-      "title": "Tutoring feels a lot less scary once Alex gets there.",
-      "speaker": "Narrator",
-      "location": "Tutoring center • Late afternoon",
-      "backdrop": "tutoring-room",
-      "body": "Alex books a session, walks in, and finds a regular study room with a tutor and a few other students. Nobody expects a polished explanation.",
-      "cards": [
-        {
-          "title": "Booking it",
-          "body": "Alex uses the tutoring site to find the course, the time, and the format that fits."
-        },
-        {
-          "title": "Walking in",
-          "body": "The room looks like school, not like a tribunal. People are working, asking questions, and comparing notes."
-        },
-        {
-          "title": "What the tutor does",
-          "body": "The tutor asks what is confusing, looks at the quiz and homework, and helps Alex break the problem down."
-        }
-      ],
-      "bullets": [
-        "Bring notes, homework, or even just the problem set that is not clicking.",
-        "It is normal if the first sentence is, 'I do not know where I am stuck.'",
-        "Lots of students use tutoring before they feel ready, not after."
-      ],
-      "badgeId": "tutoring-explorer",
-      "effects": {
-        "confidenceDelta": 15,
-        "xpDelta": 25,
+        "xpDelta": 8,
         "unlockBadgeIds": [
-          "tutoring-explorer"
+          "office-hours-visited"
         ]
       },
-      "ctaLabel": "Open ASU tutoring",
-      "ctaHref": "https://tutoring.asu.edu/about-us",
-      "ctaExternal": true,
-      "continueLabel": "That helps",
-      "nextSceneId": "day3-money-intro"
+      "continueLabel": "Use your free day well",
+      "nextSceneId": "day5-free-day-intro"
     },
     {
-      "id": "day2-office-hours-resource",
-      "dayId": "day2",
-      "kind": "resource",
-      "title": "The email does not need to sound perfect.",
-      "speaker": "Narrator",
-      "location": "Laptop screen • Evening",
-      "backdrop": "inbox",
-      "body": "Alex writes a simple, honest note asking about the quiz and office hours. The professor replies like this question is normal, because it is.",
-      "emailMock": {
-        "subject": "Question about quiz 1 and office hours",
-        "from": "alex@asu.edu",
-        "to": "professor@asu.edu",
-        "body": "Hi Professor, I scored lower than I expected on Quiz 1 and I want to improve before the next one. Could I come to office hours to ask where I went wrong? Thank you, Alex.",
-        "replySubject": "Re: Question about quiz 1 and office hours",
-        "replyFrom": "professor@asu.edu",
-        "replyBody": "Hi Alex, thanks for reaching out. Yes, come by office hours tomorrow and bring your quiz. We can talk through what tripped you up and how to prepare for the next one."
-      },
-      "bullets": [
-        "A short email is enough.",
-        "Office hours are for confusion, not just emergencies.",
-        "Professors expect students to need clarification."
-      ],
-      "badgeId": "office-hours-pro",
-      "effects": {
-        "confidenceDelta": 10,
-        "xpDelta": 20,
-        "unlockBadgeIds": [
-          "office-hours-pro"
-        ]
-      },
-      "ctaLabel": "Open ASU academic support",
-      "ctaHref": "https://tutoring.asu.edu/about-us",
-      "ctaExternal": true,
-      "continueLabel": "Next day",
-      "nextSceneId": "day3-money-intro"
-    },
-    {
-      "id": "day3-money-intro",
-      "dayId": "day3",
-      "kind": "story",
-      "title": "The textbook bill lands badly.",
-      "speaker": "Narrator",
-      "location": "Dorm room • Afternoon",
-      "backdrop": "money-stress",
-      "body": "Alex adds up books, lab fees, and everything that felt small until it stacked. The math starts feeling personal.",
-      "continueLabel": "Keep reading",
-      "nextSceneId": "day3-coaching-choice"
-    },
-    {
-      "id": "day3-coaching-choice",
-      "dayId": "day3",
-      "kind": "choice",
-      "title": "Alex hears about financial coaching.",
-      "speaker": "Friend from the hall",
-      "location": "Dorm stairwell",
-      "backdrop": "money-stress",
-      "body": "\"It is not weird,\" they say. \"They literally help you make sense of the money stuff.\"",
-      "choices": [
-        {
-          "id": "day3-coaching-skip",
-          "label": "\"That's probably not for me.\"",
-          "caption": "Shrink the option before trying it.",
-          "resultSceneId": "day3-coaching-avoid"
-        },
-        {
-          "id": "day3-coaching-open",
-          "label": "\"I'll check it out.\"",
-          "caption": "Give the resource a real look.",
-          "resultSceneId": "day3-coaching-resource"
-        }
-      ]
-    },
-    {
-      "id": "day3-coaching-avoid",
-      "dayId": "day3",
-      "kind": "consequence",
-      "title": "The stress stays vague and heavy.",
-      "speaker": "Narrator",
-      "location": "Dorm room • Evening",
-      "backdrop": "money-stress",
-      "body": "Alex does what a lot of students do: keeps worrying in private and hopes the numbers somehow get gentler on their own.",
-      "effects": {
-        "confidenceDelta": -5,
-        "xpDelta": 5
-      },
-      "continueLabel": "One more thing happens",
-      "nextSceneId": "day3-scholarship-choice"
-    },
-    {
-      "id": "day3-coaching-resource",
-      "dayId": "day3",
-      "kind": "resource",
-      "title": "Money help can be practical, not dramatic.",
-      "speaker": "Narrator",
-      "location": "Financial wellness view • Evening",
-      "backdrop": "money-coaching",
-      "body": "The explainer makes it feel normal: a confidential conversation about budgeting, aid steps, deadlines, and what to do before the stress snowballs.",
-      "cards": [
-        {
-          "title": "What it is",
-          "body": "A place to talk through expenses, timelines, and options without needing to already understand financial aid language."
-        },
-        {
-          "title": "What happens in a session",
-          "body": "Alex would walk through the specific pressure points: books, aid timing, bills, and what questions to ask next."
-        },
-        {
-          "title": "What it is not",
-          "body": "It is not a judgment session and it is not only for crisis. It is just money clarity."
-        }
-      ],
-      "bullets": [
-        "Free guidance is still worth using, even if the problem feels 'not serious enough.'",
-        "Talking early usually creates more options than waiting.",
-        "Money stress counts as school stress."
-      ],
-      "badgeId": "financial-coach-found",
-      "effects": {
-        "confidenceDelta": 10,
-        "xpDelta": 20,
-        "unlockBadgeIds": [
-          "financial-coach-found"
-        ]
-      },
-      "ctaLabel": "Open ASU money support",
-      "ctaHref": "https://tuition.asu.edu/financial-aid/fafsa",
-      "ctaExternal": true,
-      "continueLabel": "Keep going",
-      "nextSceneId": "day3-scholarship-choice"
-    },
-    {
-      "id": "day3-scholarship-choice",
-      "dayId": "day3",
-      "kind": "choice",
-      "title": "A scholarship flyer catches Alex's eye.",
-      "speaker": "Narrator",
-      "location": "Memorial Union table",
-      "backdrop": "scholarship-wall",
-      "body": "The default thought arrives instantly: this is probably for someone more prepared, more impressive, more anything.",
-      "choices": [
-        {
-          "id": "day3-scholarship-nope",
-          "label": "\"I probably don't qualify.\"",
-          "caption": "Assume no and move on.",
-          "resultSceneId": "day3-scholarship-avoid"
-        },
-        {
-          "id": "day3-scholarship-check",
-          "label": "\"Let me check if I'm eligible.\"",
-          "caption": "Trade certainty for curiosity.",
-          "resultSceneId": "day3-scholarship-resource"
-        }
-      ]
-    },
-    {
-      "id": "day3-scholarship-avoid",
-      "dayId": "day3",
-      "kind": "consequence",
-      "title": "Alex walks past it.",
-      "speaker": "Narrator",
-      "location": "Memorial Union",
-      "backdrop": "scholarship-wall",
-      "body": "The game reveals something Alex never gets to see in the moment: three scholarships actually matched. They stay invisible because Alex never checked.",
-      "effects": {
-        "confidenceDelta": -10,
-        "xpDelta": 5
-      },
-      "continueLabel": "Next day",
-      "nextSceneId": "day4-breakdown-intro"
-    },
-    {
-      "id": "day3-scholarship-resource",
-      "dayId": "day3",
-      "kind": "resource",
-      "title": "Checking is better than assuming no.",
-      "speaker": "Alex",
-      "location": "Scholarship checker • On laptop",
-      "backdrop": "laptop-gold",
-      "body": "Alex opens the checker instead of self-rejecting. Even finding only a few matches feels better than letting guesswork decide.",
-      "cards": [
-        {
-          "title": "Why this matters",
-          "body": "Scholarship opportunities often hide behind filters, deadlines, and confidence gaps more than qualifications."
-        },
-        {
-          "title": "What Alex learns",
-          "body": "Eligibility is often broader than the inner critic says it is."
-        }
-      ],
-      "embedScholarshipChecker": true,
-      "badgeId": "scholarship-hunter",
-      "effects": {
-        "confidenceDelta": 15,
-        "xpDelta": 25,
-        "unlockBadgeIds": [
-          "scholarship-hunter"
-        ]
-      },
-      "ctaLabel": "Open scholarship checker page",
-      "ctaHref": "/scholarships",
-      "ctaExternal": false,
-      "continueLabel": "Move to day 4",
-      "nextSceneId": "day4-breakdown-intro"
-    },
-    {
-      "id": "day4-breakdown-intro",
-      "dayId": "day4",
-      "kind": "story",
-      "title": "The week catches up all at once.",
-      "speaker": "Narrator",
-      "location": "Dorm room • 1:14 a.m.",
-      "backdrop": "midnight-room",
-      "body": "Midterms are coming. Alex is not sleeping well and has quietly started thinking about dropping a class just to breathe.",
-      "continueLabel": "Keep going",
-      "nextSceneId": "day4-counseling-choice"
-    },
-    {
-      "id": "day4-counseling-choice",
-      "dayId": "day4",
-      "kind": "choice",
-      "title": "Alex's roommate mentions counseling services.",
-      "speaker": "Roommate",
-      "location": "Dorm room • Late night",
-      "backdrop": "midnight-room",
-      "body": "\"You don't have to be in crisis,\" they say. \"Sometimes it just helps to talk to someone who knows college stress is real.\"",
-      "choices": [
-        {
-          "id": "day4-counseling-deny",
-          "label": "\"I don't need therapy, I'm fine.\"",
-          "caption": "Push it away for now.",
-          "resultSceneId": "day4-counseling-avoid"
-        },
-        {
-          "id": "day4-counseling-open",
-          "label": "\"Maybe I'll just look into it.\"",
-          "caption": "Keep it low-pressure and honest.",
-          "resultSceneId": "day4-counseling-resource"
-        }
-      ]
-    },
-    {
-      "id": "day4-counseling-avoid",
-      "dayId": "day4",
-      "kind": "consequence",
-      "title": "Alex closes the laptop.",
-      "speaker": "Narrator",
-      "location": "Dorm room • Late night",
-      "backdrop": "midnight-room",
-      "body": "Nothing about the overwhelm gets smaller. Alex just has one less option in view while still carrying all of it.",
-      "effects": {
-        "confidenceDelta": -10,
-        "xpDelta": 5
-      },
-      "continueLabel": "Morning comes anyway",
-      "nextSceneId": "day4-advisor-choice"
-    },
-    {
-      "id": "day4-counseling-resource",
-      "dayId": "day4",
-      "kind": "resource",
-      "title": "Counseling does not have to be a last resort.",
-      "speaker": "Narrator",
-      "location": "Counseling services preview",
-      "backdrop": "wellness-room",
-      "body": "Alex learns that a first visit can just be a conversation about stress, sleep, overwhelm, or feeling off. It is not only for emergencies.",
-      "cards": [
-        {
-          "title": "The first conversation",
-          "body": "Mostly questions: what has been feeling hard, what has changed, and what kind of support sounds useful."
-        },
-        {
-          "title": "What Alex does not need",
-          "body": "A perfect explanation, a crisis script, or permission to feel overwhelmed."
-        },
-        {
-          "title": "Why it helps",
-          "body": "Naming the stress out loud can make it feel less like a private flaw and more like something support can actually touch."
-        }
-      ],
-      "bullets": [
-        "Looking into counseling is not the same as committing to something scary.",
-        "It can just be a first conversation.",
-        "Students use it for school pressure, not only severe emergencies."
-      ],
-      "badgeId": "wellness-warrior",
-      "effects": {
-        "confidenceDelta": 10,
-        "xpDelta": 20,
-        "unlockBadgeIds": [
-          "wellness-warrior"
-        ]
-      },
-      "ctaLabel": "Open ASU counseling",
-      "ctaHref": "https://eoss.asu.edu/counseling/about-us",
-      "ctaExternal": true,
-      "continueLabel": "Next scene",
-      "nextSceneId": "day4-advisor-choice"
-    },
-    {
-      "id": "day4-advisor-choice",
-      "dayId": "day4",
-      "kind": "choice",
-      "title": "An advisor email comes in.",
-      "speaker": "Narrator",
-      "location": "Inbox • Morning",
-      "backdrop": "inbox",
-      "body": "It is the kind of message Alex might normally ignore because it sounds official and maybe disappointing.",
-      "choices": [
-        {
-          "id": "day4-advisor-ignore",
-          "label": "Ignore it.",
-          "caption": "Leave the email unopened.",
-          "resultSceneId": "day4-advisor-ignore-result"
-        },
-        {
-          "id": "day4-advisor-open",
-          "label": "Open it.",
-          "caption": "See what the nudge actually says.",
-          "resultSceneId": "day4-advisor-open-result"
-        }
-      ]
-    },
-    {
-      "id": "day4-advisor-ignore-result",
-      "dayId": "day4",
-      "kind": "consequence",
-      "title": "The unread dot stays there.",
-      "speaker": "Narrator",
-      "location": "Inbox • Morning",
-      "backdrop": "inbox",
-      "body": "Alex avoids one more thing that might have helped. It does not feel like a big decision. Those are often the ones that quietly add up.",
-      "effects": {
-        "confidenceDelta": -5,
-        "xpDelta": 5
-      },
-      "continueLabel": "Finish the week",
-      "nextSceneId": "day5-turnaround"
-    },
-    {
-      "id": "day4-advisor-open-result",
-      "dayId": "day4",
-      "kind": "resource",
-      "title": "The nudge is warmer than Alex expected.",
-      "speaker": "Advisor email",
-      "location": "Inbox • Morning",
-      "backdrop": "inbox-gold",
-      "body": "Instead of sounding punitive, the email sounds normal and specific. It points to tutoring without making Alex feel like a problem to be solved.",
-      "messageMock": {
-        "sender": "ASU Student Support",
-        "title": "A quick note before next week",
-        "body": "Hi Alex. A lot of students in your class use tutoring early, not just after things get bad. If the first quiz felt rough, here is what tutoring actually looks like and how to get started. No pressure."
-      },
-      "bullets": [
-        "Warm nudges work better than scary warnings.",
-        "The goal is to normalize help, not shame students into it.",
-        "Opening one email can reopen several options."
-      ],
-      "effects": {
-        "confidenceDelta": 10,
-        "xpDelta": 15
-      },
-      "ctaLabel": "Open tutoring jump-in",
-      "ctaHref": "/simulate/tutoring",
-      "ctaExternal": false,
-      "continueLabel": "Finish the week",
-      "nextSceneId": "day5-turnaround"
-    },
-    {
-      "id": "day5-turnaround",
+      "id": "day5-free-day-intro",
       "dayId": "day5",
       "kind": "story",
-      "title": "The pressure is still real. The map is what changed.",
+      "title": "No classes today. That is exactly why this matters.",
       "speaker": "Narrator",
-      "location": "Campus sunrise • Day 5",
+      "location": "Dorm desk • Friday morning",
+      "backdrop": "myasu-dashboard",
+      "body": "Free days disappear quickly. This is the moment to clear the first-week admin tasks that can quietly block the rest of the semester if you leave them vague.",
+      "continueLabel": "Open the dashboard",
+      "nextSceneId": "day5-task-choice"
+    },
+    {
+      "id": "day5-task-choice",
+      "dayId": "day5",
+      "kind": "choice",
+      "title": "What do you do with the quiet morning?",
+      "speaker": "You",
+      "location": "MyASU dashboard • Friday",
+      "backdrop": "myasu-dashboard",
+      "body": "Admin screens are rarely fun. They are still easier now than they will be when a deadline is attached.",
+      "choices": [
+        {
+          "id": "day5-task-open",
+          "label": "\"Open MyASU and knock out the priority tasks now.\"",
+          "caption": "Do the small annoying things while they are still small.",
+          "resultSceneId": "day5-task-resource-good"
+        },
+        {
+          "id": "day5-task-delay-choice",
+          "label": "\"Avoid it a little longer because the screen is confusing.\"",
+          "caption": "Keep the stress in the background for now.",
+          "resultSceneId": "day5-task-delay"
+        }
+      ]
+    },
+    {
+      "id": "day5-task-delay",
+      "dayId": "day5",
+      "kind": "consequence",
+      "title": "The uncertainty stays open in the background.",
+      "speaker": "Narrator",
+      "location": "Dorm desk • Friday morning",
+      "backdrop": "myasu-dashboard",
+      "body": "When you avoid MyASU tasks, they do not stop existing. They just sit there waiting until the timing is worse.",
+      "effects": {
+        "confidenceDelta": -10,
+        "xpDelta": 5
+      },
+      "continueLabel": "At least check it once",
+      "nextSceneId": "day5-task-resource-lite"
+    },
+    {
+      "id": "day5-task-resource-good",
+      "dayId": "day5",
+      "kind": "resource",
+      "title": "Small admin tasks feel smaller once they are visible.",
+      "speaker": "Narrator",
+      "location": "MyASU dashboard • Friday",
+      "backdrop": "myasu-dashboard",
+      "body": "You open MyASU, not because you suddenly love paperwork, but because it is easier to handle one task now than five problems later.",
+      "cards": [
+        {
+          "title": "Why this helps",
+          "body": "Priority tasks, holds, and missing forms feel more manageable once they are named and sorted."
+        },
+        {
+          "title": "What to keep nearby",
+          "body": "Your student ID, any requested document names, and a place to write down what still needs follow-up."
+        }
+      ],
+      "taskChecklist": [
+        {
+          "title": "Check Priority Tasks",
+          "detail": "Open the MyASU task list and note anything marked urgent or time-sensitive."
+        },
+        {
+          "title": "Submit missing documents",
+          "detail": "Upload or gather anything tied to residency, financial aid, immunization, or identity verification."
+        },
+        {
+          "title": "Review holds and alerts",
+          "detail": "See whether anything in MyASU could affect registration, billing, or access later."
+        },
+        {
+          "title": "Add due dates to your calendar",
+          "detail": "Pull the first deadlines from Python, Math, and Chemistry into one place you will actually check."
+        },
+        {
+          "title": "Look at next week's schedule once",
+          "detail": "Use the calm day to remind yourself which buildings and rooms are coming next."
+        }
+      ],
+      "bullets": [
+        "Admin work feels academic the moment it starts affecting classes.",
+        "You do not have to finish the whole semester today. You just need to make the next week legible.",
+        "The point is fewer surprises, not perfect control."
+      ],
+      "badgeId": "priority-tasks-handled",
+      "effects": {
+        "confidenceDelta": 15,
+        "xpDelta": 25,
+        "unlockBadgeIds": [
+          "priority-tasks-handled"
+        ]
+      },
+      "continueLabel": "Wrap the week",
+      "nextSceneId": "day5-wrap"
+    },
+    {
+      "id": "day5-task-resource-lite",
+      "dayId": "day5",
+      "kind": "resource",
+      "title": "Even a partial check helps.",
+      "speaker": "Narrator",
+      "location": "MyASU dashboard • Friday",
+      "backdrop": "myasu-dashboard",
+      "body": "You finally open MyASU and realize the screen is annoying, not impossible. A few tasks still need attention, but now you at least know what is waiting.",
+      "taskChecklist": [
+        {
+          "title": "See the urgent items first",
+          "detail": "Start with anything the dashboard marks as time-sensitive."
+        },
+        {
+          "title": "Write down one next action",
+          "detail": "If you cannot solve it today, at least leave yourself a plain-language note about what to do next."
+        },
+        {
+          "title": "Look at next week's class locations",
+          "detail": "Even one glance at the building names makes Monday easier."
+        }
+      ],
+      "bullets": [
+        "Partial progress is still progress.",
+        "The screen gets less intimidating once it has been opened once.",
+        "You can come back to the rest with more context."
+      ],
+      "continueLabel": "Wrap the week",
+      "nextSceneId": "day5-wrap"
+    },
+    {
+      "id": "day5-wrap",
+      "dayId": "day5",
+      "kind": "story",
+      "title": "Week one did not get smaller. You got more context.",
+      "speaker": "Narrator",
+      "location": "Tempe campus • Friday evening",
       "backdrop": "sunrise",
-      "body": "College did not suddenly get easy. But depending on the week Alex just had, the campus now feels either slightly more navigable or much lonelier.",
-      "continueLabel": "See Alex's ending",
+      "body": "The buildings are still big. The systems are still new. But depending on the choices you made, ASU now feels either a little more legible or still mostly opaque.",
+      "continueLabel": "See your week-one result",
       "nextSceneId": "day5-ending"
     },
     {
@@ -777,9 +1047,9 @@
       "kind": "ending",
       "title": "End of week one",
       "speaker": "Narrator",
-      "location": "Alex's first week at ASU",
+      "location": "Your first week at ASU",
       "backdrop": "sunrise",
-      "body": "The ending depends on what Alex chose to try, avoid, and trust during the week."
+      "body": "Your week-one result depends on how often you checked, asked, and showed up before confusion had to do all the talking."
     }
   ]
 }

@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My ASU - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --asu-maroon: #8C1D40;
+            --asu-gold: #FFC627;
+            --light-gray: #f5f5f5;
+            --border-gray: #ddd;
+            --dark-text: #333;
+            --medium-gray: #888;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        /* Utility Bar */
+        .utility-bar {
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-gray);
+            padding: 8px 24px;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        .utility-bar a {
+            color: var(--asu-maroon);
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .utility-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* Header */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-gray);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .asu-logo {
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .asu-logo-fork {
+            color: var(--asu-gold);
+            font-size: 20px;
+            margin-right: 4px;
+        }
+
+        .asu-logo-text {
+            color: var(--asu-maroon);
+        }
+
+        .asu-logo-sub {
+            color: var(--medium-gray);
+            font-size: 11px;
+            margin-top: -2px;
+        }
+
+        .my-asu-heading {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--dark-text);
+            font-size: 14px;
+        }
+
+        /* Primary Navigation */
+        .primary-nav {
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-gray);
+            padding: 0;
+            display: flex;
+            gap: 0;
+        }
+
+        .primary-nav a {
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--dark-text);
+            font-size: 14px;
+            border-bottom: 3px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .primary-nav a:hover {
+            background-color: var(--light-gray);
+        }
+
+        .primary-nav a.active {
+            border-bottom-color: var(--asu-maroon);
+            color: var(--asu-maroon);
+            font-weight: 600;
+        }
+
+        /* Quick Links Bar */
+        .quick-links {
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-gray);
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+
+        .quick-links a {
+            color: var(--asu-maroon);
+            text-decoration: none;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .quick-links a:hover {
+            text-decoration: underline;
+        }
+
+        .quick-links-badge {
+            background-color: var(--asu-maroon);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+
+        .quick-links-spacer {
+            flex: 1;
+        }
+
+        .customize-btn {
+            background-color: var(--light-gray);
+            border: 1px solid var(--border-gray);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--dark-text);
+        }
+
+        .customize-btn:hover {
+            background-color: #eee;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 24px auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: #fff;
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark-text);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-icon {
+            cursor: pointer;
+            color: var(--medium-gray);
+            font-size: 14px;
+        }
+
+        /* Semester Tabs */
+        .semester-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-gray);
+            overflow-x: auto;
+        }
+
+        .semester-tabs button {
+            padding: 8px 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--medium-gray);
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .semester-tabs button.active {
+            color: var(--asu-maroon);
+            border-bottom-color: var(--asu-maroon);
+            font-weight: 600;
+        }
+
+        /* Class List */
+        .class-list {
+            list-style: none;
+            margin-bottom: 12px;
+        }
+
+        .class-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .class-item:last-child {
+            border-bottom: none;
+        }
+
+        .class-info {
+            flex: 1;
+        }
+
+        .class-name {
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
+        .class-instructor {
+            font-size: 12px;
+            color: var(--medium-gray);
+            margin-top: 2px;
+        }
+
+        .class-icon {
+            width: 24px;
+            height: 24px;
+            background-color: var(--light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--medium-gray);
+            margin-left: 8px;
+        }
+
+        .view-schedule-btn {
+            background-color: var(--asu-maroon);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .view-schedule-btn:hover {
+            background-color: #6b1531;
+        }
+
+        .card-links {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .card-links a {
+            color: var(--asu-maroon);
+            text-decoration: none;
+        }
+
+        .card-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Agenda */
+        .agenda-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .agenda-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .agenda-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--asu-maroon);
+            font-size: 13px;
+            padding: 4px 8px;
+        }
+
+        .agenda-event {
+            padding: 8px 0;
+            font-size: 13px;
+            color: var(--dark-text);
+        }
+
+        /* Accordion */
+        .accordion-item {
+            border-bottom: 1px solid var(--border-gray);
+            padding: 12px 0;
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 0;
+            font-size: 13px;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            color: var(--asu-maroon);
+        }
+
+        .accordion-toggle {
+            color: var(--medium-gray);
+            font-size: 14px;
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 8px 0;
+            font-size: 12px;
+            color: var(--medium-gray);
+            line-height: 1.4;
+        }
+
+        .accordion-content.show {
+            display: block;
+        }
+
+        /* Tabs */
+        .tab-buttons {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border-gray);
+            margin-bottom: 12px;
+        }
+
+        .tab-buttons button {
+            padding: 8px 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--medium-gray);
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab-buttons button.active {
+            color: var(--asu-maroon);
+            border-bottom-color: var(--asu-maroon);
+            font-weight: 600;
+        }
+
+        /* Right Sidebar */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== SUN BUDDY FEATURE ===== */
+
+        /* Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.3); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        @keyframes buddyBounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-12px); }
+        }
+
+        @keyframes bubblePop {
+            from { transform: scale(0.7); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        @keyframes shimmer {
+            0%   { transform: translateX(-100%); }
+            60%  { transform: translateX(100%);  }
+            100% { transform: translateX(100%);  }
+        }
+
+        @keyframes levelUpSpin {
+            0%   { transform: rotate(0deg) scale(1); }
+            50%  { transform: rotate(180deg) scale(1.4); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* ===== FIRST LOGIN POPUP ===== */
+        .fl-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .fl-overlay.hidden { display: none; }
+
+        .fl-modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px 48px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: popIn 0.45s cubic-bezier(0.34,1.56,0.64,1);
+            border-top: 6px solid var(--asu-gold);
+        }
+
+        .fl-sun-buddy-char {
+            animation: buddyBounce 1.8s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .fl-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--asu-maroon);
+            margin: 12px 0 6px;
+        }
+
+        .fl-subtitle {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+
+        .fl-reward-row {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        .fl-badge-card, .fl-cookie-card {
+            border: 2px solid var(--asu-gold);
+            border-radius: 10px;
+            padding: 16px 24px;
+            text-align: center;
+            min-width: 110px;
+            background: linear-gradient(135deg, #fffbf0, #fff8e1);
+        }
+
+        .fl-badge-icon, .fl-cookie-icon { font-size: 36px; }
+
+        .fl-badge-label, .fl-cookie-label {
+            font-weight: 600;
+            color: var(--asu-maroon);
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .fl-badge-sub, .fl-cookie-count {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .fl-cookie-count {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--asu-maroon);
+        }
+
+        .fl-btn-awesome {
+            background: var(--asu-maroon);
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .fl-btn-awesome:hover {
+            background: #6b1531;
+            transform: scale(1.03);
+        }
+
+        /* ===== TUTORIAL OVERLAY ===== */
+        .tut-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            pointer-events: none;
+        }
+
+        .tut-backdrop {
+            display: none;
+        }
+
+        .tut-spotlight {
+            position: fixed;
+            pointer-events: none;
+            border-radius: 6px;
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.72);
+            z-index: 8001;
+            outline: 3px solid var(--asu-gold);
+            outline-offset: 3px;
+        }
+
+        .tut-panel {
+            position: fixed;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            z-index: 8002;
+            pointer-events: all;
+            transition: all 0.35s ease;
+            max-width: 360px;
+        }
+
+        .tut-buddy-wrap {
+            flex-shrink: 0;
+        }
+
+        .tut-buddy-char {
+            display: block;
+            animation: buddyBounce 1.8s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+
+        .tut-bubble {
+            background: #fff;
+            border-radius: 12px 12px 12px 0;
+            padding: 16px 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            border: 2px solid var(--asu-gold);
+            min-width: 220px;
+            animation: bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        .tut-msg {
+            font-size: 14px;
+            color: var(--dark-text);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .tut-btn-row {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .tut-btn {
+            padding: 7px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+            pointer-events: all;
+        }
+
+        .tut-btn-skip {
+            background: transparent;
+            color: #888;
+            border: 1px solid #ddd;
+        }
+
+        .tut-btn-skip:hover { background: #f0f0f0; }
+
+        .tut-btn-next {
+            background: var(--asu-maroon);
+            color: #fff;
+        }
+
+        .tut-btn-next:hover {
+            background: #6b1531;
+            transform: scale(1.04);
+        }
+
+        /* Sun Buddy Nav Tab gold shimmer */
+        #sunBuddyNavTab {
+            position: relative;
+            overflow: hidden;
+        }
+
+        #sunBuddyNavTab::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,198,39,0.35) 50%, transparent 100%);
+            transform: translateX(-100%);
+            animation: shimmer 2.8s ease-in-out infinite;
+        }
+
+        /* ===== SUN BUDDY DASHBOARD ===== */
+        .sb-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .sb-dashboard { grid-template-columns: 1fr; }
+        }
+
+        /* My Buddy section */
+        .sb-buddy-body {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .sb-buddy-avatar-wrap { text-align: center; }
+
+        .sb-buddy-avatar {
+            display: block;
+            animation: buddyBounce 2s ease-in-out infinite;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .sb-buddy-avatar:active { transform: scale(1.2) rotate(10deg); }
+
+        .sb-buddy-level-label {
+            font-weight: 700;
+            color: var(--asu-maroon);
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .sb-buddy-xp-bar {
+            width: 140px;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0 auto 4px;
+        }
+
+        .sb-buddy-xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--asu-maroon), var(--asu-gold));
+            border-radius: 5px;
+            transition: width 0.6s ease;
+        }
+
+        .sb-buddy-xp-label {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .sb-buddy-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 8px;
+        }
+
+        .sb-btn-gold {
+            background: var(--asu-gold);
+            color: var(--asu-maroon);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .sb-btn-gold:hover { background: #e6b020; transform: scale(1.03); }
+
+        .sb-btn-maroon {
+            background: var(--asu-maroon);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+
+        .sb-btn-maroon:hover { background: #6b1531; }
+
+        .sb-feed-msg {
+            font-size: 12px;
+            color: var(--asu-maroon);
+            font-weight: 600;
+            min-height: 16px;
+            transition: opacity 0.4s;
+        }
+
+        /* NFT Badges Grid */
+        .sb-badges-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .sb-badge {
+            border: 2px solid var(--border-gray);
+            border-radius: 10px;
+            padding: 14px 8px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: default;
+        }
+
+        .sb-badge.earned {
+            border-color: var(--asu-gold);
+            background: linear-gradient(135deg, #fffbf0, #fff8e1);
+            box-shadow: 0 0 12px rgba(255,198,39,0.4);
+        }
+
+        .sb-badge:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        .sb-badge-icon { font-size: 28px; }
+        .sb-badge-name { font-size: 11px; font-weight: 600; color: var(--dark-text); margin-top: 6px; }
+        .sb-badge-status { font-size: 10px; color: #aaa; margin-top: 2px; }
+        .sb-badge-status.earned-label { color: var(--asu-maroon); font-weight: 700; }
+
+        /* Sun Cookies */
+        .sb-cookie-balance-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .sb-cookie-big {
+            font-size: 52px;
+            font-weight: 800;
+            color: var(--asu-maroon);
+            line-height: 1;
+        }
+
+        .sb-cookie-unit {
+            font-size: 16px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .sb-cookie-history-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sb-cookie-history {
+            list-style: none;
+        }
+
+        .sb-cookie-history li {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border-gray);
+            font-size: 13px;
+            color: var(--dark-text);
+        }
+
+        .sb-cookie-history li:last-child { border-bottom: none; }
+
+        .sb-cookie-earn { color: #2a7a2a; font-weight: 700; }
+
+        /* Tasks List */
+        .sb-task-list { list-style: none; }
+
+        .sb-task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-gray);
+            font-size: 13px;
+        }
+
+        .sb-task-item:last-child { border-bottom: none; }
+
+        .sb-task-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .sb-task-icon.done { background: #e8f5e9; }
+        .sb-task-icon.todo { background: #f5f5f5; }
+
+        .sb-task-info { flex: 1; }
+        .sb-task-name { font-weight: 500; }
+        .sb-task-reward { font-size: 11px; color: #888; margin-top: 2px; }
+
+        .sb-task-complete-btn {
+            background: var(--asu-gold);
+            color: var(--asu-maroon);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+
+        .sb-task-complete-btn:hover { background: #e6b020; }
+        .sb-task-complete-btn:disabled {
+            background: #ddd;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Utility Bar -->
+    <div class="utility-bar">
+        <a href="#">ASU Home</a>
+        <a href="#">My ASU</a>
+        <a href="#">Colleges and Schools</a>
+        <a href="#">Chirag (Sign Out)</a>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <div class="asu-logo">
+                <div><span class="asu-logo-fork">🔱</span><span class="asu-logo-text">Arizona State University</span></div>
+                <div class="asu-logo-sub">Your Future. Your Way.</div>
+            </div>
+            <div class="my-asu-heading">My ASU</div>
+        </div>
+        <div class="user-menu">
+            Chirag Manjeshwar ▾
+        </div>
+    </div>
+
+    <!-- Primary Navigation -->
+    <div class="primary-nav" id="primaryNav">
+        <a href="#" class="active" onclick="showDashboard(event)">Home</a>
+        <a href="#" onclick="showDashboard(event)">Finances</a>
+        <a href="#" onclick="showDashboard(event)">Campus Services</a>
+        <a href="#" onclick="showDashboard(event)">Profile</a>
+        <a href="#" onclick="showDashboard(event)">Help</a>
+        <a href="#" id="sunBuddyNavTab" onclick="showSunBuddyPage(event)">Sun Buddy 🌞</a>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="quick-links">
+        <a href="#">Gmail <span class="quick-links-badge">500</span></a>
+        <a href="#">Canvas</a>
+        <a href="#">Google Drive</a>
+        <a href="#">ASU Library</a>
+        <a href="#">My Apps</a>
+        <a href="#">Calendar</a>
+        <a href="#">Clubs and Orgs</a>
+        <a href="#">OneDrive</a>
+        <a href="#">ASU Dropbox</a>
+        <a href="#">My Files (AFS)</a>
+        <a href="#">Zoom</a>
+        <div class="quick-links-spacer"></div>
+        <button class="customize-btn">✏ Customize</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sun Buddy Dashboard Page (hidden until tab clicked) -->
+        <div id="sunBuddyPage" style="display:none; grid-column: 1 / -1;">
+            <div class="sb-dashboard">
+
+                <!-- Section 1: My Buddy -->
+                <div id="sb-section-buddy" class="card sb-buddy-card">
+                    <div class="card-title">My Buddy</div>
+                    <div class="sb-buddy-body">
+                        <div class="sb-buddy-avatar-wrap">
+                            <img id="sbBuddyChar" src="sun.gif" alt="Sun Buddy" class="sb-buddy-avatar" style="width: 80px; height: 80px; display: block;">
+                            <div class="sb-buddy-levelbar-wrap">
+                                <div class="sb-buddy-level-label">Level <span id="sbLevel">1</span></div>
+                                <div class="sb-buddy-xp-bar">
+                                    <div id="sbXpFill" class="sb-buddy-xp-fill" style="width:20%"></div>
+                                </div>
+                                <div class="sb-buddy-xp-label"><span id="sbXp">10</span> / 50 XP</div>
+                            </div>
+                        </div>
+                        <div class="sb-buddy-actions">
+                            <button onclick="feedBuddy()" class="sb-btn-gold" id="sbFeedBtn">
+                                🍪 Feed (costs 5 cookies)
+                            </button>
+                            <button onclick="pinBadge()" class="sb-btn-maroon" id="sbPinBtn">
+                                📌 Pin Badge
+                            </button>
+                            <div id="sbFeedMsg" class="sb-feed-msg"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: NFT Badges -->
+                <div id="sb-section-badges" class="card">
+                    <div class="card-title">NFT Badges</div>
+                    <div class="sb-badges-grid">
+                        <!-- Earned badge -->
+                        <div class="sb-badge earned" title="First Login">
+                            <div class="sb-badge-icon">🎓</div>
+                            <div class="sb-badge-name">First Login</div>
+                            <div class="sb-badge-status earned-label">Earned!</div>
+                        </div>
+                        <!-- Locked badges -->
+                        <div class="sb-badge locked" title="Profile Complete">
+                            <div class="sb-badge-icon">🔒</div>
+                            <div class="sb-badge-name">Profile Pro</div>
+                            <div class="sb-badge-status">Locked</div>
+                        </div>
+                        <div class="sb-badge locked" title="Attend Advising">
+                            <div class="sb-badge-icon">🔒</div>
+                            <div class="sb-badge-name">Advising Ace</div>
+                            <div class="sb-badge-status">Locked</div>
+                        </div>
+                        <div class="sb-badge locked" title="Join a Club">
+                            <div class="sb-badge-icon">🔒</div>
+                            <div class="sb-badge-name">Club Star</div>
+                            <div class="sb-badge-status">Locked</div>
+                        </div>
+                        <div class="sb-badge locked" title="Perfect Attendance">
+                            <div class="sb-badge-icon">🔒</div>
+                            <div class="sb-badge-name">Attendance Hero</div>
+                            <div class="sb-badge-status">Locked</div>
+                        </div>
+                        <div class="sb-badge locked" title="Dean's List">
+                            <div class="sb-badge-icon">🔒</div>
+                            <div class="sb-badge-name">Dean's List</div>
+                            <div class="sb-badge-status">Locked</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Sun Cookies -->
+                <div id="sb-section-cookies" class="card sb-cookies-card">
+                    <div class="card-title">Sun Cookies 🍪</div>
+                    <div class="sb-cookie-balance-row">
+                        <span class="sb-cookie-big" id="sbCookieDisplay">50</span>
+                        <span class="sb-cookie-unit">cookies</span>
+                    </div>
+                    <div class="sb-cookie-history-title">Recent Earnings</div>
+                    <ul class="sb-cookie-history" id="sbCookieHistory">
+                        <!-- Populated by JS from localStorage history array -->
+                    </ul>
+                </div>
+
+                <!-- Section 4: Tasks -->
+                <div id="sb-section-tasks" class="card">
+                    <div class="card-title">Tasks — Earn Badges & Cookies</div>
+                    <ul class="sb-task-list" id="sbTaskList">
+                        <!-- Each item rendered by JS from taskData array -->
+                    </ul>
+                </div>
+
+            </div><!-- .sb-dashboard -->
+        </div><!-- #sunBuddyPage -->
+
+        <!-- Left Column -->
+        <div class="left-column">
+            <!-- My Classes -->
+            <div class="card">
+                <div class="card-title">My Classes</div>
+
+                <div class="semester-tabs">
+                    <button>Spring '25</button>
+                    <button>Fall '24</button>
+                    <button class="active">Spring '26</button>
+                    <button>Summer '26</button>
+                    <button>Fall '25</button>
+                    <button>All Semesters ▾</button>
+                </div>
+
+                <ul class="class-list">
+                    <li class="class-item">
+                        <div class="class-info">
+                            <div class="class-name">CSE 573 Semantic Web Mining</div>
+                            <div class="class-instructor">Davidou</div>
+                        </div>
+                        <div class="class-icon">👤</div>
+                    </li>
+                    <li class="class-item">
+                        <div class="class-info">
+                            <div class="class-name">CSE 384 Topic: Curricular Practical Training</div>
+                            <div class="class-instructor">Shrivastava</div>
+                        </div>
+                        <div class="class-icon">👤</div>
+                    </li>
+                </ul>
+
+                <button class="view-schedule-btn">View My Schedule</button>
+
+                <div class="card-links">
+                    <a href="#">Registration</a>
+                    <a href="#">Class Search</a>
+                    <a href="#">Books</a>
+                    <a href="#">Grades and Transcripts</a>
+                </div>
+            </div>
+
+            <!-- My Agenda -->
+            <div class="card">
+                <div class="card-title">
+                    My Agenda
+                    <span class="card-icon">⚙</span>
+                </div>
+
+                <div class="agenda-header">
+                    <div>Friday, April 3, 2026</div>
+                    <div class="agenda-nav">
+                        <button>◀</button>
+                        <button>Today</button>
+                        <button>▶</button>
+                    </div>
+                </div>
+
+                <div class="agenda-event">
+                    CSE 584 Internship
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="right-column">
+            <!-- Priority Tasks -->
+            <div class="card">
+                <div class="card-title">
+                    Priority Tasks
+                    <span class="card-icon">⚙</span>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Find Destination Survey</span>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content"></div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Getting Ready to Graduate</span>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content"></div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Optional Practical Training</span>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content"></div>
+                </div>
+            </div>
+
+            <!-- My Programs -->
+            <div class="card">
+                <div class="card-title">
+                    My Programs
+                    <span class="card-icon">⚙</span>
+                </div>
+
+                <div class="tab-buttons">
+                    <button class="active">Programs</button>
+                    <button>Graduation</button>
+                    <button>Find Programs</button>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Computer Science (MS)</span>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content"></div>
+                </div>
+            </div>
+
+            <!-- Academic Support Team -->
+            <div class="card">
+                <div class="card-title">
+                    Academic Support Team
+                    <span class="card-icon">⚙</span>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Academic Advising</span>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content">Degree requirements, graduation progress, and course registration.</div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Committee Members</span>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content">View your defense committee members.</div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Tutoring</span>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content">Find assistance with writing or a specific subject area.</div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Ask a Librarian</span>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First-Login Popup Overlay -->
+    <div id="firstLoginOverlay" class="fl-overlay">
+        <div class="fl-modal">
+            <div class="fl-sun-buddy-char"><img src="sun.gif" alt="Sun Buddy" style="width: 72px; height: 72px; display: block;"></div>
+            <h2 class="fl-title">Welcome, Chirag!</h2>
+            <p class="fl-subtitle">You just earned your first rewards!</p>
+
+            <!-- NFT Badge card -->
+            <div class="fl-reward-row">
+                <div class="fl-badge-card">
+                    <div class="fl-badge-icon">🎓</div>
+                    <div class="fl-badge-label">First Login</div>
+                    <div class="fl-badge-sub">NFT Badge</div>
+                </div>
+
+                <!-- Sun Cookies reward -->
+                <div class="fl-cookie-card">
+                    <div class="fl-cookie-icon">🍪</div>
+                    <div class="fl-cookie-count">+50</div>
+                    <div class="fl-cookie-label">Sun Cookies</div>
+                </div>
+            </div>
+
+            <button id="firstLoginDismiss" class="fl-btn-awesome">Awesome! 🎉</button>
+        </div>
+    </div>
+
+    <!-- Tutorial Overlay (shared for both tutorial sequences) -->
+    <div id="tutorialOverlay" class="tut-overlay" style="display:none;">
+        <!-- Dark full-page backdrop -->
+        <div class="tut-backdrop"></div>
+
+        <!-- Spotlight ring: absolutely positioned to surround the highlighted element -->
+        <div id="tutorialSpotlight" class="tut-spotlight"></div>
+
+        <!-- Sun Buddy speech bubble panel -->
+        <div id="tutorialPanel" class="tut-panel">
+            <div class="tut-buddy-wrap">
+                <img src="sun.gif" alt="Sun Buddy" class="tut-buddy-char" style="width: 56px; height: 56px; display: block;">
+            </div>
+            <div class="tut-bubble">
+                <p id="tutorialMessage" class="tut-msg"></p>
+                <div class="tut-btn-row">
+                    <button id="tutSkipBtn"  class="tut-btn tut-btn-skip">Skip</button>
+                    <button id="tutNextBtn"  class="tut-btn tut-btn-next">Next →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAccordion(element) {
+            const content = element.nextElementSibling;
+            content.classList.toggle('show');
+        }
+
+        /* ===== SUN BUDDY STATE MANAGEMENT ===== */
+        const STATE_KEY = 'sunBuddyState';
+        const BADGE_EMOJI_MAP = {
+            'first-login': '🎓',
+            'profile-pro': '👤',
+            'advising-ace': '📚',
+            'club-star': '⭐',
+            'attendance-hero': '✅',
+            'deans-list': '🏆'
+        };
+
+        const TASKS = [
+            { id:'complete-profile', name:'Complete your profile',       reward: '10 cookies + Profile Pro badge', cookies:10, badge:'profile-pro'   },
+            { id:'attend-advising',  name:'Attend academic advising',    reward: '15 cookies + Advising Ace badge', cookies:15, badge:'advising-ace'  },
+            { id:'join-club',        name:'Join a club or organization', reward: '10 cookies + Club Star badge',    cookies:10, badge:'club-star'      },
+            { id:'perfect-week',     name:'Attend all classes this week',reward: '20 cookies + Attendance Hero badge', cookies:20, badge:'attendance-hero' },
+            { id:'deans-list',       name:"Make the Dean's List",        reward: "25 cookies + Dean's List badge",  cookies:25, badge:'deans-list'    },
+        ];
+
+        function loadState() {
+            const raw = localStorage.getItem(STATE_KEY);
+            if (raw) return JSON.parse(raw);
+            return {
+                cookies: 50,
+                buddyLevel: 1,
+                buddyXp: 10,
+                earnedBadges: ['first-login'],
+                completedTasks: [],
+                cookieHistory: [
+                    { label: 'First Login Bonus', amount: 50, date: 'Apr 3, 2026' }
+                ],
+                pinnedBadge: 'first-login'
+            };
+        }
+
+        function saveState(state) {
+            localStorage.setItem(STATE_KEY, JSON.stringify(state));
+        }
+
+        let state = loadState();
+
+        /* ===== TUTORIAL STEP DEFINITIONS ===== */
+        const MAIN_TUTORIAL_STEPS = [
+            {
+                targetId: 'primaryNav',
+                message: "Welcome! I'm Sun Buddy, your ASU companion! Let me show you around. 👋",
+                panelPosition: 'below'
+            },
+            {
+                targetId: 'sunBuddyNavTab',
+                message: "Click here to visit your Sun Buddy HQ and explore rewards! 🌟",
+                panelPosition: 'below',
+                isLastStep: true
+            }
+        ];
+
+        const TAB_TUTORIAL_STEPS = [
+            {
+                targetId: 'sb-section-buddy',
+                message: "This is your Sun Buddy! Feed it cookies to level it up! 🍪",
+                panelPosition: 'below'
+            },
+            {
+                targetId: 'sb-section-badges',
+                message: "These are your NFT badges. You earned your first one for logging in! 🎓",
+                panelPosition: 'below'
+            },
+            {
+                targetId: 'sb-section-cookies',
+                message: "Sun Cookies are your currency. Complete tasks to earn more! 💰",
+                panelPosition: 'right'
+            },
+            {
+                targetId: 'sb-section-tasks',
+                message: "Complete these tasks to earn badges and cookies! ✅",
+                panelPosition: 'right',
+                isLastStep: true
+            }
+        ];
+
+        /* ===== TUTORIAL ENGINE ===== */
+        let currentTutSteps  = [];
+        let currentTutStep   = 0;
+        let tutorialCallback = null;
+
+        function startTutorial(steps, onFinish) {
+            currentTutSteps  = steps;
+            currentTutStep   = 0;
+            tutorialCallback = onFinish || null;
+            document.getElementById('tutorialOverlay').style.display = 'block';
+
+            // Add event listeners to update position on scroll/resize
+            window.addEventListener('scroll', updateTutorialPosition);
+            window.addEventListener('resize', updateTutorialPosition);
+
+            renderTutorialStep();
+        }
+
+        function renderTutorialStep() {
+            const step = currentTutSteps[currentTutStep];
+            const target = document.getElementById(step.targetId);
+            if (!target) { endTutorial(); return; }
+
+            // Scroll target into view with generous delay for smooth scrolling
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            setTimeout(() => {
+                // Position spotlight and panel multiple times to ensure proper alignment
+                positionSpotlight(target);
+                positionPanel(target, step.panelPosition);
+                // Re-position after panel renders
+                setTimeout(() => {
+                    positionSpotlight(target);
+                    positionPanel(target, step.panelPosition);
+                }, 100);
+            }, 500);
+
+            document.getElementById('tutorialMessage').textContent = step.message;
+
+            const nextBtn = document.getElementById('tutNextBtn');
+            nextBtn.textContent = step.isLastStep ? "Got it! ✓" : "Next →";
+        }
+
+        function positionSpotlight(target) {
+            const rect = target.getBoundingClientRect();
+            const pad  = 12;
+            const spot = document.getElementById('tutorialSpotlight');
+
+            // Spotlight is position:fixed, so use viewport coordinates directly (no scroll offset)
+            spot.style.top    = (rect.top  - pad) + 'px';
+            spot.style.left   = (rect.left - pad) + 'px';
+            spot.style.width  = (rect.width  + pad * 2) + 'px';
+            spot.style.height = (rect.height + pad * 2) + 'px';
+        }
+
+        function positionPanel(target, position) {
+            const rect  = target.getBoundingClientRect();
+            const panel = document.getElementById('tutorialPanel');
+            const vpW   = window.innerWidth;
+            const vpH   = window.innerHeight;
+            const PANEL_W = 360;
+
+            let top, left;
+
+            // Panel is position:fixed, so use viewport coordinates directly (no scroll offset)
+            if (position === 'below') {
+                top  = rect.bottom + 20;
+                left = Math.max(16, Math.min(rect.left, vpW - PANEL_W - 16));
+            } else if (position === 'above') {
+                top  = rect.top - 160;
+                left = Math.max(16, Math.min(rect.left, vpW - PANEL_W - 16));
+            } else if (position === 'right') {
+                // For right position, try placing to the right of target, but fallback to left if needed
+                if (rect.right + 20 + PANEL_W < vpW) {
+                    left = rect.right + 20;
+                } else {
+                    left = Math.max(16, rect.left - PANEL_W - 20);
+                }
+                top  = rect.top;
+            } else {
+                // left position
+                left = rect.left - PANEL_W - 20;
+                top  = rect.top;
+            }
+
+            // Clamp to viewport with margins
+            top  = Math.max(10, Math.min(top, vpH - 180));
+            left = Math.max(10, Math.min(left, vpW - PANEL_W - 10));
+
+            panel.style.top  = top  + 'px';
+            panel.style.left = left + 'px';
+        }
+
+        function tutorialNext() {
+            currentTutStep++;
+            if (currentTutStep >= currentTutSteps.length) {
+                endTutorial();
+            } else {
+                const bubble = document.querySelector('.tut-bubble');
+                bubble.style.animation = 'none';
+                void bubble.offsetWidth;
+                bubble.style.animation = '';
+                renderTutorialStep();
+            }
+        }
+
+        function tutorialSkip() { endTutorial(); }
+
+        function endTutorial() {
+            document.getElementById('tutorialOverlay').style.display = 'none';
+            window.removeEventListener('scroll', updateTutorialPosition);
+            window.removeEventListener('resize', updateTutorialPosition);
+            if (tutorialCallback) tutorialCallback();
+        }
+
+        function updateTutorialPosition() {
+            if (currentTutSteps.length === 0) return;
+            const step = currentTutSteps[currentTutStep];
+            const target = document.getElementById(step.targetId);
+            if (target) {
+                positionSpotlight(target);
+                positionPanel(target, step.panelPosition);
+            }
+        }
+
+        /* ===== POPUP FLOW ===== */
+        function dismissFirstLoginPopup() {
+            const overlay = document.getElementById('firstLoginOverlay');
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.3s';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                startMainTutorial();
+            }, 300);
+        }
+
+        function startMainTutorial() {
+            startTutorial(MAIN_TUTORIAL_STEPS, () => {
+                // Tutorial complete - no state needed since it plays every time
+            });
+        }
+
+        /* ===== PAGE NAVIGATION ===== */
+        function showSunBuddyPage(event) {
+            event.preventDefault();
+
+            document.querySelectorAll('.primary-nav a').forEach(a => a.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            document.querySelectorAll('.left-column, .right-column').forEach(el => el.style.display = 'none');
+            document.getElementById('sunBuddyPage').style.display = 'block';
+
+            setTimeout(() => {
+                startTutorial(TAB_TUTORIAL_STEPS, () => {
+                    // Tutorial complete - no state needed since it plays every time
+                });
+            }, 400);
+        }
+
+        function showDashboard(event) {
+            event.preventDefault();
+            document.querySelectorAll('.primary-nav a').forEach(a => a.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.querySelectorAll('.left-column, .right-column').forEach(el => el.style.display = '');
+            document.getElementById('sunBuddyPage').style.display = 'none';
+        }
+
+        /* ===== RENDER UI FROM STATE ===== */
+        function renderSunBuddyUI() {
+            document.getElementById('sbCookieDisplay').textContent = state.cookies;
+            document.getElementById('sbLevel').textContent = state.buddyLevel;
+            document.getElementById('sbXp').textContent = state.buddyXp;
+
+            const xpNeeded = state.buddyLevel * 50;
+            document.getElementById('sbXpFill').style.width = Math.min(100, (state.buddyXp / xpNeeded) * 100) + '%';
+
+            renderCookieHistory();
+            renderTasks();
+        }
+
+        function renderCookieHistory() {
+            const ul = document.getElementById('sbCookieHistory');
+            ul.innerHTML = state.cookieHistory
+                .slice(-6)
+                .reverse()
+                .map(h => `<li><span>${h.label}</span><span class="sb-cookie-earn">+${h.amount}</span></li>`)
+                .join('');
+        }
+
+        function renderTasks() {
+            const ul = document.getElementById('sbTaskList');
+            ul.innerHTML = TASKS.map(task => {
+                const done = state.completedTasks.includes(task.id);
+                return `
+                <li class="sb-task-item">
+                    <div class="sb-task-icon ${done ? 'done' : 'todo'}">${done ? '✅' : '⭕'}</div>
+                    <div class="sb-task-info">
+                        <div class="sb-task-name">${task.name}</div>
+                        <div class="sb-task-reward">${task.reward}</div>
+                    </div>
+                    <button class="sb-task-complete-btn"
+                            onclick="completeTask('${task.id}')"
+                            ${done ? 'disabled' : ''}>
+                        ${done ? 'Done!' : 'Complete'}
+                    </button>
+                </li>`;
+            }).join('');
+        }
+
+        /* ===== INTERACTIONS ===== */
+        function feedBuddy() {
+            if (state.cookies < 5) {
+                showFeedMsg("Not enough cookies! 😢");
+                return;
+            }
+            state.cookies   -= 5;
+            state.buddyXp   += 10;
+
+            const xpNeeded = state.buddyLevel * 50;
+            if (state.buddyXp >= xpNeeded) {
+                state.buddyLevel++;
+                state.buddyXp = state.buddyXp - xpNeeded;
+                showFeedMsg(`Level up! Now Level ${state.buddyLevel}! 🎉`);
+                triggerLevelUpAnimation();
+            } else {
+                showFeedMsg("+10 XP! 🌞");
+            }
+
+            saveState(state);
+            renderSunBuddyUI();
+        }
+
+        function showFeedMsg(msg) {
+            const el = document.getElementById('sbFeedMsg');
+            el.textContent = msg;
+            el.style.opacity = '1';
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(() => { el.style.opacity = '0'; }, 2500);
+        }
+
+        function triggerLevelUpAnimation() {
+            const avatar = document.getElementById('sbBuddyChar');
+            avatar.style.animation = 'none';
+            void avatar.offsetWidth;
+            avatar.style.animation = 'levelUpSpin 0.6s ease, buddyBounce 2s ease-in-out 0.6s infinite';
+        }
+
+        function pinBadge() {
+            const earned = state.earnedBadges;
+            const idx    = earned.indexOf(state.pinnedBadge);
+            state.pinnedBadge = earned[(idx + 1) % earned.length];
+            saveState(state);
+            showFeedMsg(`Badge pinned: ${state.pinnedBadge} 📌`);
+        }
+
+        function completeTask(taskId) {
+            if (state.completedTasks.includes(taskId)) return;
+            const task = TASKS.find(t => t.id === taskId);
+            if (!task) return;
+
+            state.completedTasks.push(taskId);
+            state.cookies += task.cookies;
+            state.cookieHistory.push({
+                label: task.name,
+                amount: task.cookies,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            });
+
+            if (!state.earnedBadges.includes(task.badge)) {
+                state.earnedBadges.push(task.badge);
+            }
+
+            saveState(state);
+            renderSunBuddyUI();
+            updateBadgesDisplay();
+        }
+
+        function updateBadgesDisplay() {
+            document.querySelectorAll('.sb-badge').forEach((badgeEl, idx) => {
+                const badgeIds = ['first-login', 'profile-pro', 'advising-ace', 'club-star', 'attendance-hero', 'deans-list'];
+                const badgeId = badgeIds[idx];
+                if (state.earnedBadges.includes(badgeId)) {
+                    badgeEl.classList.remove('locked');
+                    badgeEl.classList.add('earned');
+                    badgeEl.querySelector('.sb-badge-icon').textContent = BADGE_EMOJI_MAP[badgeId] || '🏅';
+                    badgeEl.querySelector('.sb-badge-status').textContent = 'Earned!';
+                    badgeEl.querySelector('.sb-badge-status').classList.add('earned-label');
+                }
+            });
+        }
+
+        /* ===== INITIALIZATION ===== */
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('tutNextBtn').addEventListener('click', tutorialNext);
+            document.getElementById('tutSkipBtn').addEventListener('click', tutorialSkip);
+            document.getElementById('firstLoginDismiss').addEventListener('click', dismissFirstLoginPopup);
+
+            renderSunBuddyUI();
+
+            // Show popup and tutorials every time
+            document.getElementById('firstLoginOverlay').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
