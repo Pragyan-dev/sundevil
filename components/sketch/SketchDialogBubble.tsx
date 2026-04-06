@@ -212,19 +212,31 @@ export function SketchDialogBubble({
             <path
               className="sketch-dialog-stroke"
               d={generateWobblyCirclePath(52, bubbleSeed + 1)}
-              transform="translate(20 128) scale(2.24 1.84)"
+              transform="translate(-10 20) scale(3.5 3.5)"
               pathLength={1}
             />
             <path
               className="sketch-dialog-stroke"
               d={generateWobblyCirclePath(64, bubbleSeed + 2)}
-              transform="translate(80 64) scale(3.28 2.32)"
+              transform="translate(140 -10) scale(4.2 3.8)"
               pathLength={1}
             />
             <path
               className="sketch-dialog-stroke"
               d={generateWobblyCirclePath(58, bubbleSeed + 3)}
-              transform="translate(192 112) scale(2.8 2.0)"
+              transform="translate(10 140) scale(3.8 4.2)"
+              pathLength={1}
+            />
+            <path
+              className="sketch-dialog-stroke"
+              d={generateWobblyCirclePath(60, bubbleSeed + 4)}
+              transform="translate(160 130) scale(4.2 4.4)"
+              pathLength={1}
+            />
+            <path
+              className="sketch-dialog-stroke"
+              d={generateWobblyCirclePath(62, bubbleSeed + 5)}
+              transform="translate(70 60) scale(4.0 4.0)"
               pathLength={1}
             />
           </svg>
