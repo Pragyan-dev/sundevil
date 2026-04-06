@@ -32,16 +32,19 @@ export default function MiniGameShell({
       </svg>
 
       <div className="sketch-minigame-header">
-        <div>
-          <h2>
-            <span aria-hidden="true">{icon}</span>
-            <span>{title}</span>
-          </h2>
-          <p>{instructions}</p>
+        <div className="sketch-minigame-title-block">
+          <div className="sketch-minigame-icon" aria-hidden="true">
+            {icon}
+          </div>
+          <div>
+            <p className="sketch-mini-eyebrow">Interactive checkpoint</p>
+            <h2>{title}</h2>
+            <p>{instructions}</p>
+          </div>
         </div>
         {score ? (
           <div className="sketch-minigame-score">
-            <span>Score</span>
+            <span className="sketch-mini-eyebrow">Score</span>
             <strong>
               {score.correct}/{score.total}
             </strong>
@@ -62,4 +65,3 @@ export default function MiniGameShell({
     </section>
   );
 }
-

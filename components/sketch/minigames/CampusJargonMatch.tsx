@@ -55,6 +55,7 @@ export default function CampusJargonMatch({
 
   const definitions = useMemo(() => definitionOrder.map((index) => pairs[index]), []);
   const done = matchedIds.length === pairs.length;
+  const selectedTerm = selectedTermId ? pairs.find((pair) => pair.id === selectedTermId) ?? null : null;
 
   function handleTermTap(termId: string) {
     onInteract?.();
@@ -92,9 +93,31 @@ export default function CampusJargonMatch({
       completed={done}
       onComplete={onComplete}
     >
+      <article className={`sketch-jargon-summary-card ${selectedTerm ? "is-active" : ""} ${done ? "is-complete" : ""}`}>
+        <p className="sketch-mini-eyebrow">{done ? "Completed" : "How it works"}</p>
+        <strong>
+          {done
+            ? "You translated the jargon."
+            : selectedTerm
+              ? `Now match “${selectedTerm.term}” to its meaning.`
+              : "Tap a term first, then tap the definition that actually matches it."}
+        </strong>
+        <span>
+          {done
+            ? "That is the point: once the words have plain-English meaning, they stop feeling like secret college language."
+            : "Wrong matches are fine. This is the place to learn the words before they show up in real emails and portals."}
+        </span>
+      </article>
+
       <div className="sketch-jargon-board">
-        <div>
-          <p className="sketch-mini-eyebrow">Terms</p>
+        <article className="sketch-jargon-panel">
+          <div className="sketch-jargon-panel-header">
+            <div>
+              <p className="sketch-mini-eyebrow">Terms</p>
+              <strong>ASU words you will actually see</strong>
+            </div>
+            <span className="sketch-jargon-count-pill">{matchedIds.length}/{pairs.length}</span>
+          </div>
           <div className="sketch-jargon-column">
             {pairs.map((pair) => (
               <button
@@ -105,14 +128,26 @@ export default function CampusJargonMatch({
                 } ${matchedIds.includes(pair.id) ? "is-matched" : ""}`}
                 onClick={() => handleTermTap(pair.id)}
               >
-                {pair.term}
+                <strong>{pair.term}</strong>
+                <span>
+                  {matchedIds.includes(pair.id)
+                    ? "Matched"
+                    : selectedTermId === pair.id
+                      ? "Selected"
+                      : "Tap to choose"}
+                </span>
               </button>
             ))}
           </div>
-        </div>
+        </article>
 
-        <div>
-          <p className="sketch-mini-eyebrow">Definitions</p>
+        <article className="sketch-jargon-panel">
+          <div className="sketch-jargon-panel-header">
+            <div>
+              <p className="sketch-mini-eyebrow">Definitions</p>
+              <strong>Plain-English meaning</strong>
+            </div>
+          </div>
           <div className="sketch-jargon-column">
             {definitions.map((pair) => (
               <button
@@ -127,11 +162,11 @@ export default function CampusJargonMatch({
                 }`}
                 onClick={() => handleDefinitionTap(pair.id)}
               >
-                {pair.definition}
+                <p>{pair.definition}</p>
               </button>
             ))}
           </div>
-        </div>
+        </article>
       </div>
 
       <p className="sketch-jargon-status">
@@ -142,4 +177,3 @@ export default function CampusJargonMatch({
     </MiniGameShell>
   );
 }
-

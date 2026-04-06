@@ -63,6 +63,7 @@ export default function DarsExplorer({
     () => tasks.find((task) => !completedTasks.includes(task.id)) ?? null,
     [completedTasks],
   );
+  const currentTaskIndex = currentTask ? tasks.findIndex((task) => task.id === currentTask.id) : -1;
 
   function handleTap(target: string, key: string) {
     onInteract?.();
@@ -99,20 +100,27 @@ export default function DarsExplorer({
       <div className="sketch-dars-grid">
         <div className="sketch-dars-panel">
           <div className="sketch-dars-header">
-            <div>
-              <p className="sketch-mini-eyebrow">Student</p>
-              <strong>{mockDars.student}</strong>
+            <div className="sketch-dars-identity-grid">
+              <article className="sketch-dars-info-card">
+                <p className="sketch-mini-eyebrow">Student</p>
+                <strong>{mockDars.student}</strong>
+                <span>First-week demo view</span>
+              </article>
+
+              <article className="sketch-dars-info-card">
+                <p className="sketch-mini-eyebrow">Major</p>
+                <strong>{mockDars.major}</strong>
+                <span>Track the boxes, not the panic.</span>
+              </article>
             </div>
-            <div>
-              <p className="sketch-mini-eyebrow">Major</p>
-              <strong>{mockDars.major}</strong>
-            </div>
+
             <button
               type="button"
               className={`sketch-dars-stat ${wrongKey === "credits" ? "is-wrong" : ""}`}
               onClick={() => handleTap("credits", "credits")}
             >
-              <span>Total credits needed</span>
+              <span className="sketch-mini-eyebrow">Graduation target</span>
+              <p>Total credits needed</p>
               <strong>{mockDars.totalCreditsNeeded}</strong>
             </button>
           </div>
@@ -138,13 +146,20 @@ export default function DarsExplorer({
                     <button
                       key={key}
                       type="button"
-                      className={`sketch-dars-row ${wrongKey === key ? "is-wrong" : ""}`}
+                      className={`sketch-dars-row ${wrongKey === key ? "is-wrong" : ""} ${
+                        currentTask?.target === target ? "is-current-target" : ""
+                      }`}
                       onClick={() => handleTap(target ?? key, key)}
                     >
-                      <span>{course.code}</span>
-                      <span>{course.name}</span>
-                      <span>{course.credits} cr</span>
-                      <span>{course.status}</span>
+                      <div className="sketch-dars-row-top">
+                        <strong>{course.code}</strong>
+                        <span className={`sketch-dars-status-pill is-${course.status}`}>{course.status}</span>
+                      </div>
+                      <p>{course.name}</p>
+                      <div className="sketch-dars-row-meta">
+                        <span>{course.credits} credits</span>
+                        {currentTask?.target === target ? <span className="sketch-dars-hotspot">Tap this</span> : null}
+                      </div>
                     </button>
                   );
                 })}
@@ -154,18 +169,53 @@ export default function DarsExplorer({
         </div>
 
         <aside className="sketch-task-list-panel">
-          <p className="sketch-mini-eyebrow">Checklist</p>
+          <div className="sketch-task-sidebar-header">
+            <div>
+              <p className="sketch-mini-eyebrow">Checklist</p>
+              <strong>What you are hunting for</strong>
+            </div>
+            <span className="sketch-task-progress-pill">
+              {completedTasks.length}/{tasks.length}
+            </span>
+          </div>
+
+          <article className={`sketch-current-task-card ${done ? "is-complete" : ""}`}>
+            <p className="sketch-mini-eyebrow">{done ? "Completed" : `Current target ${currentTaskIndex + 1}/${tasks.length}`}</p>
+            <strong>
+              {done
+                ? "You read the basics of a DARS report."
+                : currentTask?.label}
+            </strong>
+            <span>
+              {done
+                ? "That is the whole point: find what is done, what is in progress, and what still needs a box checked."
+                : "Tap the matching card or stat on the left."}
+            </span>
+          </article>
+
           <div className="sketch-task-list">
-            {tasks.map((task) => (
+            {tasks.map((task, index) => (
               <article
                 key={task.id}
-                className={`sketch-task-item ${completedTasks.includes(task.id) ? "is-complete" : ""}`}
+                className={`sketch-task-item ${completedTasks.includes(task.id) ? "is-complete" : ""} ${
+                  currentTask?.id === task.id ? "is-current" : ""
+                }`}
               >
-                <span>{completedTasks.includes(task.id) ? "✓" : "○"}</span>
-                <p>{task.label}</p>
+                <span className="sketch-task-bullet">{completedTasks.includes(task.id) ? "✓" : index + 1}</span>
+                <div>
+                  <strong>{task.label}</strong>
+                  <p>
+                    {task.target === "credits"
+                      ? "Look for the big number in the header."
+                      : task.target === "MAT 265"
+                        ? "Find the enrolled math course."
+                        : "Choose a course still marked needed in Major Requirements."}
+                  </p>
+                </div>
               </article>
             ))}
           </div>
+
           <p className="sketch-dars-summary">
             {done
               ? "That's it. DARS shows you what you've done and what's left. You can access it anytime through My ASU."

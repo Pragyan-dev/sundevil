@@ -106,6 +106,20 @@ export default function ScheduleBuilder({
     >
       <div className="sketch-schedule-layout">
         <div className="sketch-schedule-palette">
+          <article className="sketch-schedule-helper-card">
+            <p className="sketch-mini-eyebrow">Current move</p>
+            <strong>
+              {activeResourceId
+                ? `Place ${resources.find((resource) => resource.id === activeResourceId)?.label}.`
+                : "Pick a support block, then tap an open slot."}
+            </strong>
+            <span>
+              {done
+                ? "You proved at least two support blocks fit into a normal week."
+                : "This is meant to make the time cost visible, not perfect."}
+            </span>
+          </article>
+
           {resources.map((resource) => (
             <button
               key={resource.id}
@@ -133,6 +147,10 @@ export default function ScheduleBuilder({
         </div>
 
         <div className="sketch-schedule-board">
+          <div className="sketch-schedule-board-intro">
+            <p className="sketch-mini-eyebrow">Week map</p>
+            <strong>Classes and work are fixed. Support blocks go in the open gaps.</strong>
+          </div>
           <div className="sketch-schedule-header">
             <span />
             {days.map((day) => (

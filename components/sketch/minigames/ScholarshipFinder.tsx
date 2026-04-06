@@ -66,6 +66,18 @@ export default function ScholarshipFinder({
     >
       <div className="sketch-scholarship-grid">
         <div className="sketch-scholarship-controls">
+          <article className="sketch-scholarship-summary-card">
+            <p className="sketch-mini-eyebrow">Live result</p>
+            <strong>
+              {matches.length} scholarships, up to ${valueTotal.toLocaleString()}
+            </strong>
+            <span>
+              {extraFirstGenCount > 0
+                ? `Turning first-gen on reveals ${extraFirstGenCount} more matches right now.`
+                : "Shift one profile detail at a time and watch the list react."}
+            </span>
+          </article>
+
           <label className="sketch-mini-field">
             <span>Year</span>
             <select
@@ -149,6 +161,7 @@ export default function ScholarshipFinder({
                 <strong>{scholarship.name}</strong>
                 <p>{scholarship.description}</p>
                 <span>Deadline: {scholarship.deadlineLabel}</span>
+                <span className="sketch-scholarship-card-accent">Real ASU-linked opportunity</span>
               </article>
             ))}
           </div>
@@ -157,4 +170,3 @@ export default function ScholarshipFinder({
     </MiniGameShell>
   );
 }
-

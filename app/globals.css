@@ -2818,7 +2818,9 @@ body:has(.story-shell) main {
   position: relative;
   display: grid;
   gap: 1rem;
-  padding: 1.25rem;
+  width: min(100%, 84rem);
+  margin-inline: auto;
+  padding: 1.15rem 1.2rem 1.05rem;
   color: var(--sketch-ink);
 }
 
@@ -2836,11 +2838,41 @@ body:has(.story-shell) main {
   z-index: 1;
 }
 
+.sketch-minigame-header {
+  display: grid;
+  gap: 1rem;
+}
+
+.sketch-minigame-title-block {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.sketch-minigame-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 0.9rem;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.12) 0 6px,
+      transparent 6px 12px
+    ),
+    rgba(255, 250, 240, 0.96);
+  font-size: 1.4rem;
+  filter: url(#sketch);
+}
+
 .sketch-minigame-header h2 {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
   line-height: 1;
 }
 
@@ -2853,17 +2885,27 @@ body:has(.story-shell) main {
 }
 
 .sketch-minigame-score {
+  align-self: start;
+  justify-self: end;
+  min-width: 5.25rem;
+  padding: 0.65rem 0.8rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1rem;
+  background: rgba(255, 250, 240, 0.94);
+  filter: url(#sketch);
   text-align: right;
 }
 
 .sketch-minigame-score strong {
   display: block;
-  font-size: 1.45rem;
+  font-size: 1.65rem;
+  line-height: 1;
 }
 
 .sketch-minigame-body {
   display: grid;
   gap: 1rem;
+  align-content: start;
 }
 
 .sketch-results-card,
@@ -2903,7 +2945,33 @@ body:has(.story-shell) main {
 
 .sketch-dars-header {
   align-items: stretch;
-  flex-wrap: wrap;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sketch-dars-identity-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sketch-dars-info-card {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1rem;
+  padding: 0.8rem 0.9rem;
+  background: rgba(255, 255, 255, 0.52);
+  filter: url(#sketch);
+}
+
+.sketch-dars-info-card strong {
+  display: block;
+  font-size: 1.15rem;
+}
+
+.sketch-dars-info-card span {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.9rem;
+  color: rgba(26, 26, 26, 0.64);
 }
 
 .sketch-dars-stat,
@@ -2920,6 +2988,10 @@ body:has(.story-shell) main {
   font-size: 1.45rem;
 }
 
+.sketch-dars-stat p {
+  font-size: 1.05rem;
+}
+
 .sketch-dars-section + .sketch-dars-section {
   margin-top: 1rem;
 }
@@ -2932,7 +3004,68 @@ body:has(.story-shell) main {
 
 .sketch-dars-row {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.35rem;
+}
+
+.sketch-dars-row-top,
+.sketch-dars-row-meta,
+.sketch-task-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sketch-dars-row strong {
+  font-size: 1.1rem;
+}
+
+.sketch-dars-row p {
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.sketch-dars-row-meta {
+  color: rgba(26, 26, 26, 0.62);
+  font-size: 0.9rem;
+}
+
+.sketch-dars-status-pill,
+.sketch-dars-hotspot,
+.sketch-task-progress-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--sketch-ink);
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  background: rgba(255, 255, 255, 0.72);
+  filter: url(#sketch);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sketch-dars-status-pill.is-enrolled {
+  background: rgba(255, 198, 39, 0.28);
+}
+
+.sketch-dars-status-pill.is-needed {
+  background: rgba(140, 29, 64, 0.12);
+}
+
+.sketch-dars-hotspot {
+  background: rgba(255, 198, 39, 0.42);
+}
+
+.sketch-dars-row.is-current-target {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.16) 0 8px,
+      transparent 8px 16px
+    ),
+    rgba(255, 250, 240, 0.98);
 }
 
 .sketch-task-list {
@@ -2943,10 +3076,83 @@ body:has(.story-shell) main {
 
 .sketch-task-item {
   align-items: flex-start;
+  justify-content: flex-start;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1rem;
+  padding: 0.8rem 0.9rem;
+  background: rgba(255, 255, 255, 0.58);
+  filter: url(#sketch);
+}
+
+.sketch-task-item strong {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.sketch-task-item p {
+  margin-top: 0.22rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: rgba(26, 26, 26, 0.68);
+}
+
+.sketch-task-item.is-current {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.15) 0 7px,
+      transparent 7px 14px
+    ),
+    rgba(255, 250, 240, 0.96);
+}
+
+.sketch-task-bullet {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid var(--sketch-ink);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  filter: url(#sketch);
+  font-size: 0.86rem;
+  flex-shrink: 0;
 }
 
 .sketch-task-item.is-complete span {
   color: #2e7d32;
+}
+
+.sketch-current-task-card {
+  display: grid;
+  gap: 0.28rem;
+  margin-top: 0.9rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.12) 0 8px,
+      transparent 8px 16px
+    ),
+    rgba(255, 250, 240, 0.98);
+  filter: url(#sketch);
+}
+
+.sketch-current-task-card strong {
+  font-size: 1.08rem;
+  line-height: 1.35;
+}
+
+.sketch-current-task-card span {
+  font-size: 0.93rem;
+  color: rgba(26, 26, 26, 0.66);
+}
+
+.sketch-current-task-card.is-complete {
+  background: rgba(112, 196, 124, 0.16);
 }
 
 .sketch-dars-summary,
@@ -2962,6 +3168,52 @@ body:has(.story-shell) main {
   gap: 0.85rem;
 }
 
+.sketch-jargon-summary-card,
+.sketch-budget-insight-card,
+.sketch-scholarship-summary-card,
+.sketch-schedule-helper-card {
+  display: grid;
+  gap: 0.28rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.12) 0 8px,
+      transparent 8px 16px
+    ),
+    rgba(255, 250, 240, 0.96);
+  filter: url(#sketch);
+}
+
+.sketch-jargon-summary-card strong,
+.sketch-budget-insight-card strong,
+.sketch-scholarship-summary-card strong,
+.sketch-schedule-helper-card strong,
+.sketch-schedule-board-intro strong,
+.sketch-budget-compare-header strong,
+.sketch-jargon-panel-header strong,
+.sketch-resource-quiz-header strong {
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.sketch-jargon-summary-card span,
+.sketch-budget-insight-card span,
+.sketch-scholarship-summary-card span,
+.sketch-schedule-helper-card span,
+.sketch-schedule-board-intro span,
+.sketch-budget-legend {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: rgba(26, 26, 26, 0.66);
+}
+
+.sketch-jargon-summary-card.is-complete {
+  background: rgba(112, 196, 124, 0.16);
+}
+
 .sketch-jargon-column {
   display: grid;
   gap: 0.7rem;
@@ -2973,6 +3225,46 @@ body:has(.story-shell) main {
   border-radius: 1.1rem;
   padding: 0.85rem;
   text-align: left;
+}
+
+.sketch-jargon-panel,
+.sketch-budget-compare,
+.sketch-budget-sliders,
+.sketch-scholarship-results,
+.sketch-scholarship-controls,
+.sketch-schedule-palette {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sketch-jargon-panel {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.2rem;
+  padding: 0.95rem 1rem 1rem;
+  background: rgba(255, 250, 240, 0.84);
+  filter: url(#sketch);
+}
+
+.sketch-jargon-panel-header,
+.sketch-resource-quiz-header,
+.sketch-budget-compare-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sketch-jargon-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.15rem;
+  border: 2px solid var(--sketch-ink);
+  border-radius: 999px;
+  padding: 0.22rem 0.6rem;
+  background: rgba(255, 255, 255, 0.78);
+  filter: url(#sketch);
+  font-size: 0.8rem;
 }
 
 .sketch-jargon-card.is-selected,
@@ -3000,6 +3292,58 @@ body:has(.story-shell) main {
   opacity: 0.45;
 }
 
+.sketch-jargon-card strong,
+.sketch-option-copy strong {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.sketch-jargon-card span,
+.sketch-option-copy span {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 0.9rem;
+  color: rgba(26, 26, 26, 0.62);
+}
+
+.sketch-jargon-definition p {
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.sketch-resource-quiz {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.sketch-option-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sketch-option-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.sketch-option-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 2px solid var(--sketch-ink);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.82);
+  filter: url(#sketch);
+  font-size: 1.15rem;
+}
+
+.sketch-option-check {
+  font-size: 1.2rem;
+}
+
 .sketch-budget-header {
   flex-wrap: wrap;
 }
@@ -3023,6 +3367,20 @@ body:has(.story-shell) main {
 .sketch-scholarship-results {
   display: grid;
   gap: 0.85rem;
+}
+
+.sketch-budget-row {
+  display: grid;
+  gap: 0.55rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1rem;
+  padding: 0.8rem 0.9rem;
+  background: rgba(255, 255, 255, 0.66);
+  filter: url(#sketch);
+}
+
+.sketch-budget-bucket-label {
+  font-size: 0.98rem;
 }
 
 .sketch-budget-row input[type="range"] {
@@ -3089,6 +3447,11 @@ body:has(.story-shell) main {
   gap: 0.45rem;
 }
 
+.sketch-scholarship-card-accent {
+  font-size: 0.82rem;
+  color: var(--sketch-maroon);
+}
+
 .sketch-schedule-layout {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -3111,6 +3474,12 @@ body:has(.story-shell) main {
 
 .sketch-schedule-board {
   overflow-x: auto;
+}
+
+.sketch-schedule-board-intro {
+  display: grid;
+  gap: 0.2rem;
+  margin-bottom: 0.7rem;
 }
 
 .sketch-schedule-header,
@@ -3167,6 +3536,44 @@ body:has(.story-shell) main {
   .sketch-jargon-board,
   .sketch-option-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sketch-minigame-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .sketch-dars-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(19rem, 0.78fr);
+    align-items: start;
+  }
+
+  .sketch-dars-identity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sketch-jargon-board {
+    grid-template-columns: minmax(15rem, 0.8fr) minmax(20rem, 1.2fr);
+    align-items: start;
+  }
+
+  .sketch-option-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sketch-budget-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.95fr);
+    align-items: start;
+  }
+
+  .sketch-scholarship-grid {
+    grid-template-columns: minmax(18rem, 0.85fr) minmax(0, 1.15fr);
+    align-items: start;
+  }
+
+  .sketch-schedule-layout {
+    grid-template-columns: minmax(17rem, 0.72fr) minmax(0, 1.28fr);
+    align-items: start;
   }
 }
 

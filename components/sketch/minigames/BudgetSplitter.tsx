@@ -82,6 +82,12 @@ export default function BudgetSplitter({
       completed={submitted && total === 100}
       onComplete={onComplete}
     >
+      <article className="sketch-budget-insight-card">
+        <p className="sketch-mini-eyebrow">What this teaches</p>
+        <strong>Week-one money stress usually comes from invisible tradeoffs, not personal failure.</strong>
+        <span>Make the percentages feel real, then compare them to the recommended split on the right.</span>
+      </article>
+
       <div className="sketch-budget-header">
         <div className={`sketch-budget-total ${total === 100 ? "is-good" : total > 100 ? "is-over" : ""}`}>
           <span>Total allocated</span>
@@ -95,7 +101,7 @@ export default function BudgetSplitter({
           {buckets.map((bucket) => (
             <label key={bucket.id} className="sketch-budget-row">
               <div className="sketch-budget-row-copy">
-                <span>
+                <span className="sketch-budget-bucket-label">
                   {bucket.emoji} {bucket.label}
                 </span>
                 <strong>{allocations[bucket.id]}%</strong>
@@ -116,7 +122,13 @@ export default function BudgetSplitter({
         </div>
 
         <div className="sketch-budget-compare">
-          <div className="sketch-mini-eyebrow">Your split vs recommended</div>
+          <div className="sketch-budget-compare-header">
+            <div>
+              <p className="sketch-mini-eyebrow">Compare</p>
+              <strong>Your split vs recommended</strong>
+            </div>
+            <span className="sketch-budget-legend">Top bar = yours</span>
+          </div>
           {buckets.map((bucket) => (
             <div key={`${bucket.id}-chart`} className="sketch-budget-chart-row">
               <strong>{bucket.label}</strong>

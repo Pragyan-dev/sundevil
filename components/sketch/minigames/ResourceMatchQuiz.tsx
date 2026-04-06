@@ -148,9 +148,15 @@ export default function ResourceMatchQuiz({
       ) : (
         <div className="sketch-resource-quiz">
           <article className="sketch-scenario-card">
-            <p className="sketch-mini-eyebrow">
-              Scenario {scenarioIndex + 1} of {scenarios.length}
-            </p>
+            <div className="sketch-resource-quiz-header">
+              <div>
+                <p className="sketch-mini-eyebrow">
+                  Scenario {scenarioIndex + 1} of {scenarios.length}
+                </p>
+                <strong>Which door actually fits this problem?</strong>
+              </div>
+              <span className="sketch-jargon-count-pill">{correctCount} right</span>
+            </div>
             <p>{currentScenario.situation}</p>
           </article>
 
@@ -169,9 +175,18 @@ export default function ResourceMatchQuiz({
                   disabled={isDisabled || Boolean(selectedCorrectId)}
                   onClick={() => handleOption(option.id)}
                 >
-                  <span>{option.icon}</span>
-                  <strong>{option.label}</strong>
-                  {isCorrect ? <span>✓</span> : null}
+                  <span className="sketch-option-icon">{option.icon}</span>
+                  <div className="sketch-option-copy">
+                    <strong>{option.label}</strong>
+                    <span>
+                      {isCorrect
+                        ? "Correct match"
+                        : isDisabled
+                          ? "Not this one"
+                          : "Try this resource"}
+                    </span>
+                  </div>
+                  {isCorrect ? <span className="sketch-option-check">✓</span> : null}
                 </button>
               );
             })}
