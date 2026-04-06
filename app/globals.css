@@ -1885,7 +1885,7 @@ body:has(.story-shell) main {
 .sim-ground-line {
   position: absolute;
   right: 1rem;
-  bottom: 5rem;
+  bottom: 4.35rem;
   left: 1rem;
   border-top: 3px solid rgba(26, 26, 26, 0.8);
 }
@@ -1893,7 +1893,7 @@ body:has(.story-shell) main {
 .sim-ground-doodles {
   position: absolute;
   right: 1rem;
-  bottom: 2.9rem;
+  bottom: 2.45rem;
   left: 1rem;
   display: flex;
   align-items: center;
@@ -1906,11 +1906,11 @@ body:has(.story-shell) main {
 .sim-day-label {
   position: absolute;
   right: 1rem;
-  bottom: 0.9rem;
+  bottom: 0.5rem;
   display: grid;
   gap: 0.1rem;
-  border-radius: 1.2rem;
-  padding: 0.7rem 0.95rem;
+  border-radius: 1.05rem;
+  padding: 0.58rem 0.9rem 0.52rem;
 }
 
 .sim-day-label strong {
@@ -2456,5 +2456,802 @@ body:has(.story-shell) main {
 
   .sim-reward-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.sketch-sequence-shell,
+.sketch-minigame-shell {
+  grid-column: 1 / -1;
+}
+
+.sketch-sequence-shell {
+  display: grid;
+  gap: 0.45rem;
+  align-self: stretch;
+}
+
+.sketch-sequence-grid {
+  display: grid;
+  gap: clamp(1.4rem, 3vw, 3.4rem);
+  align-items: end;
+  min-height: 26rem;
+}
+
+.sketch-sequence-character {
+  position: relative;
+  display: flex;
+  min-height: 21rem;
+  align-items: end;
+  justify-content: center;
+}
+
+.sketch-sequence-avatar-wrap {
+  position: relative;
+  z-index: 1;
+  animation:
+    sketch-avatar-enter 260ms ease-out,
+    sketch-avatar-breathe 4.2s ease-in-out 260ms infinite;
+}
+
+.sketch-sequence-shadow {
+  position: absolute;
+  bottom: 1rem;
+  width: min(68%, 15rem);
+  height: 1.05rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.13);
+  filter: blur(1.6px);
+}
+
+.sketch-sequence-dialogue {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.sketch-dialog-bubble {
+  position: relative;
+  width: 100%;
+  min-height: 16.75rem;
+  max-width: 58rem;
+  color: var(--sketch-ink);
+  cursor: pointer;
+  animation: sketch-bubble-arrive 320ms cubic-bezier(0.18, 0.88, 0.24, 1);
+}
+
+.sketch-dialog-bubble:not([role="button"]) {
+  cursor: default;
+}
+
+.sketch-dialog-bubble-frame,
+.sketch-dialog-pointer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sketch-dialog-bubble-frame {
+  overflow: visible;
+}
+
+.sketch-dialog-bubble::after {
+  content: "";
+  position: absolute;
+  inset: 0.85rem 0.9rem 0.25rem 0.65rem;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.03);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+.sketch-dialog-bubble-frame path,
+.sketch-dialog-pointer path,
+.sketch-progress-dot-svg path,
+.sketch-minigame-frame path {
+  fill: rgba(255, 250, 240, 0.97);
+  stroke: var(--sketch-ink);
+  stroke-width: 2.8;
+  vector-effect: non-scaling-stroke;
+  filter: url(#sketch);
+}
+
+.sketch-dialog-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: sketch-frame-draw 400ms cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.sketch-dialog-bubble-thought .sketch-dialog-bubble-frame path {
+  fill: rgba(255, 246, 212, 0.96);
+}
+
+.sketch-dialog-pointer {
+  left: -1.4rem;
+  top: 38%;
+  width: 1.5rem;
+  height: 2.1rem;
+}
+
+.sketch-thought-pointer {
+  position: absolute;
+  left: -0.55rem;
+  bottom: 1.35rem;
+  display: grid;
+  gap: 0.15rem;
+  animation: sketch-bubble-arrive 220ms ease-out;
+}
+
+.sketch-thought-pointer span {
+  display: block;
+  border-radius: 999px;
+  background: rgba(255, 246, 212, 0.98);
+  border: 2.5px solid var(--sketch-ink);
+  filter: url(#sketch);
+}
+
+.sketch-thought-pointer span:nth-child(1) {
+  width: 0.55rem;
+  height: 0.55rem;
+}
+
+.sketch-thought-pointer span:nth-child(2) {
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-left: 0.35rem;
+}
+
+.sketch-thought-pointer span:nth-child(3) {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-left: 0.7rem;
+}
+
+.sketch-dialog-tag {
+  position: absolute;
+  top: -0.4rem;
+  left: 1.35rem;
+  z-index: 2;
+  display: inline-flex;
+  min-height: 1.85rem;
+  align-items: center;
+  padding: 0.2rem 0.78rem 0.15rem;
+  border-radius: 0.65rem;
+  background: var(--sketch-ink);
+  color: #fff;
+  font-family: var(--font-sketch-display), cursive;
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+.sketch-dialog-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 16.75rem;
+  gap: 0.5rem;
+  padding: 1.8rem 1.55rem 1.05rem 1.35rem;
+}
+
+.sketch-location-label,
+.sketch-mini-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.5);
+}
+
+.sketch-dialog-copy {
+  min-height: 7rem;
+  max-width: 92%;
+  font-size: clamp(1.28rem, 2.1vw, 1.72rem);
+  line-height: 1.58;
+}
+
+.sketch-dialog-copy-thought {
+  font-style: italic;
+}
+
+.sketch-dialog-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1rem;
+  margin-left: 0.18rem;
+  background: var(--sketch-ink);
+  vertical-align: middle;
+  animation: sketch-blink 900ms steps(1) infinite;
+}
+
+.sketch-dialog-actions,
+.sketch-minigame-footer,
+.sketch-budget-header,
+.sketch-budget-row-copy,
+.sketch-minigame-header,
+.sketch-budget-total,
+.sketch-task-item,
+.sketch-dars-header,
+.sketch-dars-section-heading,
+.sketch-schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.sketch-dialog-actions {
+  margin-top: auto;
+  align-items: flex-end;
+  min-height: 2.8rem;
+}
+
+.sketch-dialog-secondary,
+.sketch-dialog-next,
+.sketch-action-button,
+.sketch-option-card,
+.sketch-jargon-card,
+.sketch-dars-row,
+.sketch-dars-stat,
+.sketch-resource-block,
+.sketch-toggle-pill,
+.sketch-schedule-cell {
+  border: 3px solid var(--sketch-ink);
+  background: rgba(255, 250, 240, 0.98);
+  color: var(--sketch-ink);
+  filter: url(#sketch);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.sketch-dialog-secondary,
+.sketch-dialog-next,
+.sketch-action-button {
+  font-size: 0.8rem;
+}
+
+.sketch-action-button-gold,
+.sketch-dialog-next {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(26, 26, 26, 0.08) 0 7px,
+      transparent 7px 14px
+    ),
+    var(--sketch-gold);
+}
+
+.sketch-dialog-next {
+  min-height: 2.25rem;
+  padding: 0.42rem 0.78rem 0.36rem;
+  border-radius: 0.9rem;
+  border-width: 3px;
+  font-family: var(--font-sketch-display), cursive;
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  animation: sketch-pulse 2s ease-in-out infinite;
+}
+
+.sketch-dialog-secondary {
+  font-family: var(--font-sketch-body), cursive;
+  padding: 0.25rem 0;
+  border: 0;
+  background: transparent;
+  color: rgba(26, 26, 26, 0.72);
+  filter: none;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.24em;
+}
+
+.sketch-dialog-next-reveal {
+  animation:
+    sketch-next-reveal 180ms ease-out,
+    sketch-pulse 2s ease-in-out 180ms infinite;
+}
+
+.sketch-progress-dots {
+  display: flex;
+  width: min(100%, 58rem);
+  justify-content: flex-start;
+  gap: 0.35rem;
+  margin-left: auto;
+  padding-left: 1rem;
+}
+
+.sketch-progress-dot {
+  display: inline-flex;
+  width: 0.95rem;
+  height: 0.7rem;
+  transition: transform 180ms ease;
+}
+
+.sketch-progress-dot-current {
+  transform: scale(1.26);
+  animation: sketch-progress-pop 180ms ease-out;
+}
+
+.sketch-progress-dot-svg path {
+  fill: rgba(0, 0, 0, 0.14);
+}
+
+.sketch-progress-dot-complete .sketch-progress-dot-svg path {
+  fill: var(--sketch-ink);
+}
+
+.sketch-progress-dot-current .sketch-progress-dot-svg path {
+  fill: var(--sketch-gold);
+}
+
+.sketch-dialog-bubble[role="button"]:focus-visible,
+.sketch-dialog-next:focus-visible,
+.sketch-dialog-secondary:focus-visible {
+  outline: none;
+}
+
+.sketch-dialog-bubble[role="button"]:focus-visible .sketch-dialog-stroke,
+.sketch-dialog-next:focus-visible,
+.sketch-dialog-secondary:focus-visible {
+  stroke: var(--sketch-gold);
+}
+
+.sketch-dialog-next:focus-visible,
+.sketch-dialog-secondary:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 198, 39, 0.28);
+}
+
+.sketch-dialog-next:hover,
+.sketch-dialog-next:active {
+  transform: translateY(1px);
+}
+
+.sketch-dialog-secondary:hover {
+  color: var(--sketch-ink);
+}
+
+.sketch-minigame-shell {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  color: var(--sketch-ink);
+}
+
+.sketch-minigame-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sketch-minigame-header,
+.sketch-minigame-body,
+.sketch-minigame-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.sketch-minigame-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  line-height: 1;
+}
+
+.sketch-minigame-header p,
+.sketch-minigame-note,
+.sketch-results-card p,
+.sketch-scholarship-card p,
+.sketch-scholarship-card span {
+  color: rgba(26, 26, 26, 0.72);
+}
+
+.sketch-minigame-score {
+  text-align: right;
+}
+
+.sketch-minigame-score strong {
+  display: block;
+  font-size: 1.45rem;
+}
+
+.sketch-minigame-body {
+  display: grid;
+  gap: 1rem;
+}
+
+.sketch-results-card,
+.sketch-task-list-panel,
+.sketch-scenario-card,
+.sketch-explanation-card,
+.sketch-scholarship-card,
+.sketch-budget-total,
+.sketch-mini-field select,
+.sketch-schedule-board,
+.sketch-schedule-palette,
+.sketch-dars-panel {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.4rem;
+  background: rgba(255, 250, 240, 0.96);
+  filter: url(#sketch);
+}
+
+.sketch-results-card,
+.sketch-task-list-panel,
+.sketch-scenario-card,
+.sketch-explanation-card,
+.sketch-scholarship-card,
+.sketch-dars-panel,
+.sketch-schedule-palette,
+.sketch-schedule-board {
+  padding: 1rem;
+}
+
+.sketch-dars-grid,
+.sketch-budget-grid,
+.sketch-scholarship-grid,
+.sketch-schedule-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.sketch-dars-header {
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.sketch-dars-stat,
+.sketch-dars-row {
+  width: 100%;
+  border-radius: 1rem;
+  padding: 0.75rem 0.85rem;
+  text-align: left;
+}
+
+.sketch-dars-stat strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1.45rem;
+}
+
+.sketch-dars-section + .sketch-dars-section {
+  margin-top: 1rem;
+}
+
+.sketch-dars-rows {
+  margin-top: 0.7rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.sketch-dars-row {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sketch-task-list {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.8rem;
+}
+
+.sketch-task-item {
+  align-items: flex-start;
+}
+
+.sketch-task-item.is-complete span {
+  color: #2e7d32;
+}
+
+.sketch-dars-summary,
+.sketch-jargon-status {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.sketch-jargon-board,
+.sketch-option-grid,
+.sketch-scholarship-card-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sketch-jargon-column {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.55rem;
+}
+
+.sketch-jargon-card,
+.sketch-option-card {
+  border-radius: 1.1rem;
+  padding: 0.85rem;
+  text-align: left;
+}
+
+.sketch-jargon-card.is-selected,
+.sketch-toggle-pill.is-active,
+.sketch-resource-block.is-active {
+  background: rgba(255, 198, 39, 0.42);
+}
+
+.sketch-jargon-card.is-matched,
+.sketch-option-card.is-correct,
+.sketch-task-item.is-complete,
+.sketch-schedule-cell.is-resource {
+  background: rgba(112, 196, 124, 0.18);
+  border-color: rgba(32, 88, 41, 0.92);
+}
+
+.sketch-jargon-card.is-wrong,
+.sketch-dars-row.is-wrong,
+.sketch-dars-stat.is-wrong {
+  background: rgba(168, 44, 44, 0.14);
+  border-color: rgba(122, 32, 32, 0.9);
+}
+
+.sketch-option-card.is-disabled {
+  opacity: 0.45;
+}
+
+.sketch-budget-header {
+  flex-wrap: wrap;
+}
+
+.sketch-budget-total {
+  min-width: 12rem;
+  padding: 0.85rem 1rem;
+}
+
+.sketch-budget-total.is-good {
+  background: rgba(255, 198, 39, 0.38);
+}
+
+.sketch-budget-total.is-over {
+  background: rgba(168, 44, 44, 0.14);
+}
+
+.sketch-budget-sliders,
+.sketch-budget-compare,
+.sketch-scholarship-controls,
+.sketch-scholarship-results {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sketch-budget-row input[type="range"] {
+  width: 100%;
+}
+
+.sketch-budget-chart-row {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.sketch-budget-bar-pair {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.sketch-budget-bar-shell {
+  overflow: hidden;
+  height: 0.95rem;
+  border-radius: 999px;
+  border: 2px solid var(--sketch-ink);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.sketch-budget-bar {
+  display: block;
+  height: 100%;
+}
+
+.sketch-budget-bar-shell-muted {
+  opacity: 0.5;
+}
+
+.sketch-mini-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.sketch-mini-field select {
+  padding: 0.8rem 0.9rem;
+}
+
+.sketch-toggle-group {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.sketch-toggle-group > div {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.sketch-toggle-pill {
+  border-radius: 999px;
+  padding: 0.55rem 0.8rem;
+}
+
+.sketch-scholarship-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.sketch-scholarship-card {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.sketch-schedule-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sketch-schedule-palette {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.sketch-resource-block {
+  border-radius: 1.1rem;
+  padding: 0.8rem;
+  text-align: left;
+}
+
+.sketch-resource-block strong,
+.sketch-schedule-cell span {
+  display: block;
+}
+
+.sketch-schedule-board {
+  overflow-x: auto;
+}
+
+.sketch-schedule-header,
+.sketch-schedule-row {
+  display: grid;
+  grid-template-columns: 4rem repeat(5, minmax(4.4rem, 1fr));
+  gap: 0.45rem;
+  align-items: stretch;
+}
+
+.sketch-schedule-row + .sketch-schedule-row {
+  margin-top: 0.35rem;
+}
+
+.sketch-schedule-time {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: rgba(26, 26, 26, 0.62);
+}
+
+.sketch-schedule-cell {
+  min-height: 2.5rem;
+  border-radius: 0.85rem;
+  padding: 0.3rem;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.sketch-schedule-cell.is-fixed {
+  background: rgba(140, 29, 64, 0.18);
+}
+
+@media (min-width: 960px) {
+  .sketch-sequence-grid {
+    grid-template-columns: minmax(20rem, 0.82fr) minmax(28rem, 1.18fr);
+  }
+
+  .sketch-sequence-character {
+    min-height: 29rem;
+  }
+
+  .sketch-sequence-dialogue {
+    padding-bottom: 1.75rem;
+  }
+
+  .sketch-progress-dots {
+    padding-left: 1.2rem;
+  }
+
+  .sketch-dars-grid,
+  .sketch-budget-grid,
+  .sketch-scholarship-grid,
+  .sketch-schedule-layout,
+  .sketch-jargon-board,
+  .sketch-option-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@keyframes sketch-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sketch-frame-draw {
+  from {
+    opacity: 0.85;
+    stroke-dashoffset: 1;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes sketch-bubble-arrive {
+  from {
+    opacity: 0;
+    transform: translate3d(14px, 0, 0) rotate(0.35deg);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+@keyframes sketch-avatar-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(-12px, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes sketch-avatar-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes sketch-pulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes sketch-next-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sketch-progress-pop {
+  from {
+    opacity: 0.75;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.26);
   }
 }

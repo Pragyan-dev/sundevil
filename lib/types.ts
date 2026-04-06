@@ -122,6 +122,13 @@ export type CharacterId =
   | "counselor-park";
 export type BubbleType = "speech" | "thought";
 export type StoryAnnotationType = "underline" | "highlight" | "circle";
+export type MiniGameType =
+  | "resource-match"
+  | "jargon-match"
+  | "dars-explorer"
+  | "budget-splitter"
+  | "scholarship-finder"
+  | "schedule-builder";
 
 export interface StoryEffect {
   confidenceDelta?: number;
@@ -167,6 +174,16 @@ export interface StoryLine {
   bubbleType: BubbleType;
   text: string;
   archetypeText?: Partial<Record<ArchetypeId, string>>;
+  overlayId?: string;
+  annotation?: StoryAnnotationType;
+}
+
+export interface DialogLine {
+  id: string;
+  speaker: string;
+  speakerType: CharacterId;
+  text: string;
+  isThought?: boolean;
   overlayId?: string;
   annotation?: StoryAnnotationType;
 }
@@ -282,6 +299,7 @@ export interface DialogueScene extends StorySceneBase {
   locationLabel?: string;
   overlayPromptLabel?: string;
   overlayDescription?: string;
+  miniGameType?: MiniGameType;
   effects?: StoryEffect;
   badgeId?: string;
 }

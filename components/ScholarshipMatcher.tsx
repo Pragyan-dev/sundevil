@@ -3,70 +3,33 @@
 import { useState } from "react";
 
 import { ResourceCard } from "@/components/ResourceCard";
-import { scholarshipFormOptions, scholarships } from "@/lib/data";
+import { scholarshipFormOptions } from "@/lib/data";
+import {
+  filterScholarships,
+  initialScholarshipFilterState,
+  type ScholarshipFilterState,
+} from "@/lib/scholarships";
 import type {
   AidStatus,
   FirstGenStatus,
   GpaRange,
   MajorCategory,
   ResidencyStatus,
-  Scholarship,
   StudentYear,
 } from "@/lib/types";
-
-type ScholarshipFormState = {
-  year: StudentYear | "";
-  major: Exclude<MajorCategory, "any"> | "";
-  gpaRange: GpaRange | "";
-  firstGen: FirstGenStatus | "";
-  residency: ResidencyStatus | "";
-  aidStatus: AidStatus | "";
-};
 
 interface ScholarshipMatcherProps {
   variant?: "page" | "overlay";
 }
 
-const initialFormState: ScholarshipFormState = {
-  year: "",
-  major: "",
-  gpaRange: "",
-  firstGen: "",
-  residency: "",
-  aidStatus: "",
-};
-
-function matchesScholarship(scholarship: Scholarship, form: ScholarshipFormState) {
-  if (form.year && !scholarship.eligibility.years.includes(form.year)) return false;
-  if (
-    form.major &&
-    !(
-      scholarship.eligibility.majors.includes("any") ||
-      scholarship.eligibility.majors.includes(form.major)
-    )
-  ) {
-    return false;
-  }
-  if (
-    form.gpaRange &&
-    !scholarship.eligibility.gpaRanges.includes(form.gpaRange as Exclude<GpaRange, "under-2.5">)
-  ) {
-    return false;
-  }
-  if (form.firstGen && !scholarship.eligibility.firstGen.includes(form.firstGen)) return false;
-  if (form.residency && !scholarship.eligibility.residency.includes(form.residency)) return false;
-  if (form.aidStatus && !scholarship.eligibility.aidStatus.includes(form.aidStatus)) return false;
-  return true;
-}
-
 export function ScholarshipMatcher({ variant = "page" }: ScholarshipMatcherProps) {
-  const [form, setForm] = useState<ScholarshipFormState>(initialFormState);
+  const [form, setForm] = useState<ScholarshipFilterState>(initialScholarshipFilterState);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const results = scholarships.filter((scholarship) => matchesScholarship(scholarship, form));
+  const results = filterScholarships(form);
   const isOverlay = variant === "overlay";
 
-  function updateField<K extends keyof ScholarshipFormState>(key: K, value: ScholarshipFormState[K]) {
+  function updateField<K extends keyof ScholarshipFilterState>(key: K, value: ScholarshipFilterState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
@@ -185,7 +148,7 @@ export function ScholarshipMatcher({ variant = "page" }: ScholarshipMatcherProps
             type="button"
             className="button-secondary"
             onClick={() => {
-              setForm(initialFormState);
+              setForm(initialScholarshipFilterState);
               setHasSubmitted(false);
             }}
           >

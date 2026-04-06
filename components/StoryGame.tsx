@@ -5,7 +5,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { RefObject } from "react";
 
 import { CharacterAvatar } from "@/components/SketchCharacters";
+import { SketchDialogBubble } from "@/components/sketch/SketchDialogBubble";
 import { SketchNotation } from "@/components/SketchNotation";
+import { useSoundEngine } from "@/components/sketch/SoundEngine";
+import { SketchDialogSequence } from "@/components/sketch/SketchDialogSequence";
+import MiniGameRouter from "@/components/sketch/minigames/MiniGameRouter";
 import {
   ALEX_STORY_STORAGE_KEY,
   applyStoryEffect,
@@ -35,12 +39,12 @@ import type {
   ArchetypeDefinition,
   ArchetypeId,
   ChoiceOption,
+  DialogLine,
   JumpInSlug,
   PersistedStoryState,
   RewardDefinition,
   ResourceOverlayDefinition,
   SceneFrame,
-  StoryLine,
 } from "@/lib/types";
 
 interface StoryGameProps {
@@ -142,33 +146,6 @@ function DoodleStrip() {
       <span>◦</span>
       <span>⌇⌇</span>
     </div>
-  );
-}
-
-function BubbleText({
-  line,
-  archetypeId,
-}: {
-  line: StoryLine;
-  archetypeId: PersistedStoryState["archetypeId"];
-}) {
-  const text = getLineText(line, archetypeId);
-
-  if (!line.annotation) {
-    return <p className="sim-bubble-copy">{text}</p>;
-  }
-
-  return (
-    <p className="sim-bubble-copy">
-      <SketchNotation
-        type={line.annotation}
-        color={line.annotation === "highlight" ? "#FFC627" : "#8C1D40"}
-        padding={3}
-        multiline
-      >
-        {text}
-      </SketchNotation>
-    </p>
   );
 }
 
@@ -809,6 +786,7 @@ function EndingScene({
 export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   const previewPreset = previewSlug ? storyJumpInBySlug[previewSlug] : undefined;
   const previewMode = mode === "preview" && Boolean(previewPreset);
+  const sound = useSoundEngine();
 
   const [storyState, setStoryState] = useState<PersistedStoryState>(() =>
     previewPreset ? createPreviewStoryState(previewPreset) : createDefaultStoryState(),
@@ -824,6 +802,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [ttsAvailable, setTtsAvailable] = useState(true);
+  const [phase, setPhase] = useState<"dialog" | "minigame" | "reflect">("dialog");
 
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
   const audioAbortRef = useRef<AbortController | null>(null);
@@ -842,6 +821,21 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   const activeSpeaker = storyCharacterById[activeSpeakerId];
   const ending = currentScene?.type === "ending" ? getEndingForConfidence(storyState.confidence) : null;
   const previewTitle = previewPreset?.title;
+  const dialogLines = useMemo<DialogLine[]>(
+    () =>
+      currentScene?.type === "dialogue"
+        ? currentScene.lines.map((line) => ({
+            id: line.id,
+            speaker: storyCharacterById[line.speakerId].name,
+            speakerType: line.speakerId,
+            text: getLineText(line, storyState.archetypeId),
+            isThought: line.bubbleType === "thought",
+            overlayId: line.overlayId,
+            annotation: line.annotation,
+          }))
+        : [],
+    [currentScene, storyState.archetypeId],
+  );
 
   const navigateToScene = useCallback((nextSceneId: string, choiceId?: string) => {
     const nextScene = getScene(nextSceneId);
@@ -853,6 +847,10 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
     setOverlayId(null);
     setRewardDrawerOpen(false);
     setSettingsOpen(false);
+    setPhase("dialog");
+    if (!isMuted) {
+      sound.whoosh();
+    }
     setStoryState((current) =>
       buildSceneState(
         {
@@ -862,7 +860,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
         nextScene,
       ),
     );
-  }, []);
+  }, [isMuted, sound]);
 
   const playCurrentLineAudio = useCallback(async () => {
     if (!currentScene || currentScene.type !== "dialogue" || !currentDialogue || !storyState.archetypeId) {
@@ -971,6 +969,9 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
       const newestBadge = storyState.unlockedBadgeIds.at(-1);
       if (newestBadge) {
         const frameId = window.requestAnimationFrame(() => {
+          if (!isMuted) {
+            sound.chime();
+          }
           setBadgeModalId(newestBadge);
         });
         unlockedBadgeCountRef.current = storyState.unlockedBadgeIds.length;
@@ -979,7 +980,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
     }
 
     unlockedBadgeCountRef.current = storyState.unlockedBadgeIds.length;
-  }, [storyState.unlockedBadgeIds]);
+  }, [isMuted, sound, storyState.unlockedBadgeIds]);
 
   useEffect(() => {
     if (badgeModalId || rewardModalId) {
@@ -1037,6 +1038,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
     if (
       !ttsAvailable ||
       isMuted ||
+      phase !== "dialog" ||
       !currentLineKey ||
       !storyState.archetypeId ||
       currentScene?.type !== "dialogue" ||
@@ -1054,6 +1056,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
     currentDialogue,
     currentLineKey,
     currentScene,
+    phase,
     isMuted,
     playCurrentLineAudio,
     storyState.archetypeId,
@@ -1061,19 +1064,9 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   ]);
 
   function handleContinue() {
+    void sound.prime();
+
     if (!currentScene) {
-      return;
-    }
-
-    if (currentScene.type === "dialogue") {
-      if (storyState.currentLineIndex < currentScene.lines.length - 1) {
-        setStoryState((current) => ({ ...current, currentLineIndex: current.currentLineIndex + 1 }));
-        return;
-      }
-
-      if (currentScene.nextSceneId) {
-        navigateToScene(currentScene.nextSceneId);
-      }
       return;
     }
 
@@ -1088,6 +1081,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   }
 
   function handleArchetypeSelect(archetypeId: ArchetypeId) {
+    void sound.prime();
     const archetype = storyArchetypeById[archetypeId];
 
     setStoryState((current) => ({
@@ -1098,6 +1092,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   }
 
   function handleBeginStory() {
+    void sound.prime();
     const currentSceneValue = currentScene;
     if (!currentSceneValue || currentSceneValue.type !== "character-select" || !storyState.archetypeId) {
       return;
@@ -1107,6 +1102,10 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   }
 
   function handleChoice(choice: ChoiceOption) {
+    void sound.prime();
+    if (!isMuted) {
+      sound.pop();
+    }
     navigateToScene(choice.resultSceneId, choice.id);
   }
 
@@ -1141,8 +1140,48 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
   }
 
   function openOverlay(overlayIdValue: string) {
+    void sound.prime();
     setOverlayId(overlayIdValue);
     setStoryState((current) => markOverlaySeen(current, overlayIdValue));
+  }
+
+  function handleDialogLineChange(index: number) {
+    setStoryState((current) => ({
+      ...current,
+      currentLineIndex: index,
+    }));
+  }
+
+  function handleDialogSequenceComplete() {
+    if (!currentScene || currentScene.type !== "dialogue") {
+      return;
+    }
+
+    if (currentScene.miniGameType) {
+      setPhase("minigame");
+      return;
+    }
+
+    if (currentScene.nextSceneId) {
+      navigateToScene(currentScene.nextSceneId);
+    }
+  }
+
+  function handleMiniGameComplete() {
+    if (!currentScene || currentScene.type !== "dialogue") {
+      return;
+    }
+
+    void sound.prime();
+    if (!isMuted) {
+      sound.chime();
+    }
+
+    setPhase("reflect");
+
+    if (currentScene.nextSceneId) {
+      navigateToScene(currentScene.nextSceneId);
+    }
   }
 
   function handleRewardClose() {
@@ -1239,7 +1278,7 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
             {settingsOpen ? (
               <div className="sim-settings-panel">
                 <button type="button" className="sim-settings-button" onClick={() => setIsMuted((current) => !current)}>
-                  {isMuted ? "Unmute voices" : "Mute voices"}
+                  {isMuted ? "Unmute audio" : "Mute audio"}
                 </button>
                 <button
                   type="button"
@@ -1268,75 +1307,104 @@ export function StoryGame({ mode = "main", previewSlug }: StoryGameProps) {
             ) : null}
           </header>
 
-          <div key={`${currentScene.id}:${storyState.currentLineIndex}`} className="sim-scene-grid">
-            <div className="sim-character-column">
-              <div className="sim-avatar-wrap">
-                <CharacterAvatar
-                  characterId={activeSpeaker.id}
-                  size="large"
-                  className={
-                    activeSpeaker.id === "you" && storyState.archetypeId
-                      ? `sim-archetype-avatar-${storyState.archetypeId}`
-                      : undefined
+          <div key={`${currentScene.id}:${phase}`} className="sim-scene-grid">
+            {currentScene.type === "dialogue" && phase === "dialog" ? (
+              <SketchDialogSequence
+                lines={dialogLines}
+                initialLineIndex={storyState.currentLineIndex}
+                onLineIndexChange={handleDialogLineChange}
+                onSequenceComplete={handleDialogSequenceComplete}
+                onSpeakerChange={() => {
+                  if (!isMuted) {
+                    sound.whoosh();
                   }
-                />
-              </div>
-              <div className="sim-character-shadow" />
-            </div>
+                }}
+                onTypingComplete={() => {
+                  if (!isMuted) {
+                    sound.pop();
+                  }
+                }}
+                onInteract={() => {
+                  void sound.prime();
+                }}
+                locationLabel={currentScene.locationLabel}
+                finalButtonLabel={currentScene.continueLabel}
+                getSecondaryAction={(line) =>
+                  line.overlayId
+                    ? {
+                        label: currentScene.overlayPromptLabel ?? "Open overlay",
+                        onClick: () => openOverlay(line.overlayId!),
+                      }
+                    : null
+                }
+                archetypeClassName={
+                  storyState.archetypeId ? `sim-archetype-avatar-${storyState.archetypeId}` : undefined
+                }
+              />
+            ) : null}
 
-            <div className="sim-dialogue-column">
-              {currentScene.type === "dialogue" && currentDialogue ? (
-                <article
-                  className={`sim-bubble ${
-                    currentDialogue.bubbleType === "thought" ? "sim-bubble-thought" : ""
-                  }`}
-                >
-                  <span className="sim-bubble-tag">{activeSpeaker.name}</span>
-                  <div className="sim-bubble-inner">
-                    {currentScene.locationLabel ? (
-                      <p className="sim-location-label">{currentScene.locationLabel}</p>
-                    ) : null}
-                    <BubbleText line={currentDialogue} archetypeId={storyState.archetypeId} />
-                    <div className="sim-bubble-actions">
-                      {currentDialogue.overlayId ? (
-                        <button
-                          type="button"
-                          className="sim-inline-link"
-                          onClick={() => openOverlay(currentDialogue.overlayId!)}
-                        >
-                          {currentScene.overlayPromptLabel ?? "Open overlay"}
-                        </button>
-                      ) : null}
-                      <button type="button" className="sim-next-button" onClick={handleContinue}>
-                        {storyState.currentLineIndex < currentScene.lines.length - 1
-                          ? "Next ►"
-                          : currentScene.continueLabel ?? "Next ►"}
-                      </button>
+            {currentScene.type === "dialogue" && phase === "minigame" && currentScene.miniGameType ? (
+              <MiniGameRouter
+                type={currentScene.miniGameType}
+                onComplete={handleMiniGameComplete}
+                sound={sound}
+                onInteract={() => {
+                  void sound.prime();
+                }}
+              />
+            ) : null}
+
+            {currentScene.type === "choice" ? (
+              <>
+                <div className="sim-character-column">
+                  <div className="sim-avatar-wrap">
+                    <CharacterAvatar
+                      characterId={activeSpeaker.id}
+                      size="large"
+                      className={
+                        activeSpeaker.id === "you" && storyState.archetypeId
+                          ? `sim-archetype-avatar-${storyState.archetypeId}`
+                          : undefined
+                      }
+                    />
+                  </div>
+                  <div className="sim-character-shadow" />
+                </div>
+
+                <div className="sim-dialogue-column">
+                  <article className="sim-choice-panel">
+                    <SketchDialogBubble
+                      text={getLineText(currentScene.prompt, storyState.archetypeId)}
+                      speakerName={activeSpeaker.name}
+                      speakerType={activeSpeaker.id}
+                      isThought={currentScene.prompt.bubbleType === "thought"}
+                      onComplete={() => undefined}
+                      instantReveal
+                      showContinueButton={false}
+                      onInteract={() => {
+                        void sound.prime();
+                      }}
+                      locationLabel={currentScene.locationLabel}
+                      secondaryActionLabel={currentScene.prompt.overlayId ? "Open overlay" : undefined}
+                      onSecondaryAction={
+                        currentScene.prompt.overlayId
+                          ? () => {
+                              openOverlay(currentScene.prompt.overlayId!);
+                            }
+                          : undefined
+                      }
+                      annotation={currentScene.prompt.annotation}
+                    />
+
+                    <div className="sim-choice-stack">
+                      {currentScene.choices.map((choice) => (
+                        <ChoiceCard key={choice.id} choice={choice} onSelect={() => handleChoice(choice)} />
+                      ))}
                     </div>
-                  </div>
-                </article>
-              ) : null}
-
-              {currentScene.type === "choice" ? (
-                <article className="sim-choice-panel">
-                  <div className={`sim-bubble ${currentScene.prompt.bubbleType === "thought" ? "sim-bubble-thought" : ""}`}>
-                    <span className="sim-bubble-tag">{activeSpeaker.name}</span>
-                    <div className="sim-bubble-inner">
-                      {currentScene.locationLabel ? (
-                        <p className="sim-location-label">{currentScene.locationLabel}</p>
-                      ) : null}
-                      <BubbleText line={currentScene.prompt} archetypeId={storyState.archetypeId} />
-                    </div>
-                  </div>
-
-                  <div className="sim-choice-stack">
-                    {currentScene.choices.map((choice) => (
-                      <ChoiceCard key={choice.id} choice={choice} onSelect={() => handleChoice(choice)} />
-                    ))}
-                  </div>
-                </article>
-              ) : null}
-            </div>
+                  </article>
+                </div>
+              </>
+            ) : null}
           </div>
 
           <div className="sim-ground-line" />

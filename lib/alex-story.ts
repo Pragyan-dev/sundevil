@@ -17,7 +17,7 @@ import type {
 
 const storyData = asuUnlockedStory;
 
-export const ALEX_STORY_STORAGE_KEY = "sundevilconnect-asu-unlocked-v2";
+export const ALEX_STORY_STORAGE_KEY = "sundevilconnect-asu-unlocked-v3";
 
 export const storyDays = storyData.days;
 export const storyArchetypes = storyData.archetypes;
