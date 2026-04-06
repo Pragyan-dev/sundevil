@@ -1,0 +1,607 @@
+[
+  {
+    "id": "marisol-soto",
+    "initials": "M.S.",
+    "firstName": "Marisol",
+    "pronouns": "she/her",
+    "year": "first-year",
+    "major": "Computer Science",
+    "campus": "tempe",
+    "isFirstGen": true,
+    "isInternational": false,
+    "isCommuter": true,
+    "livesOnCampus": false,
+    "workHoursPerWeek": 8,
+    "hasScholarship": false,
+    "behaviorTags": ["Quiet in lecture", "Shows up early", "Asked TA after class"],
+    "strengths": [
+      "Shows up early to lecture",
+      "Writes detailed notes",
+      "Stays through the full lecture"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T14:30:00",
+        "description": "Asked the TA where the math room was after class and left before office hours began.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-03T18:20:00",
+        "description": "Opened Canvas but did not click any faculty help or office-hours links.",
+        "type": "neutral"
+      },
+      {
+        "date": "2026-09-02T08:55:00",
+        "description": "Arrived early and took notes through the full Python lecture.",
+        "type": "positive"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "never",
+      "tutoring": "never",
+      "advising": "never",
+      "counseling": "never",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": false,
+      "currentDay": 0,
+      "completed": false,
+      "badges": [],
+      "confidence": 34
+    },
+    "concernLevel": "high",
+    "supportFocus": "Navigation anxiety and uncertainty about where help lives on campus are keeping this student from making a first move.",
+    "recommendedResource": {
+      "type": "tutoring",
+      "reason": "A concrete tutoring location and drop-in process can make support feel real instead of abstract."
+    },
+    "outreachHistory": []
+  },
+  {
+    "id": "jalen-thomas",
+    "initials": "J.T.",
+    "firstName": "Jalen",
+    "pronouns": "he/him",
+    "year": "first-year",
+    "major": "Software Engineering",
+    "campus": "tempe",
+    "isFirstGen": true,
+    "isInternational": false,
+    "isCommuter": true,
+    "livesOnCampus": false,
+    "workHoursPerWeek": 10,
+    "hasScholarship": false,
+    "behaviorTags": ["Morning job", "Asks clarifying questions", "Calendar user"],
+    "strengths": [
+      "Introduced himself after class",
+      "Uses calendar reminders",
+      "Already checked DARS independently"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T16:10:00",
+        "description": "Downloaded all three syllabi and entered deadlines into his calendar.",
+        "type": "positive"
+      },
+      {
+        "date": "2026-09-03T11:40:00",
+        "description": "Completed an advising visit and asked about next-semester sequencing.",
+        "type": "positive"
+      },
+      {
+        "date": "2026-09-02T09:15:00",
+        "description": "Stayed after Python lecture to clarify the homework policy.",
+        "type": "positive"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "never",
+      "tutoring": "once",
+      "advising": "once",
+      "counseling": "never",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": true,
+      "currentDay": 3,
+      "completed": false,
+      "badges": ["classroom-navigator", "dars-scout", "advisor-check-in", "tutor-trial"],
+      "confidence": 68
+    },
+    "concernLevel": "steady",
+    "supportFocus": "Keep momentum steady and avoid over-messaging a student who is already using support appropriately.",
+    "recommendedResource": {
+      "type": "career-services",
+      "reason": "This student is ready for light-touch future planning rather than emergency intervention."
+    },
+    "outreachHistory": [
+      {
+        "date": "2026-09-03T17:10:00",
+        "type": "email",
+        "summary": "Sent a warm follow-up after the first advising visit with encouragement to keep using the same planning system."
+      },
+      {
+        "date": "2026-09-04T10:05:00",
+        "type": "check-in",
+        "summary": "Confirmed that the student understood DARS and already had next deadlines in the calendar."
+      }
+    ]
+  },
+  {
+    "id": "noor-khan",
+    "initials": "N.K.",
+    "firstName": "Noor",
+    "pronouns": "she/they",
+    "year": "first-year",
+    "major": "Data Science",
+    "campus": "tempe",
+    "isFirstGen": true,
+    "isInternational": true,
+    "isCommuter": true,
+    "livesOnCampus": false,
+    "workHoursPerWeek": 0,
+    "hasScholarship": true,
+    "behaviorTags": ["Strong quiz prep habits", "Reads everything", "Overthinks emails"],
+    "strengths": [
+      "Comes prepared with written questions",
+      "Reads announcements early",
+      "Attends lecture consistently"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T15:20:00",
+        "description": "Told a peer she rewrote an office-hours email three times and never sent it.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-03T13:45:00",
+        "description": "Opened the office-hours preview but has not attended a live visit yet.",
+        "type": "neutral"
+      },
+      {
+        "date": "2026-09-02T09:05:00",
+        "description": "Attendance is consistent across all three classes this week.",
+        "type": "positive"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "never",
+      "tutoring": "never",
+      "advising": "once",
+      "counseling": "never",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": true,
+      "currentDay": 4,
+      "completed": false,
+      "badges": [
+        "classroom-navigator",
+        "dars-scout",
+        "advisor-check-in",
+        "tutor-trial",
+        "office-hours-drafted"
+      ],
+      "confidence": 61
+    },
+    "concernLevel": "watch",
+    "supportFocus": "The barrier is not willingness to work; it is uncertainty about etiquette and how to walk into office hours without feeling foolish.",
+    "recommendedResource": {
+      "type": "advising",
+      "reason": "This student responds well when the process is translated into concrete next steps."
+    },
+    "outreachHistory": [
+      {
+        "date": "2026-09-04T09:00:00",
+        "type": "email",
+        "summary": "Shared the office-hours preview and normalized asking one small question."
+      }
+    ]
+  },
+  {
+    "id": "eli-romero",
+    "initials": "E.R.",
+    "firstName": "Eli",
+    "pronouns": "he/they",
+    "year": "first-year",
+    "major": "Informatics",
+    "campus": "tempe",
+    "isFirstGen": true,
+    "isInternational": false,
+    "isCommuter": true,
+    "livesOnCampus": false,
+    "workHoursPerWeek": 18,
+    "hasScholarship": false,
+    "behaviorTags": ["Works evenings", "Low portal confidence", "Stays after class once"],
+    "strengths": [
+      "Responds well to direct asks",
+      "Shows interest in Python concepts",
+      "Will admit when the portal is confusing"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T19:10:00",
+        "description": "Said MyASU feels important but too dense to know what is urgent.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-03T12:40:00",
+        "description": "Did not open the advising follow-up link after class.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-02T10:20:00",
+        "description": "Stayed after class once to ask if all enrollment documents were finished.",
+        "type": "positive"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "never",
+      "tutoring": "never",
+      "advising": "never",
+      "counseling": "never",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": true,
+      "currentDay": 1,
+      "completed": false,
+      "badges": ["classroom-navigator"],
+      "confidence": 39
+    },
+    "concernLevel": "high",
+    "supportFocus": "Work hours and portal overload are making advising and MyASU tasks feel too expensive to start.",
+    "recommendedResource": {
+      "type": "advising",
+      "reason": "A short advising visit can translate DARS, tasks, and deadlines into a simpler plan."
+    },
+    "outreachHistory": []
+  },
+  {
+    "id": "priya-shah",
+    "initials": "P.S.",
+    "firstName": "Priya",
+    "pronouns": "she/her",
+    "year": "first-year",
+    "major": "Chemistry",
+    "campus": "tempe",
+    "isFirstGen": true,
+    "isInternational": false,
+    "isCommuter": false,
+    "livesOnCampus": true,
+    "workHoursPerWeek": 0,
+    "hasScholarship": true,
+    "behaviorTags": ["Lives on campus", "High self-pressure", "Reads announcements early"],
+    "strengths": [
+      "Prepared notes for lecture",
+      "Strong attendance across week one",
+      "Follows assignment instructions carefully"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T13:00:00",
+        "description": "Opened the office-hours preview after a personalized message but still has not gone.",
+        "type": "neutral"
+      },
+      {
+        "date": "2026-09-03T14:35:00",
+        "description": "Told a lab partner she does not want to waste professor time with a small question.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-02T08:30:00",
+        "description": "Read every course announcement before the lecture started.",
+        "type": "positive"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "never",
+      "tutoring": "once",
+      "advising": "once",
+      "counseling": "never",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": true,
+      "currentDay": 4,
+      "completed": false,
+      "badges": [
+        "classroom-navigator",
+        "dars-scout",
+        "advisor-check-in",
+        "tutor-trial",
+        "office-hours-drafted"
+      ],
+      "confidence": 59
+    },
+    "concernLevel": "watch",
+    "supportFocus": "The student is academically engaged but still treats office hours like something reserved for serious emergencies.",
+    "recommendedResource": {
+      "type": "tutoring",
+      "reason": "A low-pressure academic support space can make later office-hours outreach feel more normal."
+    },
+    "outreachHistory": [
+      {
+        "date": "2026-09-04T08:40:00",
+        "type": "email",
+        "summary": "Sent a personalized note normalizing small office-hours questions and linked the preview."
+      }
+    ]
+  },
+  {
+    "id": "andres-luna",
+    "initials": "A.L.",
+    "firstName": "Andres",
+    "pronouns": "he/him",
+    "year": "second-year",
+    "major": "Computer Systems Engineering",
+    "campus": "tempe",
+    "isFirstGen": false,
+    "isInternational": false,
+    "isCommuter": true,
+    "livesOnCampus": false,
+    "workHoursPerWeek": 12,
+    "hasScholarship": true,
+    "behaviorTags": ["Commuter", "Works afternoons", "Volunteers answers"],
+    "strengths": [
+      "Uses tutoring when a concept stalls",
+      "Volunteers answers in class",
+      "Tracks deadlines independently"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T17:15:00",
+        "description": "Mentioned he already booked a career fair prep appointment for later this month.",
+        "type": "positive"
+      },
+      {
+        "date": "2026-09-03T15:10:00",
+        "description": "Used tutoring once this week before the first quiz review.",
+        "type": "positive"
+      },
+      {
+        "date": "2026-09-02T11:00:00",
+        "description": "Dropped by office hours with one targeted question.",
+        "type": "positive"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "once",
+      "tutoring": "regular",
+      "advising": "once",
+      "counseling": "never",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": true,
+      "currentDay": 5,
+      "completed": true,
+      "badges": [
+        "classroom-navigator",
+        "dars-scout",
+        "advisor-check-in",
+        "tutor-trial",
+        "office-hours-drafted",
+        "office-hours-visited",
+        "wellness-door-open",
+        "myasu-cleanup"
+      ],
+      "confidence": 86
+    },
+    "concernLevel": "steady",
+    "supportFocus": "Use this student as a model for what self-directed support can look like without over-checking in.",
+    "recommendedResource": {
+      "type": "career-services",
+      "reason": "Career support is the next highest-value resource for this student rather than remedial outreach."
+    },
+    "outreachHistory": [
+      {
+        "date": "2026-09-03T16:30:00",
+        "type": "note",
+        "summary": "Marked as stable after confirming the student already used tutoring and office hours appropriately."
+      }
+    ]
+  },
+  {
+    "id": "zoe-kim",
+    "initials": "Z.K.",
+    "firstName": "Zoe",
+    "pronouns": "she/her",
+    "year": "first-year",
+    "major": "Biological Sciences",
+    "campus": "tempe",
+    "isFirstGen": false,
+    "isInternational": false,
+    "isCommuter": false,
+    "livesOnCampus": true,
+    "workHoursPerWeek": 15,
+    "hasScholarship": false,
+    "behaviorTags": ["Works weekends", "Friendly in lab", "Money stress"],
+    "strengths": [
+      "Shows up for lab prepared",
+      "Asks peers for clarification",
+      "Stays engaged even when stressed"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T20:15:00",
+        "description": "Said textbook and meal costs are hitting harder than expected and she has not opened aid follow-up tasks.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-03T17:20:00",
+        "description": "Started the simulation but stopped during the Day 2 resource decision.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-02T13:05:00",
+        "description": "Asked a classmate where to find scholarship info but did not follow up online.",
+        "type": "neutral"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "never",
+      "tutoring": "never",
+      "advising": "never",
+      "counseling": "never",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": true,
+      "currentDay": 2,
+      "completed": false,
+      "badges": ["classroom-navigator", "dars-scout"],
+      "confidence": 41
+    },
+    "concernLevel": "high",
+    "supportFocus": "Financial stress is present, but the actionable barrier is not knowing which aid step or campus contact should happen first.",
+    "recommendedResource": {
+      "type": "financial-aid",
+      "reason": "The student needs a concrete aid pathway before money stress spills further into class performance."
+    },
+    "outreachHistory": []
+  },
+  {
+    "id": "fatima-hassan",
+    "initials": "F.H.",
+    "firstName": "Fatima",
+    "pronouns": "she/her",
+    "year": "first-year",
+    "major": "Mechanical Engineering",
+    "campus": "tempe",
+    "isFirstGen": true,
+    "isInternational": true,
+    "isCommuter": false,
+    "livesOnCampus": true,
+    "workHoursPerWeek": 6,
+    "hasScholarship": true,
+    "behaviorTags": ["International student", "Quiet in large rooms", "Consistent attendance"],
+    "strengths": [
+      "Consistent lecture attendance",
+      "Takes thorough handwritten notes",
+      "Responds well to direct reassurance"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T18:05:00",
+        "description": "Started the simulation and stopped on Day 2 after the advising jargon section.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-03T12:00:00",
+        "description": "Mentioned that campus terms still sound unfamiliar and slightly intimidating.",
+        "type": "concern"
+      },
+      {
+        "date": "2026-09-02T09:10:00",
+        "description": "Was in every class on time and ready to take notes.",
+        "type": "positive"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "never",
+      "tutoring": "never",
+      "advising": "never",
+      "counseling": "once",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": true,
+      "currentDay": 2,
+      "completed": false,
+      "badges": ["classroom-navigator"],
+      "confidence": 44
+    },
+    "concernLevel": "watch",
+    "supportFocus": "The pattern suggests jargon and process friction more than academic disengagement, especially around advising and resource language.",
+    "recommendedResource": {
+      "type": "student-success-center",
+      "reason": "A low-pressure coaching-style entry point may feel safer than jumping straight into formal appointments."
+    },
+    "outreachHistory": [
+      {
+        "date": "2026-09-04T11:25:00",
+        "type": "note",
+        "summary": "Logged that the student seems more blocked by vocabulary and process than by course interest."
+      }
+    ]
+  },
+  {
+    "id": "diego-mora",
+    "initials": "D.M.",
+    "firstName": "Diego",
+    "pronouns": "he/him",
+    "year": "third-year",
+    "major": "Computer Science",
+    "campus": "tempe",
+    "isFirstGen": false,
+    "isInternational": false,
+    "isCommuter": true,
+    "livesOnCampus": false,
+    "workHoursPerWeek": 20,
+    "hasScholarship": false,
+    "behaviorTags": ["Commutes 35 min", "Part-time job", "Direct communicator"],
+    "strengths": [
+      "Uses office hours strategically",
+      "Communicates directly when he needs clarification",
+      "Balances work and class obligations consistently"
+    ],
+    "signals": [
+      {
+        "date": "2026-09-04T16:50:00",
+        "description": "Referred a classmate to tutoring after going himself earlier in the week.",
+        "type": "positive"
+      },
+      {
+        "date": "2026-09-03T10:45:00",
+        "description": "Attended office hours with one specific debugging question.",
+        "type": "positive"
+      },
+      {
+        "date": "2026-09-02T14:15:00",
+        "description": "Checked DARS on his own before advising.",
+        "type": "positive"
+      }
+    ],
+    "resourceUsage": {
+      "officeHours": "regular",
+      "tutoring": "once",
+      "advising": "regular",
+      "counseling": "never",
+      "financialCoaching": "never"
+    },
+    "simulation": {
+      "started": true,
+      "currentDay": 5,
+      "completed": true,
+      "badges": [
+        "classroom-navigator",
+        "dars-scout",
+        "advisor-check-in",
+        "tutor-trial",
+        "office-hours-drafted",
+        "office-hours-visited"
+      ],
+      "confidence": 81
+    },
+    "concernLevel": "steady",
+    "supportFocus": "This student is stable; outreach should stay minimal and specific to career-planning opportunities, not academic concern.",
+    "recommendedResource": {
+      "type": "career-services",
+      "reason": "Academic support is already in use, so the next nudge should be future-facing."
+    },
+    "outreachHistory": [
+      {
+        "date": "2026-09-03T18:00:00",
+        "type": "email",
+        "summary": "Shared a career-fair reminder and encouraged the student to use his strong office-hours habits in internship planning too."
+      },
+      {
+        "date": "2026-09-04T12:20:00",
+        "type": "check-in",
+        "summary": "Briefly confirmed the student already has a clear plan for balancing work shifts and the next exam cycle."
+      }
+    ]
+  }
+]

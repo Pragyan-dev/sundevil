@@ -58,6 +58,139 @@ export interface Resource {
   flowSteps: ResourceFlowStep[];
 }
 
+export type WalkthroughMode = "in-person" | "online" | "drop-in";
+
+export interface StudentContext {
+  concern: FinderConcern | null;
+  year: StudentYear | null;
+  experience: ResourceExperience | null;
+}
+
+export interface WalkthroughVisual {
+  icon: string;
+  eyebrow?: string;
+  title: string;
+  caption?: string;
+}
+
+export interface WalkthroughStep {
+  id: string;
+  title: string;
+  description: string;
+  bullets: string[];
+  reassurance?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  ctaExternal?: boolean;
+  visual?: WalkthroughVisual;
+}
+
+export interface WalkthroughModeDefinition {
+  mode: WalkthroughMode;
+  label: string;
+  summary: string;
+  steps: WalkthroughStep[];
+}
+
+export interface WalkthroughQuestionSet {
+  defaultOpener: string;
+  defaultProTip: string;
+  firstTimeIntro?: string;
+  scenarioPlaceholders?: Partial<Record<FinderConcern, string>>;
+  questionsByYear: Record<StudentYear, string[]>;
+}
+
+export interface ResourceWalkthrough {
+  slug: ResourceSlug;
+  title: string;
+  summary: string;
+  modes: WalkthroughModeDefinition[];
+  questionSet: WalkthroughQuestionSet;
+}
+
+export interface GeneratedQuestionsResult {
+  opener: string;
+  questions: string[];
+  proTip: string;
+}
+
+export type DashboardCampus = "tempe" | "downtown" | "polytechnic" | "west" | "online";
+export type DashboardConcernLevel = "high" | "watch" | "steady";
+export type DashboardResourceUsageLevel = "never" | "once" | "regular";
+export type FacultyEmailTone = "warm" | "direct" | "encouraging";
+export type FacultyEmailFocusArea = "navigation" | "tutoring" | "advising" | "general";
+
+export interface DashboardSignal {
+  date: string;
+  description: string;
+  type: "positive" | "neutral" | "concern";
+}
+
+export interface DashboardResourceUsage {
+  officeHours: DashboardResourceUsageLevel;
+  tutoring: DashboardResourceUsageLevel;
+  advising: DashboardResourceUsageLevel;
+  counseling: DashboardResourceUsageLevel;
+  financialCoaching: DashboardResourceUsageLevel;
+}
+
+export interface DashboardSimulationStatus {
+  started: boolean;
+  currentDay: number;
+  completed: boolean;
+  badges: string[];
+  confidence: number;
+}
+
+export interface DashboardRecommendedResource {
+  type: ResourceSlug;
+  reason: string;
+}
+
+export interface DashboardOutreachItem {
+  date: string;
+  type: "email" | "check-in" | "note";
+  summary: string;
+}
+
+export interface DashboardStudent {
+  id: string;
+  initials: string;
+  firstName: string;
+  pronouns: string;
+  year: StudentYear;
+  major: string;
+  campus: DashboardCampus;
+  isFirstGen: boolean;
+  isInternational: boolean;
+  isCommuter: boolean;
+  livesOnCampus: boolean;
+  workHoursPerWeek: number;
+  hasScholarship: boolean;
+  behaviorTags: string[];
+  strengths: string[];
+  signals: DashboardSignal[];
+  resourceUsage: DashboardResourceUsage;
+  simulation: DashboardSimulationStatus;
+  concernLevel: DashboardConcernLevel;
+  supportFocus: string;
+  recommendedResource: DashboardRecommendedResource;
+  outreachHistory: DashboardOutreachItem[];
+}
+
+export interface CohortPattern {
+  id: string;
+  icon: string;
+  text: string;
+  severity: "high" | "medium" | "low";
+  studentIds: string[];
+}
+
+export interface FacultyEmailDraft {
+  subject: string;
+  body: string;
+}
+
 export interface FinderOption<T extends string> {
   label: string;
   value: T;

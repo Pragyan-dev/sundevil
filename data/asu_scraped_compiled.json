@@ -1,0 +1,221 @@
+{
+  "tutoring": {
+    "name": "Subject Area Tutoring (ASN)",
+    "url": "https://tutoring.asu.edu/tutoring",
+    "type": "drop-in",
+    "booking": "No appointment needed. Drop-in only. Bring ASU Sun Card.",
+    "booking_tool": "TracCloud at trac.asu.edu to search for tutors by course",
+    "how_to_search_tutor": "https://docs.google.com/document/d/1HJLFNySXFq7yBT2qasF7jh-N9MTFOz1IqZKXbTaO9bk",
+    "video_guide": "https://www.youtube.com/watch?v=ICd0e9WCBgI",
+    "queue_system": "Check in with desk aide, submit name to queueing system, tutor comes to you",
+    "queue_guide": "https://docs.google.com/document/d/1HI1Q-9LhFLuIyK4iA9rOc9vwZlG8L5hwpKkgdplXctc",
+    "what_to_bring": "ASU Sun Card, notes, textbooks, calculators, paper, pencils",
+    "subjects": "Math, Science, Business, Statistics",
+    "cannot_help_with": "Take-home tests, quizzes, graded assessments (unless instructor gives written permission)",
+    "locations": {
+      "online": {
+        "name": "Online Tutoring Center",
+        "link": "https://asu.zoom.us/j/89720501931",
+        "hours": "Mon-Thur 10am-11pm, Fri 10am-3pm, Sun 3pm-11pm",
+        "phone": "480-965-9072"
+      },
+      "tempe": [
+        {
+          "name": "Hayden Library Concourse Level C-41",
+          "map_link": "https://gis.m.asu.edu/asucampus/?find=LIB",
+          "hours": "Mon-Thur 10am-6pm, Fri 10am-3pm",
+          "phone": "480-965-3074"
+        },
+        {
+          "name": "Math Tutoring Center, Wexler 116",
+          "map_link": "https://gis.m.asu.edu/asucampus/?find=WXLR",
+          "hours": "Mon-Thur 10am-6pm, Fri 10am-3pm",
+          "phone": "480-965-9976"
+        },
+        {
+          "name": "W.P. Carey Tutoring Center, BA 201",
+          "map_link": "https://gis.m.asu.edu/asucampus/?find=BA",
+          "hours": "Mon-Thur 11am-5pm, Fri 11am-3pm",
+          "phone": "480-965-8033"
+        },
+        {
+          "name": "HAV Evening Tutoring, MSHAL HAV F101",
+          "map_link": "https://gis.m.asu.edu/asucampus/?find=MSHAL",
+          "hours": "Mon-Thur 5pm-10pm",
+          "phone": "480-965-9072"
+        }
+      ],
+      "downtown": {
+        "name": "UCENT 101",
+        "map_link": "https://gis.m.asu.edu/asucampus/?find=UCENT",
+        "hours": "Mon-Thur 11am-5pm, Fri 11am-3pm",
+        "phone": "602-496-4278"
+      },
+      "polytechnic": {
+        "name": "CNTR 160",
+        "map_link": "https://gis.m.asu.edu/asucampus/?find=CNTR",
+        "hours": "Mon-Thur 11am-6pm, Fri 11am-3pm",
+        "phone": "480-727-1452"
+      },
+      "west": {
+        "name": "Fletcher Library, 1st Floor",
+        "map_link": "https://gis.m.asu.edu/asucampus/?find=FLHLB",
+        "hours": "Mon-Thur 11am-5pm, Fri 11am-3pm",
+        "phone": "480-965-0161"
+      }
+    },
+    "fulton_engineering_tutoring": {
+      "name": "Fulton Schools Engineering Tutoring Centers (FSETC)",
+      "url": "https://students.engineering.asu.edu/pulse/tutoring/",
+      "type": "drop-in",
+      "subjects": "Physics, Math, Computer Science, various Engineering disciplines",
+      "locations": [
+        {
+          "name": "ECG 104 (Computing/SCAI courses)",
+          "hours": "Mon-Thur 9am-10pm, Fri 9am-7pm, Sat-Sun 10am-5pm"
+        },
+        {
+          "name": "ECG 152 (Engineering courses: Aerospace, BME, ChemE, Civil, EE, IE, MSE, ME, Math, Physics)",
+          "hours": "Mon-Thur 9am-10pm, Fri 9am-7pm, Sat-Sun 10am-5pm"
+        }
+      ],
+      "virtual": "Available via Zoom, same queue as in-person"
+    },
+    "checkin_process": [
+      "Walk into any tutoring center with your ASU Sun Card",
+      "Check in with the desk aide at the front",
+      "Submit your name to the queueing system",
+      "A tutor will be with you as soon as possible",
+      "You may work in small groups with a tutor",
+      "Tutors are fellow students, not professors"
+    ],
+    "expectations": [
+      "Tutors are students too — they may not know every answer",
+      "Come prepared with specific questions and concepts",
+      "Tutors cannot help with graded assessments unless instructor gives written permission",
+      "Tutors review concepts and work through practice problems",
+      "Tutoring is not a substitute for class attendance",
+      "Sessions are typically 30-60 minutes"
+    ]
+  },
+  "counseling": {
+    "name": "ASU Counseling Services",
+    "url": "https://eoss.asu.edu/counseling",
+    "where_to_start": "https://eoss.asu.edu/counseling/services/where-to-start",
+    "cost": "Free for all currently enrolled ASU students",
+    "confidential": true,
+    "hours": "Mon-Fri 8am-5pm",
+    "crisis_line": "480-921-1006 (EMPACT, 24/7)",
+    "national_crisis": "Call or text 988",
+    "open_call_chat": {
+      "url": "https://eoss.asu.edu/counseling/services/open-call-and-open-chat",
+      "availability": "24/7/365",
+      "partner": "TELUS Health Student Support",
+      "languages": ["English", "Arabic", "Chinese", "French", "Korean", "Spanish"],
+      "how_to_access": [
+        "Download the TELUS Health Student Support app",
+        "Search for 'Arizona State University'",
+        "Fill in your name, preferred language, and consent",
+        "Your home screen offers Open Call, Chat, scheduling, mental health articles, and screening tools"
+      ]
+    },
+    "appointment_scheduling": {
+      "method": "My Health Portal or call the office",
+      "portal_url": "https://myhealth.asu.edu",
+      "same_day": "Same day in-person and telehealth appointments available — call the office",
+      "scheduled": "Scheduled consults available Mon-Fri on My Health Portal",
+      "telehealth": "Available anywhere in the world, including non-traditional hours"
+    },
+    "what_to_expect": [
+      "You do not need to be in crisis to use counseling",
+      "Same-day availability is guaranteed — you will always have a clinician available",
+      "First visit is an initial consultation to understand your needs",
+      "Services are matched to your specific care pathway",
+      "Sessions are confidential"
+    ],
+    "services": [
+      "Individual counseling",
+      "Crisis support",
+      "Telehealth sessions",
+      "Group therapy",
+      "Referral coordination"
+    ]
+  },
+  "advising": {
+    "name": "Academic Advising",
+    "overview": "Each ASU college has its own advising center. Fulton Engineering uses fultonapps.asu.edu/advising/",
+    "fulton_scheduling": {
+      "url": "https://fultonapps.asu.edu/advising/",
+      "calendar_url": "https://fultonapps.asu.edu/advising/calendar/",
+      "steps": [
+        "Go to fultonapps.asu.edu/advising/",
+        "Select 'Current Student' (or 'Prospective Student' if no ASU ID)",
+        "Log in with your ASURITE User ID and Password",
+        "Select your program from the dropdown",
+        "Select your academic advisor from the dropdown menu",
+        "Choose an open appointment slot",
+        "Click 'Make Appointment' and enter requested information",
+        "Confirmation email will be sent to your ASU email"
+      ],
+      "modalities": ["In-person", "Zoom", "Phone"],
+      "online_students": "Schedule during designated Online Student time slots, or call 480-727-3520"
+    },
+    "scai_advising": {
+      "tempe_address": "Centerpoint, Suite 105, 660 S. Mill Ave, Tempe, AZ 85281",
+      "business_hours": "8am-12pm and 1-5pm Mon-Fri",
+      "tempe_email": "fulton.scai.advising@asu.edu",
+      "poly_address": "Picacho Hall, Suite 245, 7151 E. Sonoran Arroyo Mall, Mesa, AZ 85212",
+      "poly_email": "fseadvising.poly@asu.edu",
+      "online_email": "fulton.scai.online@asu.edu",
+      "phone": "480-727-3520"
+    },
+    "express_advising": {
+      "description": "Walk-in, first come first served during peak times (start of fall/spring semesters)",
+      "intended_for": "Quick questions, routine check-ins, time-sensitive issues",
+      "time_limit": "15 minutes — longer meetings should be scheduled as appointments"
+    },
+    "first_year_students": {
+      "nest_program": "Nurturing Entering Students through Teaching — specialized first-year advisors",
+      "requirement": "Required to meet with advisor during first two semesters to be eligible to register",
+      "orientation": "First-year students meet advisor at New Student Experience orientation"
+    },
+    "continuing_students": {
+      "soar_program": "Success Outreach and Advising for Returning students",
+      "recommendation": "Meet with advisor minimum once per year (not required after first two semesters)"
+    },
+    "what_to_discuss": [
+      "Understanding program/degree requirements",
+      "Creating a personalized four-year study plan",
+      "Choosing and sequencing classes correctly",
+      "Checking if you are on track for graduation",
+      "Identifying campus resources",
+      "Completing petitions, appeals, university forms",
+      "Switching or adding a major/minor"
+    ],
+    "preparation_tips": [
+      "Be ready to discuss your situation, plans, and goals with an open mind",
+      "Be honest with your advisor and yourself",
+      "Prepare information relevant to your goals for the meeting",
+      "Ask questions — this is your chance to find out everything about your situation at ASU",
+      "Find your principal advisor on My ASU → 'Academic Advising' link in Academic Support Team box"
+    ]
+  },
+  "financial_aid": {
+    "name": "Financial Aid & Scholarships",
+    "url": "https://students.asu.edu/financial-aid",
+    "scholarships_url": "https://students.asu.edu/scholarships"
+  },
+  "writing_center": {
+    "name": "ASU Graduate Writing Centers",
+    "url": "https://tutoring.asu.edu/graduate-writing-centers",
+    "booking": "TracCloud dashboard — search for appointments",
+    "modalities": ["In-person (Downtown, Polytechnic, Tempe, West Valley)", "Zoom"],
+    "steps": [
+      "Search for appointment availability through TracCloud dashboard",
+      "Choose in-person location or online via Zoom",
+      "Receive confirmation email at ASU email"
+    ],
+    "drop_in": "Available on first-come first-served basis, 5-20 minute sessions",
+    "cancel_phone": "480-965-9072"
+  }
+}

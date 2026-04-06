@@ -1,0 +1,167 @@
+{
+  "slug": "scholarship-search",
+  "title": "ASU Scholarship Search",
+  "summary": "Scholarship searching works best when you stop treating it like one big perfect application and start treating it like a repeatable filter-and-apply process.",
+  "modes": [
+    {
+      "mode": "online",
+      "label": "Online",
+      "summary": "Use the ASU scholarships site and filters to narrow the list, then open the opportunities that actually fit you.",
+      "steps": [
+        {
+          "id": "start-on-asu-page",
+          "title": "Start from the ASU scholarships page",
+          "description": "Begin with ASU's scholarship overview so you are using the right search entry point, not guessing from old links.",
+          "bullets": [
+            "Open the ASU scholarships page.",
+            "Look for college-specific, merit, need-based, and profile-based opportunities.",
+            "Use your real student details when filtering."
+          ],
+          "ctaLabel": "Open ASU scholarships",
+          "ctaHref": "https://students.asu.edu/scholarships",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "🔎",
+            "eyebrow": "Search start",
+            "title": "Filter first, then read details",
+            "caption": "The goal is not to open every scholarship. The goal is to find the short list that actually fits you."
+          }
+        },
+        {
+          "id": "filter-honestly",
+          "title": "Filter honestly and check deadlines early",
+          "description": "The two biggest time-savers are filtering by your actual profile and checking the deadline before you read deeply.",
+          "bullets": [
+            "Filter by year, major area, residency, GPA, and first-gen status if relevant.",
+            "Open only the scholarships that still fit after filtering.",
+            "Write down the deadline before you spend time on the application."
+          ],
+          "reassurance": "Students often self-reject before the scholarship system rejects them. Let the criteria decide, not your anxiety.",
+          "visual": {
+            "icon": "⏰",
+            "eyebrow": "Cut the list down",
+            "title": "Eligibility and deadline before effort",
+            "caption": "A fast no is useful. It saves your time for the better fits."
+          }
+        },
+        {
+          "id": "apply-in-batches",
+          "title": "Apply in small batches instead of one giant session",
+          "description": "Scholarship searching gets easier when you treat it like a weekly batch task instead of a once-a-semester panic event.",
+          "bullets": [
+            "Pick the best 2-3 opportunities first.",
+            "Save links, deadlines, and required materials in one note.",
+            "Submit the strongest fits before hunting for more."
+          ],
+          "visual": {
+            "icon": "📋",
+            "eyebrow": "Better process",
+            "title": "Shortlist, track, apply",
+            "caption": "Consistency beats one heroic late-night search."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "in-person",
+      "label": "In person",
+      "summary": "Use the scholarship search online first, then get in-person help with narrowing options or understanding application requirements.",
+      "steps": [
+        {
+          "id": "search-before-visit",
+          "title": "Do one quick search before asking for help",
+          "description": "In-person help is much more useful if you arrive with a few scholarships or one confusing requirement already identified.",
+          "bullets": [
+            "Run a basic search first using your year, major, and profile.",
+            "Save 2-3 scholarships that look possible.",
+            "Bring the deadline or requirement that feels most confusing."
+          ],
+          "ctaLabel": "Open ASU scholarships",
+          "ctaHref": "https://students.asu.edu/scholarships",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "🧭",
+            "eyebrow": "Prep first",
+            "title": "Bring a shortlist, not a blank screen",
+            "caption": "Help gets better when there is something concrete to point at."
+          }
+        },
+        {
+          "id": "ask-fit-questions",
+          "title": "Ask whether these scholarships are realistic fits",
+          "description": "The best use of a support person is helping you prioritize the opportunities that are worth your time.",
+          "bullets": [
+            "Ask which opportunities seem strongest for your profile.",
+            "Ask what materials are most important for each one.",
+            "Ask whether there are other ASU-specific scholarships you should search next."
+          ],
+          "reassurance": "You are not wasting anyone's time by asking which options are worth pursuing. That saves time for everyone.",
+          "visual": {
+            "icon": "💬",
+            "eyebrow": "Best use of help",
+            "title": "Get clarity on fit, not vague motivation",
+            "caption": "The question is not “Do I deserve scholarships?” It is “Which ones should I actually spend time on?”"
+          }
+        },
+        {
+          "id": "leave-with-list",
+          "title": "Leave with a ranked list and next application dates",
+          "description": "Even a short help session is useful if you leave knowing which scholarship to open first tonight.",
+          "bullets": [
+            "Write down the top scholarship to apply for first.",
+            "Save the next 1-2 deadlines in your calendar.",
+            "Note any missing materials you need before applying."
+          ],
+          "visual": {
+            "icon": "🏁",
+            "eyebrow": "Outcome",
+            "title": "One scholarship to start with tonight",
+            "caption": "Specificity matters more than motivation here."
+          }
+        }
+      ]
+    }
+  ],
+  "questionSet": {
+    "defaultOpener": "Hi, I want to make sure I am spending time on scholarships that actually fit me.",
+    "defaultProTip": "If you find a scholarship that might fit, save the deadline before you do anything else.",
+    "firstTimeIntro": "A lot of students assume scholarships are only for a tiny group of perfect applicants. That assumption blocks more people than the actual criteria do.",
+    "scenarioPlaceholders": {
+      "class": "School is already expensive and I want to know whether there are scholarship options I might actually fit.",
+      "money": "I am worried about costs and I need help figuring out which scholarships are worth applying for.",
+      "overwhelmed": "I know I should be searching for scholarships, but I do not know how to narrow the list down.",
+      "schedule": "I need a realistic scholarship plan that fits around class and work.",
+      "something-else": "I want help turning the scholarship search into something concrete instead of vague."
+    },
+    "questionsByYear": {
+      "first-year": [
+        "Which scholarships are the strongest fit for a first-year student like me?",
+        "Are there first-gen or profile-based scholarships I might be missing?",
+        "What should I look at first: eligibility, deadline, or required materials?",
+        "What is one scholarship question students usually forget to ask?",
+        "How do I keep this from turning into an overwhelming search?"
+      ],
+      "second-year": [
+        "Which scholarships fit my current year and profile best?",
+        "How should I prioritize scholarships if I only have time for a few applications?",
+        "Are there college-specific scholarships I should search differently now?",
+        "What materials should I gather before I start applying?",
+        "What deadline should I be planning around next?"
+      ],
+      "third-year": [
+        "Are there scholarships tied to upper-division standing, major progress, or internships that I should know about?",
+        "Which scholarship filters matter most for someone at my stage?",
+        "How do I avoid wasting time on low-fit opportunities?",
+        "What is one question that helps me understand the real competitiveness of a scholarship?",
+        "What should I apply for first if I need to be practical about time?"
+      ],
+      "fourth-year-plus": [
+        "Which scholarships are still realistic and useful at this stage of my degree?",
+        "What should I prioritize if I need funding help without spending weeks searching?",
+        "Are there deadline or eligibility details that matter more for later-year students?",
+        "How do I know which applications are worth finishing first?",
+        "What is the next smartest scholarship step from here?"
+      ]
+    }
+  }
+}

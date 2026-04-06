@@ -1,0 +1,223 @@
+{
+  "slug": "financial-aid",
+  "title": "Financial Aid",
+  "summary": "Financial aid is usually less about one big mystery and more about a sequence of forms, tasks, verification steps, and deadlines.",
+  "modes": [
+    {
+      "mode": "online",
+      "label": "Online",
+      "summary": "Start from the FAFSA guidance, complete the right form, and then keep checking MyASU for follow-up tasks.",
+      "steps": [
+        {
+          "id": "read-asu-guidance",
+          "title": "Start with ASU's FAFSA guidance",
+          "description": "Before you click through to the federal form, use the ASU page to understand which form or deadline applies to you.",
+          "bullets": [
+            "Open the ASU financial aid guidance page.",
+            "Check whether you need FAFSA, CSS Profile, or another step for your situation.",
+            "Note any deadline or contributor information you will need."
+          ],
+          "ctaLabel": "Open ASU financial aid",
+          "ctaHref": "https://tuition.asu.edu/financial-aid/fafsa",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "💰",
+            "eyebrow": "Start here",
+            "title": "ASU guidance before the federal form",
+            "caption": "This keeps you from guessing which form or task matters most."
+          }
+        },
+        {
+          "id": "complete-form",
+          "title": "Complete the form with the right documents nearby",
+          "description": "The process goes much faster if you gather tax, income, and contributor information before starting.",
+          "bullets": [
+            "Go to StudentAid.gov from the ASU guidance page.",
+            "Use your and your contributor's FSA IDs if needed.",
+            "Submit the form and save the confirmation."
+          ],
+          "reassurance": "Almost everyone hits a confusing screen or missing-document moment here. That does not mean you are doing it wrong.",
+          "visual": {
+            "icon": "🧾",
+            "eyebrow": "Documents",
+            "title": "Forms, IDs, and confirmation screens",
+            "caption": "Most of the friction is paperwork, not intelligence."
+          }
+        },
+        {
+          "id": "watch-myasu",
+          "title": "Treat MyASU like the follow-up center",
+          "description": "Once the form is submitted, MyASU becomes the place where missing items, verification, and updates show up.",
+          "bullets": [
+            "Check your MyASU tasks regularly after filing.",
+            "Open any hold, task, or verification notice right away.",
+            "Complete requested documents before waiting for the next update."
+          ],
+          "visual": {
+            "icon": "📋",
+            "eyebrow": "After filing",
+            "title": "Tasks, holds, and award follow-up",
+            "caption": "A lot of students think filing the FAFSA is the end. It is often the start of the follow-up phase."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "in-person",
+      "label": "In person",
+      "summary": "Use the online guidance first, then bring the confusing task or form to an ASU financial aid contact point.",
+      "steps": [
+        {
+          "id": "identify-confusing-task",
+          "title": "Figure out the exact task or hold you need explained",
+          "description": "In-person help works best when you can point to the specific MyASU task, verification request, or missing document.",
+          "bullets": [
+            "Open MyASU and take a screenshot or write down the task name.",
+            "Bring your ASU ID and any document request you received.",
+            "Know whether your question is about filing, verification, awards, or missing requirements."
+          ],
+          "ctaLabel": "Open ASU financial aid",
+          "ctaHref": "https://tuition.asu.edu/financial-aid/fafsa",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "🧭",
+            "eyebrow": "Prepare first",
+            "title": "Bring the exact confusing screen with you",
+            "caption": "The clearer the task name is, the easier it is for staff to help quickly."
+          }
+        },
+        {
+          "id": "ask-task-explanation",
+          "title": "Ask them to translate the task into plain language",
+          "description": "The best in-person help often starts with, “Can you tell me what this actually means and what I need to do next?”",
+          "bullets": [
+            "Show them the task, hold, or document request.",
+            "Ask what the task is asking for in plain language.",
+            "Ask whether there is a deadline or a specific upload process."
+          ],
+          "reassurance": "A lot of first-gen students are not confused by the money itself so much as the system language. That is normal.",
+          "visual": {
+            "icon": "🏢",
+            "eyebrow": "Help desk reality",
+            "title": "Task translation and next steps",
+            "caption": "You are not asking them to “do it for you.” You are asking them to make the system readable."
+          }
+        },
+        {
+          "id": "finish-today-if-possible",
+          "title": "Finish the next task the same day if you can",
+          "description": "If the answer is simple and you have the document, try to complete the next step right away instead of putting it off.",
+          "bullets": [
+            "Write down exactly what file or information is still missing.",
+            "Ask where to upload it or who to send it to.",
+            "Set a reminder to recheck MyASU after you submit it."
+          ],
+          "visual": {
+            "icon": "📤",
+            "eyebrow": "Momentum",
+            "title": "One less task before you leave",
+            "caption": "Financial aid gets easier when you turn vague tasks into concrete actions."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "drop-in",
+      "label": "Drop-in",
+      "summary": "Use quick help or same-day support when you have a specific financial aid task, hold, or document question.",
+      "steps": [
+        {
+          "id": "bring-one-question",
+          "title": "Bring one focused question",
+          "description": "Drop-in help works best if you know the specific task, deadline, or hold you need explained.",
+          "bullets": [
+            "Open MyASU before you go so you can show the exact message.",
+            "Write down the one thing you need answered first.",
+            "Bring any document request or financial aid email with you."
+          ],
+          "visual": {
+            "icon": "🚶",
+            "eyebrow": "Fast help",
+            "title": "Best for one concrete problem",
+            "caption": "Drop-in is usually strongest when you are trying to decode one specific task."
+          }
+        },
+        {
+          "id": "ask-what-next",
+          "title": "Ask what the next action is, not just what the task means",
+          "description": "Do not leave with only an explanation. Leave knowing what to do, where to do it, and by when.",
+          "bullets": [
+            "Ask exactly what document or information is needed.",
+            "Ask where it should be submitted.",
+            "Ask how long it usually takes to update after submission."
+          ],
+          "reassurance": "Financial aid language can feel intentionally confusing. It often sounds that way even to students who have done this before.",
+          "visual": {
+            "icon": "❓",
+            "eyebrow": "Best question",
+            "title": "What do I do next, exactly?",
+            "caption": "That one sentence usually gets you farther than asking for a general explanation."
+          }
+        },
+        {
+          "id": "record-deadline",
+          "title": "Record the deadline before you walk away",
+          "description": "Deadlines matter here more than perfect understanding, so save the due date and task name before you leave.",
+          "bullets": [
+            "Put the deadline in your calendar immediately.",
+            "Keep the task name written down in case you need help again.",
+            "Check MyASU again after you complete the requested step."
+          ],
+          "visual": {
+            "icon": "🗓️",
+            "eyebrow": "Protect yourself",
+            "title": "Do not rely on memory for money deadlines",
+            "caption": "A saved deadline turns a stressful unknown into a manageable task."
+          }
+        }
+      ]
+    }
+  ],
+  "questionSet": {
+    "defaultOpener": "Hi, I am trying to make sure I understand my financial aid steps and I want to know what I should do next.",
+    "defaultProTip": "If you can, have MyASU open during the conversation. The task name or hold message matters more than a general description.",
+    "firstTimeIntro": "Financial aid systems are full of terms students are expected to already know. You are not behind for needing translation.",
+    "scenarioPlaceholders": {
+      "class": "I am worried school is getting harder because I am also stressed about paying for everything.",
+      "money": "I filed or started financial aid, but I still do not understand what tasks or documents I need to finish.",
+      "overwhelmed": "MyASU has tasks and I do not know which financial aid step matters first.",
+      "schedule": "I need to know what aid or deadlines might affect next semester planning.",
+      "something-else": "I know I need financial aid help, but I do not know how to explain the issue clearly."
+    },
+    "questionsByYear": {
+      "first-year": [
+        "Can you explain what this task or hold means in plain language?",
+        "What do I need to complete first so my aid stays on track?",
+        "Is there anything first-year students usually miss in this process?",
+        "How will I know in MyASU when the task is fully complete?",
+        "What deadline should I put in my calendar today?"
+      ],
+      "second-year": [
+        "What is the most important next financial aid step for me right now?",
+        "Do any of these tasks affect registration or billing timing?",
+        "Is there anything I should double-check before the next term starts?",
+        "What documents or follow-up requests are most common after this step?",
+        "What should I do if MyASU does not update after I submit something?"
+      ],
+      "third-year": [
+        "Are there aid or verification steps that could affect my next semester timeline?",
+        "What should I prioritize first if I have multiple financial aid tasks showing?",
+        "Is there anything that tends to delay aid at this stage?",
+        "How do I make sure I do not miss a requirement that affects disbursement?",
+        "What is the one question students usually do not think to ask here?"
+      ],
+      "fourth-year-plus": [
+        "Are there any financial aid tasks or deadlines that could affect finishing my degree on time?",
+        "What should I verify now before the next billing or aid cycle?",
+        "If my situation changed, what should I update first?",
+        "How do I know whether I still have unresolved aid items on my account?",
+        "What next step matters most from here?"
+      ]
+    }
+  }
+}

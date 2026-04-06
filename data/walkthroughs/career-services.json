@@ -1,0 +1,223 @@
+{
+  "slug": "career-services",
+  "title": "Career and Professional Development Services",
+  "summary": "Career services can help earlier than most students think, whether you need a resume, a campus job, an internship plan, or just a starting point.",
+  "modes": [
+    {
+      "mode": "in-person",
+      "label": "In person",
+      "summary": "Use career services on campus for a resume review, internship planning, interview prep, or job search support.",
+      "steps": [
+        {
+          "id": "choose-goal",
+          "title": "Choose the support goal before you book",
+          "description": "Career support is broader than one office visit, so first decide whether you need a resume review, job search help, internship planning, or interview prep.",
+          "bullets": [
+            "Open the jobs and careers page.",
+            "Pick the support type that best matches your immediate need.",
+            "If needed, log into Handshake or the matching platform the page points you to."
+          ],
+          "ctaLabel": "Open jobs and careers",
+          "ctaHref": "https://students.asu.edu/admitted/jobs-careers",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "💼",
+            "eyebrow": "Start here",
+            "title": "Resume help, internships, jobs, and planning",
+            "caption": "The first win is narrowing the reason you are going."
+          }
+        },
+        {
+          "id": "bring-materials",
+          "title": "Bring the materials you already have",
+          "description": "Career help works better when you bring your current draft, even if it feels rough or incomplete.",
+          "bullets": [
+            "Bring your current resume or a list of jobs, clubs, or class projects.",
+            "Bring a job description if you are applying to something specific.",
+            "Write down what feels hardest: starting, wording, confidence, or knowing where to look."
+          ],
+          "reassurance": "You do not need a polished resume to deserve career help. A messy draft is exactly what these meetings are for.",
+          "visual": {
+            "icon": "📄",
+            "eyebrow": "Bring this",
+            "title": "Any draft is better than a blank page",
+            "caption": "Career support gets better once there is something concrete to react to."
+          }
+        },
+        {
+          "id": "leave-with-next-career-step",
+          "title": "Leave with one career step, not a vague feeling",
+          "description": "A useful meeting should end with one next action you can do this week.",
+          "bullets": [
+            "Ask what one change matters most for your resume or plan.",
+            "Ask what platform or next meeting you should use after this.",
+            "Before you leave, decide whether your next move is revise, apply, or schedule another visit."
+          ],
+          "visual": {
+            "icon": "➡️",
+            "eyebrow": "Outcome",
+            "title": "One real move forward",
+            "caption": "You are trying to leave with direction, not with a perfect career plan."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "online",
+      "label": "Online",
+      "summary": "Use the jobs and careers page plus Handshake or other ASU tools to get virtual career support.",
+      "steps": [
+        {
+          "id": "open-platform",
+          "title": "Open the right career platform",
+          "description": "ASU career support often routes through Handshake, appointment systems, or online resume review tools.",
+          "bullets": [
+            "Start on the ASU jobs and careers page.",
+            "Follow the link to Handshake or the appointment platform you need.",
+            "Choose the virtual support type that fits your goal."
+          ],
+          "ctaLabel": "Open jobs and careers",
+          "ctaHref": "https://students.asu.edu/admitted/jobs-careers",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "💻",
+            "eyebrow": "Online entry point",
+            "title": "Handshake and career appointment tools",
+            "caption": "The main trick is getting into the right platform first."
+          }
+        },
+        {
+          "id": "upload-draft",
+          "title": "Upload or open your current materials",
+          "description": "If the support is virtual, your file is the conversation starter.",
+          "bullets": [
+            "Upload your resume, cover letter, or portfolio draft if asked.",
+            "Keep a job posting open if you are tailoring for something specific.",
+            "Join the appointment with your materials already on screen."
+          ],
+          "reassurance": "A rough draft is still a real starting point. It is normal to show up with something unfinished.",
+          "visual": {
+            "icon": "📂",
+            "eyebrow": "Before the call",
+            "title": "Have the file open before you join",
+            "caption": "That makes the session feel more practical immediately."
+          }
+        },
+        {
+          "id": "apply-fast",
+          "title": "Turn feedback into action quickly",
+          "description": "Career advice is most useful when you apply it the same day while the suggestions are still fresh.",
+          "bullets": [
+            "Update your draft soon after the session.",
+            "Save any recommended job boards, events, or next appointments.",
+            "Apply to one role or schedule one follow-up action this week."
+          ],
+          "visual": {
+            "icon": "🚀",
+            "eyebrow": "Keep momentum",
+            "title": "Feedback fades if it sits too long",
+            "caption": "A good next step is often one application or one cleaner draft."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "drop-in",
+      "label": "Drop-in",
+      "summary": "Use drop-in help for a quick resume review, one job-search question, or a fast sense check before applying.",
+      "steps": [
+        {
+          "id": "bring-one-file",
+          "title": "Bring one file or one question",
+          "description": "Drop-in career help works best when the visit is tightly focused.",
+          "bullets": [
+            "Bring your resume draft or a single job posting.",
+            "Know whether you need feedback, search direction, or a quick review.",
+            "Be ready to tell them what you want to leave with."
+          ],
+          "visual": {
+            "icon": "🚶",
+            "eyebrow": "Quick support",
+            "title": "One draft or one question is enough",
+            "caption": "Drop-in is for getting moving, not solving every career question at once."
+          }
+        },
+        {
+          "id": "ask-most-important-fix",
+          "title": "Ask for the one most important fix",
+          "description": "A short visit is most useful when you ask for the highest-impact change rather than general feedback.",
+          "bullets": [
+            "Ask what one change matters most before you apply.",
+            "Ask whether the resume is readable for the kind of role you want.",
+            "Ask where to go next if you need more than a quick review."
+          ],
+          "reassurance": "It is normal to want a quick signal that you are not completely off-track before applying anywhere.",
+          "visual": {
+            "icon": "🎯",
+            "eyebrow": "Best question",
+            "title": "What is the biggest fix before I send this?",
+            "caption": "That question usually gets a sharper answer than “What do you think?”"
+          }
+        },
+        {
+          "id": "book-longer-if-needed",
+          "title": "Book the longer support if your issue is bigger",
+          "description": "If the quick conversation surfaces bigger gaps, convert it into a longer appointment instead of trying to force it into drop-in time.",
+          "bullets": [
+            "Ask whether a longer appointment would help more.",
+            "Save the follow-up booking link or office name.",
+            "Make the follow-up decision before you leave."
+          ],
+          "visual": {
+            "icon": "📅",
+            "eyebrow": "Next move",
+            "title": "Use quick help to get pointed in the right direction",
+            "caption": "Drop-in works best when it leads cleanly to the next support step."
+          }
+        }
+      ]
+    }
+  ],
+  "questionSet": {
+    "defaultOpener": "Hi, I want to make sure I am using career support in the smartest way for where I am right now.",
+    "defaultProTip": "Bring the actual resume or job description if you have one. Career support gets sharper when there is something concrete on the screen.",
+    "firstTimeIntro": "A lot of students wait too long to use career services because they think they need a perfect plan first. You do not.",
+    "scenarioPlaceholders": {
+      "class": "I am trying to keep school on track, but I also need to think about jobs or internships and I do not know where to start.",
+      "money": "I need a job or internship plan that actually helps with money, not just vague career advice.",
+      "overwhelmed": "I know I should use career services, but the whole job and internship process feels overwhelming.",
+      "schedule": "I need help figuring out how career planning fits into this semester without becoming another huge task.",
+      "something-else": "I want career help, but I do not know what kind of appointment or question makes the most sense."
+    },
+    "questionsByYear": {
+      "first-year": [
+        "What kind of career support makes the most sense for a first-year student?",
+        "Should I be thinking about campus jobs, internships, or just a resume first?",
+        "What should I build first if I do not have much experience yet?",
+        "What is one step I can take this week that actually matters?",
+        "What do students usually wait too long to ask career services?"
+      ],
+      "second-year": [
+        "What should I be doing now to be more ready for internships or jobs later?",
+        "Is my resume focused on the right experiences yet?",
+        "What kind of appointment or resource would help me most next?",
+        "How should I use Handshake or campus career tools well?",
+        "What is one practical career step I should not push off this semester?"
+      ],
+      "third-year": [
+        "What should I prioritize right now: internship search, resume improvement, or interview prep?",
+        "Am I late on anything career-related, or am I still in a normal spot?",
+        "What is the most strategic next step for my field or interests?",
+        "How do I know whether my current materials are strong enough to apply?",
+        "What should I do after this meeting to keep momentum?"
+      ],
+      "fourth-year-plus": [
+        "What is the highest-impact career step for me right now?",
+        "How should I approach applications, interviews, or job strategy from this point?",
+        "What support is most useful if I feel behind on career planning late in college?",
+        "What should I fix first in my materials before applying seriously?",
+        "What is one question students at my stage usually do not think to ask?"
+      ]
+    }
+  }
+}

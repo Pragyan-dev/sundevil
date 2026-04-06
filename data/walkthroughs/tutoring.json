@@ -1,0 +1,224 @@
+{
+  "slug": "tutoring",
+  "title": "ASU Tutoring",
+  "summary": "Tutoring is one of the fastest ways to turn confusion into a plan. You do not need to be failing to use it.",
+  "modes": [
+    {
+      "mode": "in-person",
+      "label": "In person",
+      "summary": "Go to a tutoring space, check in, and work through the class material with a peer tutor.",
+      "steps": [
+        {
+          "id": "find-subject",
+          "title": "Find your subject and campus option",
+          "description": "Start on the ASU tutoring site and look for the course or support area that matches your class.",
+          "bullets": [
+            "Open tutoring.asu.edu and choose the tutoring menu.",
+            "Look for your subject, writing support, or the campus tutoring schedule.",
+            "Check whether your class is listed as drop-in, appointment-based, or both."
+          ],
+          "reassurance": "A lot of students use tutoring during the first rough week, especially before they know how hard a class will feel.",
+          "ctaLabel": "Open ASU tutoring",
+          "ctaHref": "https://tutoring.asu.edu/about-us",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "📚",
+            "eyebrow": "Step preview",
+            "title": "Tutoring site and schedule",
+            "caption": "You are usually looking for your course, campus, and whether it is drop-in or scheduled."
+          }
+        },
+        {
+          "id": "walk-in",
+          "title": "Walk in and check in",
+          "description": "Once you get there, the first step is usually just checking in with your name, course, and what you need help with.",
+          "bullets": [
+            "Bring your ASU ID, assignment, notes, or quiz review sheet.",
+            "Tell the front desk or tutor which class you are in and what is confusing.",
+            "Sit down with the tutor and show the exact problem that is blocking you."
+          ],
+          "reassurance": "You do not need a perfect explanation. Saying “I do not know where I got lost” is enough to start.",
+          "visual": {
+            "icon": "🪑",
+            "eyebrow": "What it feels like",
+            "title": "Check-in desk and study tables",
+            "caption": "Most tutoring spaces feel more like a study room than a high-pressure appointment."
+          }
+        },
+        {
+          "id": "leave-with-plan",
+          "title": "Leave with one clear next step",
+          "description": "The best tutoring session ends with a next step you can do on your own after you leave.",
+          "bullets": [
+            "Ask the tutor to show one example all the way through.",
+            "Write down the pattern or mistake you need to watch for.",
+            "If you still feel stuck, ask when the next tutoring session is."
+          ],
+          "visual": {
+            "icon": "✅",
+            "eyebrow": "Outcome",
+            "title": "A smaller problem than when you walked in",
+            "caption": "You are not supposed to master the whole course in one visit. You are trying to get unstuck."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "online",
+      "label": "Online",
+      "summary": "Use the tutoring site to find an online option, then join from your laptop with your class materials ready.",
+      "steps": [
+        {
+          "id": "pick-online",
+          "title": "Pick an online tutoring option",
+          "description": "Use the tutoring schedule to find a virtual session for your subject or support area.",
+          "bullets": [
+            "Open the tutoring schedule and filter for online help if needed.",
+            "Confirm the time, platform, and whether you need to register first.",
+            "Keep your course name and assignment title handy before you join."
+          ],
+          "ctaLabel": "Open tutoring schedule",
+          "ctaHref": "https://tutoring.asu.edu/about-us",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "💻",
+            "eyebrow": "Online setup",
+            "title": "Laptop, assignment, and ASURITE sign-in",
+            "caption": "The hardest part is usually just joining on time with the right file open."
+          }
+        },
+        {
+          "id": "join-call",
+          "title": "Join and explain the exact sticking point",
+          "description": "The tutor can help faster if you show the exact question, draft, or concept that is blocking you.",
+          "bullets": [
+            "Open your notes, textbook page, or assignment before the call starts.",
+            "Use the chat or voice to say where you got lost.",
+            "Share your screen if the tutor asks to see the problem."
+          ],
+          "reassurance": "Lots of students feel awkward the first time. The tutor is used to people joining and saying, “I honestly do not know what I am doing.”",
+          "visual": {
+            "icon": "🎧",
+            "eyebrow": "During the session",
+            "title": "Short, focused help",
+            "caption": "You are allowed to ask one small question first instead of telling the whole story perfectly."
+          }
+        },
+        {
+          "id": "save-next-time",
+          "title": "Save the next time you could come back",
+          "description": "Before you leave, make it easy to return if you need a second session.",
+          "bullets": [
+            "Bookmark the tutoring page or schedule.",
+            "Write down the tutor's advice for what to practice next.",
+            "Set a reminder if you want to come back before the next quiz."
+          ],
+          "visual": {
+            "icon": "🗓️",
+            "eyebrow": "Keep momentum",
+            "title": "Make the second visit easier than the first",
+            "caption": "The first visit is usually the hardest one."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "drop-in",
+      "label": "Drop-in",
+      "summary": "Show up during open tutoring hours with your course materials and ask for help without scheduling ahead.",
+      "steps": [
+        {
+          "id": "confirm-drop-in",
+          "title": "Confirm that your class has drop-in support",
+          "description": "Some tutoring areas are true walk-in hours and some require appointments, so check before you go.",
+          "bullets": [
+            "Look at the tutoring site for your subject's drop-in times.",
+            "Double-check the campus location or virtual drop-in link.",
+            "Bring the worksheet, notes, or review guide you want to use."
+          ],
+          "visual": {
+            "icon": "🚶",
+            "eyebrow": "Low-pressure option",
+            "title": "Show up without a long setup process",
+            "caption": "Drop-in is usually the easiest first try if making appointments feels like a barrier."
+          }
+        },
+        {
+          "id": "say-why-here",
+          "title": "Tell them what you came in for",
+          "description": "When you arrive, say the course and the one thing you most want help with today.",
+          "bullets": [
+            "Start with the course code or subject area.",
+            "Point to the question or concept that is giving you trouble.",
+            "Ask if there is time to stay for a full explanation or if you should return later."
+          ],
+          "reassurance": "You are not interrupting anyone by showing up during drop-in hours. That is exactly what those hours are for.",
+          "visual": {
+            "icon": "🗣️",
+            "eyebrow": "What to say",
+            "title": "A one-sentence explanation is enough",
+            "caption": "Try: “I am in MAT 265 and I keep missing the same kind of derivative problem.”"
+          }
+        },
+        {
+          "id": "decide-next-support",
+          "title": "Decide whether to come back or switch resources",
+          "description": "After the session, decide whether you need another tutoring visit, office hours, or a study group next.",
+          "bullets": [
+            "Ask if there is another tutoring block later this week.",
+            "Note whether office hours would help with the same question.",
+            "Set one follow-up action before you leave the building."
+          ],
+          "visual": {
+            "icon": "🧭",
+            "eyebrow": "Next step",
+            "title": "Use tutoring as one tool, not the only tool",
+            "caption": "Good help usually points you toward the next useful stop too."
+          }
+        }
+      ]
+    }
+  ],
+  "questionSet": {
+    "defaultOpener": "Hi, I am using tutoring for the first time and I want to make sure I am focusing on the right problem.",
+    "defaultProTip": "If you have a bad quiz, bring that exact quiz or review sheet. Concrete materials make the session much better.",
+    "firstTimeIntro": "This can feel more awkward in your head than it does in the room. The tutor expects students to arrive confused.",
+    "scenarioPlaceholders": {
+      "class": "I got a low grade on my first quiz and I do not understand what I am missing.",
+      "money": "I am working extra hours and I am worried I am falling behind in one class.",
+      "overwhelmed": "I feel behind in multiple classes and I do not know where to start catching up.",
+      "schedule": "I can make time for tutoring, but I need help figuring out which class needs it first.",
+      "something-else": "I am trying to use tutoring well, but I am not sure what to ask for."
+    },
+    "questionsByYear": {
+      "first-year": [
+        "What is the best way to use tutoring for this class each week?",
+        "Can you help me figure out the first concept I need to fix before the next quiz?",
+        "What should I bring next time so the session goes faster?",
+        "How do I know whether I should also go to office hours for this question?",
+        "What is one thing I can practice on my own after this session?"
+      ],
+      "second-year": [
+        "Which topic is hurting me the most right now in this class?",
+        "Can you help me make a short study plan before the next exam?",
+        "What mistakes do students usually make on problems like this?",
+        "Would you recommend tutoring again this week or a different resource next?",
+        "What should I review before I come back?"
+      ],
+      "third-year": [
+        "What should I focus on first if I am balancing a heavy course load?",
+        "Can you help me identify whether this is a concept problem or a time-management problem?",
+        "What would make my questions more useful when I come back?",
+        "Is there a pattern in the mistakes I am making that I am not seeing?",
+        "What should I ask my professor or TA after this?"
+      ],
+      "fourth-year-plus": [
+        "Can you help me target the specific topic that is putting this course at risk?",
+        "What is the fastest high-impact way to prepare before the next graded assignment?",
+        "If I have limited time this week, where should I focus my effort first?",
+        "Would you recommend tutoring, office hours, or both for this issue?",
+        "What should I do if I still feel stuck after trying these steps?"
+      ]
+    }
+  }
+}

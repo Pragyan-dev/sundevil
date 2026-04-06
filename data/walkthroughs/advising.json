@@ -1,0 +1,226 @@
+{
+  "slug": "advising",
+  "title": "Academic Advising",
+  "summary": "Advisors help you read DARS, pick classes, and make sure your plan still points toward graduation.",
+  "modes": [
+    {
+      "mode": "in-person",
+      "label": "In person",
+      "summary": "Book an advising appointment, arrive a few minutes early, and talk through your schedule face to face.",
+      "steps": [
+        {
+          "id": "book-appointment",
+          "title": "Book the advising appointment",
+          "description": "Start in MyASU or your college advising page and choose the appointment reason that fits your question.",
+          "bullets": [
+            "Open your advising link from MyASU or the ASU advising page.",
+            "Choose a reason like schedule planning, DARS questions, or registration help.",
+            "Select an in-person slot and save the confirmation details."
+          ],
+          "ctaLabel": "Open ASU advising",
+          "ctaHref": "https://students.asu.edu/academic-advising",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "🗺️",
+            "eyebrow": "Booking",
+            "title": "MyASU and the advising scheduler",
+            "caption": "You are usually choosing a reason, a date, and whether it is in person or virtual."
+          }
+        },
+        {
+          "id": "arrive-and-check-in",
+          "title": "Arrive and check in",
+          "description": "When you get there, the process is usually simple: check in, wait briefly, and have your questions ready.",
+          "bullets": [
+            "Bring your ASU ID and have your MyASU or DARS open if you can.",
+            "Tell the front desk your name and that you have an advising appointment.",
+            "Use the waiting time to write the first two things you want answered."
+          ],
+          "reassurance": "Hundreds of students do this every week. You do not need to sound polished to belong in the room.",
+          "visual": {
+            "icon": "🏢",
+            "eyebrow": "Arrival",
+            "title": "Check-in desk and waiting area",
+            "caption": "It usually feels like an office suite, not a test."
+          }
+        },
+        {
+          "id": "meeting-itself",
+          "title": "Use the meeting to get clarity, not just facts",
+          "description": "The advisor will usually pull up your record, your DARS, and the next set of decisions in front of you.",
+          "bullets": [
+            "Ask them to explain what they are looking at on your DARS.",
+            "Take notes when they mention deadlines, holds, or sequencing.",
+            "Before you leave, repeat back your next classes or next tasks in your own words."
+          ],
+          "visual": {
+            "icon": "📝",
+            "eyebrow": "Meeting flow",
+            "title": "DARS, schedule, and next semester planning",
+            "caption": "The biggest win is leaving with fewer unknowns than when you walked in."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "online",
+      "label": "Online",
+      "summary": "Join a virtual advising appointment from your laptop with MyASU and DARS already open.",
+      "steps": [
+        {
+          "id": "book-virtual",
+          "title": "Choose an online advising slot",
+          "description": "Pick the online appointment option if that is the fastest or easiest way to get seen.",
+          "bullets": [
+            "Book through MyASU or your college advising site.",
+            "Confirm whether the meeting is Zoom, phone, or another platform.",
+            "Save the link and the appointment time immediately."
+          ],
+          "ctaLabel": "Open ASU advising",
+          "ctaHref": "https://students.asu.edu/academic-advising",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "💻",
+            "eyebrow": "Online option",
+            "title": "Virtual meeting link and MyASU tabs",
+            "caption": "Having DARS and your class list open before the call saves a lot of time."
+          }
+        },
+        {
+          "id": "prep-before-call",
+          "title": "Prep the screen before the meeting starts",
+          "description": "Treat the first five minutes like setup time so you are not searching for tabs while the advisor waits.",
+          "bullets": [
+            "Open DARS, your current schedule, and the notes app you will use.",
+            "Write down your main question in one sentence.",
+            "Join a few minutes early if the appointment has a meeting link."
+          ],
+          "reassurance": "If you are new to advising, it is completely normal to start with a broad question like “Can you help me understand what I am looking at?”",
+          "visual": {
+            "icon": "🖥️",
+            "eyebrow": "Before the call",
+            "title": "DARS on one tab, notes on another",
+            "caption": "The goal is to be ready to follow the advisor’s screen-sharing or instructions."
+          }
+        },
+        {
+          "id": "leave-with-notes",
+          "title": "End with written next steps",
+          "description": "Virtual meetings go fast. Make sure you leave with a written list of what to do next.",
+          "bullets": [
+            "Ask the advisor to repeat the next step if needed.",
+            "Write down course numbers, deadlines, and any holds they mention.",
+            "Check your email after the meeting for appointment notes or follow-up links."
+          ],
+          "visual": {
+            "icon": "📨",
+            "eyebrow": "After the call",
+            "title": "One clean list of next actions",
+            "caption": "Even a short advising appointment is useful if you leave with a concrete list."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "drop-in",
+      "label": "Drop-in",
+      "summary": "Use drop-in advising or quick advising hours when you need a short answer or the next available person.",
+      "steps": [
+        {
+          "id": "check-drop-in-hours",
+          "title": "Check for drop-in or express advising hours",
+          "description": "Some colleges offer quick advising or same-day support for shorter questions.",
+          "bullets": [
+            "Look for drop-in, express, or same-day advising on your college site.",
+            "Double-check whether it is in person or a virtual queue.",
+            "Write your question down so you use the short visit well."
+          ],
+          "ctaLabel": "Open ASU advising",
+          "ctaHref": "https://students.asu.edu/academic-advising",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "🚶",
+            "eyebrow": "Fastest option",
+            "title": "Quick advising for one focused question",
+            "caption": "Drop-in is often best for one clear question, not a full semester plan."
+          }
+        },
+        {
+          "id": "ask-one-clear-question",
+          "title": "Lead with the one thing you most need answered",
+          "description": "Start with your most urgent question instead of the full backstory.",
+          "bullets": [
+            "Try: “I need help understanding what to take next semester.”",
+            "Show them your DARS or class list if they ask.",
+            "If the question is bigger than drop-in can cover, ask how to book a full appointment."
+          ],
+          "reassurance": "You are allowed to use drop-in even if you feel like your question is obvious or basic.",
+          "visual": {
+            "icon": "💬",
+            "eyebrow": "What to say",
+            "title": "Short question, direct answer",
+            "caption": "The clearer your first question is, the more useful the short visit becomes."
+          }
+        },
+        {
+          "id": "convert-to-full-appointment",
+          "title": "Turn the answer into a follow-up plan",
+          "description": "If the question opens up bigger issues, leave knowing what the next advising step should be.",
+          "bullets": [
+            "Ask if you should schedule a longer follow-up appointment.",
+            "Write down any dates, forms, or holds they mention.",
+            "Check MyASU the same day so nothing slips."
+          ],
+          "visual": {
+            "icon": "➡️",
+            "eyebrow": "After drop-in",
+            "title": "Quick help should still move you forward",
+            "caption": "The goal is not perfection. The goal is one less unknown."
+          }
+        }
+      ]
+    }
+  ],
+  "questionSet": {
+    "defaultOpener": "Hi, I want to make sure I understand what classes and next steps make sense for me right now.",
+    "defaultProTip": "Open DARS before the meeting if you can. Even if you do not understand it, having it on the screen helps the conversation move faster.",
+    "firstTimeIntro": "If this is your first advising visit, let yourself be a beginner. Advisors answer “basic” questions all day.",
+    "scenarioPlaceholders": {
+      "class": "I am not sure if I am in the right classes and my DARS is confusing me.",
+      "money": "I am worried about paying for school and I do not know what deadlines or tasks I should be watching.",
+      "overwhelmed": "I feel behind already and I need help figuring out what to handle first.",
+      "schedule": "I do not know what classes I should take next semester or if I am on track.",
+      "something-else": "I know I need advising, but I am not sure how to explain my question yet."
+    },
+    "questionsByYear": {
+      "first-year": [
+        "Am I in the right classes for my first semester?",
+        "Can you show me how to read the most important part of my DARS?",
+        "What should I be paying attention to before registration opens again?",
+        "Is there anything on my account or timeline I should be worried about now?",
+        "What is one thing first-year students usually miss that I should know about?"
+      ],
+      "second-year": [
+        "Am I building the right sequence for my major requirements?",
+        "Are there any prerequisites I should plan around now?",
+        "What classes would you recommend next semester and why?",
+        "Is my DARS showing any warning signs yet?",
+        "What deadlines should I put in my calendar today?"
+      ],
+      "third-year": [
+        "Am I still on track to graduate on time?",
+        "Are there any bottleneck classes or requirements I need to plan around?",
+        "Is there anything in my DARS or progress that needs attention this semester?",
+        "Should I be thinking about internships, upper-division requirements, or graduation timing right now?",
+        "What should I do next if I need a bigger schedule change?"
+      ],
+      "fourth-year-plus": [
+        "Am I missing any graduation requirements or deadlines?",
+        "What should I verify now so my final semesters go smoothly?",
+        "Are there any holds, petitions, or approvals that could delay graduation?",
+        "What classes or requirements matter most from this point forward?",
+        "What is the smartest next step if my timeline has changed?"
+      ]
+    }
+  }
+}

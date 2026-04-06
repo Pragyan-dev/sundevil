@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { ResourceCard } from "@/components/ResourceCard";
-import { finderLogic, getFinderMatches, getSignupHref } from "@/lib/data";
+import { finderLogic, getFinderMatches } from "@/lib/data";
 import type { FinderConcern, ResourceExperience, StudentYear } from "@/lib/types";
 
 export default function FinderPage() {
@@ -13,6 +13,10 @@ export default function FinderPage() {
 
   const matches =
     concern && year && experience ? getFinderMatches(concern, year, experience) : [];
+  const walkthroughQuery =
+    concern && year && experience
+      ? new URLSearchParams({ concern, year, experience }).toString()
+      : "";
 
   return (
     <div className="page-shell pb-24">
@@ -117,13 +121,16 @@ export default function FinderPage() {
                     meta={[resource.location, resource.hours]}
                     links={[
                       {
+                        href: `/finder/walkthrough/${resource.slug}?${walkthroughQuery}`,
+                        label: "Walk me through it",
+                      },
+                      {
                         href: resource.previewPath,
                         label:
                           resource.previewPath === "/scholarships"
                             ? "Preview scholarship matches"
                             : "Preview what it's like",
                       },
-                      { href: getSignupHref(resource), label: "See step-by-step sign-up" },
                       { href: resource.url, label: "Official ASU page", external: true },
                     ]}
                   />

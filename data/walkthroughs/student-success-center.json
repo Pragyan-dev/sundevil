@@ -1,0 +1,223 @@
+{
+  "slug": "student-success-center",
+  "title": "Student Success Center",
+  "summary": "Student Success Center coaching is for the messy middle: routines, overwhelm, getting organized, and finding a support plan before everything snowballs.",
+  "modes": [
+    {
+      "mode": "in-person",
+      "label": "In person",
+      "summary": "Use the Student Success Center for face-to-face coaching about routines, stress points, and staying on track.",
+      "steps": [
+        {
+          "id": "scan-options",
+          "title": "Scan coaching options first",
+          "description": "The center often offers multiple ways in: coaching appointments, events, and pop-up support.",
+          "bullets": [
+            "Open success.asu.edu and look for coaching or support options.",
+            "Pick the format that feels easiest to try first.",
+            "Save the time and location if you are going in person."
+          ],
+          "ctaLabel": "Open Student Success Center",
+          "ctaHref": "https://success.asu.edu",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "🌟",
+            "eyebrow": "Start here",
+            "title": "Coaching, events, and support touchpoints",
+            "caption": "This is often the best first stop when the problem is “everything feels scattered.”"
+          }
+        },
+        {
+          "id": "show-up-honest",
+          "title": "Show up with the real version of the problem",
+          "description": "This works best when you name the actual pattern: missed deadlines, stress spirals, not knowing where to start, or difficulty sticking to routines.",
+          "bullets": [
+            "Bring your calendar, current to-do list, or MyASU tasks if you have them.",
+            "Start with the one habit or stress point that keeps repeating.",
+            "Ask what support would make the next week feel more manageable."
+          ],
+          "reassurance": "You do not need a dramatic crisis to use this. Many students go because they are quietly struggling to stay on top of normal college life.",
+          "visual": {
+            "icon": "🗂️",
+            "eyebrow": "What to bring",
+            "title": "Calendar, tasks, and the real problem pattern",
+            "caption": "The coach can help more when they can see how your week actually feels."
+          }
+        },
+        {
+          "id": "leave-with-system",
+          "title": "Leave with a small system, not a pep talk",
+          "description": "A strong coaching visit gives you one new routine, tool, or follow-up support path to try right away.",
+          "bullets": [
+            "Ask for one realistic routine change you can test this week.",
+            "Ask whether another resource should be part of your plan too.",
+            "Write the next action before you leave."
+          ],
+          "visual": {
+            "icon": "🧩",
+            "eyebrow": "Best outcome",
+            "title": "A small system you can actually use",
+            "caption": "Useful support feels like something you can repeat tomorrow, not just inspiration in the moment."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "online",
+      "label": "Online",
+      "summary": "Use online coaching or virtual support when you want the same planning help without traveling to a campus office.",
+      "steps": [
+        {
+          "id": "find-online-option",
+          "title": "Find the online coaching option",
+          "description": "Use the Student Success Center site to find the virtual appointment, workshop, or event that fits your need.",
+          "bullets": [
+            "Open success.asu.edu and look for virtual coaching or events.",
+            "Choose the option that feels easiest to commit to.",
+            "Save the meeting link or event instructions."
+          ],
+          "ctaLabel": "Open Student Success Center",
+          "ctaHref": "https://success.asu.edu",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "💻",
+            "eyebrow": "Virtual entry",
+            "title": "Online coaching without the extra friction",
+            "caption": "Sometimes removing the commute is enough to make support feel doable."
+          }
+        },
+        {
+          "id": "prepare-real-week",
+          "title": "Bring your real week to the call",
+          "description": "Virtual coaching works best when you have your actual schedule and tasks visible, not just a vague sense of stress.",
+          "bullets": [
+            "Open your calendar, course list, or task app before the meeting.",
+            "Know which part of the week keeps breaking down.",
+            "Be ready to say whether the issue is starting tasks, keeping routines, or missing deadlines."
+          ],
+          "reassurance": "It is okay if your answer is basically “my week feels messy and I do not know why.” That is a real coaching starting point.",
+          "visual": {
+            "icon": "📅",
+            "eyebrow": "Prep",
+            "title": "Let the coach see the shape of your week",
+            "caption": "Specific schedules usually reveal the problem faster than abstract stress does."
+          }
+        },
+        {
+          "id": "pick-one-change",
+          "title": "Pick one change you will actually try",
+          "description": "The fastest way to waste coaching is to leave with too many ideas. One repeatable change is better.",
+          "bullets": [
+            "Choose one tool, habit, or support follow-up to try first.",
+            "Ask how to tell whether the change is actually helping.",
+            "Write down when you will test it."
+          ],
+          "visual": {
+            "icon": "🎯",
+            "eyebrow": "After the call",
+            "title": "One change with a real test window",
+            "caption": "Good coaching is practical enough to show up in your next three days."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "drop-in",
+      "label": "Drop-in",
+      "summary": "Use pop-up coaching or a lower-pressure drop-in option when booking a full appointment feels like too much friction.",
+      "steps": [
+        {
+          "id": "find-low-pressure-entry",
+          "title": "Find the easiest support doorway",
+          "description": "The Student Success Center often has lower-pressure events or quick support touchpoints that do not feel like a formal appointment.",
+          "bullets": [
+            "Check the site for pop-up coaching, workshops, or same-day support.",
+            "Pick the easiest format to try this week.",
+            "Save the location or time before you close the page."
+          ],
+          "visual": {
+            "icon": "🚶",
+            "eyebrow": "Low-pressure start",
+            "title": "Use the doorway that feels easiest to walk through",
+            "caption": "Sometimes the best support is the one with the least friction."
+          }
+        },
+        {
+          "id": "state-one-pattern",
+          "title": "State the one pattern that keeps repeating",
+          "description": "For a short conversation, naming the repeat problem clearly is more useful than telling the whole semester story.",
+          "bullets": [
+            "Try: “I keep falling behind because I never know what to start first.”",
+            "Or: “I am going to class, but everything else feels disorganized.”",
+            "Ask what one tool or support would help most first."
+          ],
+          "reassurance": "This is exactly the kind of support that exists for students who are not in crisis but are also not okay doing it all alone.",
+          "visual": {
+            "icon": "💬",
+            "eyebrow": "What to say",
+            "title": "Name the repeating pattern, not the whole biography",
+            "caption": "That usually gets you to the useful advice faster."
+          }
+        },
+        {
+          "id": "convert-to-follow-up",
+          "title": "Turn the quick help into a follow-up plan",
+          "description": "If the short conversation helps, lock in the next step while you still have momentum.",
+          "bullets": [
+            "Ask whether a coaching appointment, advising visit, or another resource should come next.",
+            "Write down the next step and when you will do it.",
+            "If they suggest another office, open that link before the day ends."
+          ],
+          "visual": {
+            "icon": "🔗",
+            "eyebrow": "Keep it going",
+            "title": "Quick support should connect to the next real move",
+            "caption": "A short conversation is useful when it points you somewhere concrete."
+          }
+        }
+      ]
+    }
+  ],
+  "questionSet": {
+    "defaultOpener": "Hi, I think I need help getting more organized and I want to know what kind of support would actually help.",
+    "defaultProTip": "Bring your real calendar or task list if you can. Coaching gets more practical when the week is visible.",
+    "firstTimeIntro": "This is a good first-stop resource when the problem feels too spread out to explain neatly.",
+    "scenarioPlaceholders": {
+      "class": "I am keeping up in some classes, but my routines are not strong enough and I feel like I am slipping.",
+      "money": "Stress about money is making it harder to stay organized and keep up with everything.",
+      "overwhelmed": "I feel overwhelmed by all the different things I am supposed to keep track of.",
+      "schedule": "My week feels disorganized and I need help building a system that actually works.",
+      "something-else": "I know I need support with routines and staying on top of things, but I do not know what to ask for."
+    },
+    "questionsByYear": {
+      "first-year": [
+        "What kind of support do first-year students usually get from the Student Success Center?",
+        "What is one routine I should build now before things get more complicated?",
+        "How do I figure out which support resource should be part of my plan next?",
+        "What should I do if I feel behind but I cannot even tell where to start?",
+        "What is one question students usually do not realize they can ask here?"
+      ],
+      "second-year": [
+        "What system would help me stay more consistent this semester?",
+        "How do I know whether my problem is organization, workload, or both?",
+        "What is one support step I can add this week without making life more complicated?",
+        "How do I build a routine that actually lasts past the first few days?",
+        "What other ASU resource should I pair with this if needed?"
+      ],
+      "third-year": [
+        "What should I focus on first if my workload and responsibilities both feel heavy?",
+        "How can I build a realistic system instead of an ideal one I will not keep?",
+        "What signs suggest I need another resource in addition to coaching?",
+        "How do I make sure this support turns into an actual weekly change?",
+        "What is the smartest next step from here?"
+      ],
+      "fourth-year-plus": [
+        "What kind of structure helps most when the stakes are higher later in college?",
+        "How do I keep small problems from turning into graduation-timeline problems?",
+        "What should I prioritize first if my week feels overloaded?",
+        "How do I build a plan that is realistic for this stage of school?",
+        "What is one question students at my stage forget to ask?"
+      ]
+    }
+  }
+}

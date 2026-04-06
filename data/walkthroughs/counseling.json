@@ -1,0 +1,226 @@
+{
+  "slug": "counseling",
+  "title": "ASU Counseling Services",
+  "summary": "Counseling is a normal support option for stress, anxiety, adjustment, grief, overwhelm, and the general feeling that everything is heavier than it should be.",
+  "modes": [
+    {
+      "mode": "in-person",
+      "label": "In person",
+      "summary": "Use the counseling site to start, then attend an in-person intake or first appointment at your campus location.",
+      "steps": [
+        {
+          "id": "start-on-site",
+          "title": "Start on the counseling site",
+          "description": "Begin with the ASU counseling page so you can tell whether you need urgent help or a routine appointment.",
+          "bullets": [
+            "Open the counseling services page.",
+            "Check whether your need is urgent or routine.",
+            "Follow the appointment or contact instructions for your campus."
+          ],
+          "ctaLabel": "Open ASU counseling",
+          "ctaHref": "https://eoss.asu.edu/counseling/about-us",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "💚",
+            "eyebrow": "Getting started",
+            "title": "Urgent support versus routine support",
+            "caption": "The first decision is usually just whether this is immediate crisis support or a standard appointment."
+          }
+        },
+        {
+          "id": "arrive-with-basics",
+          "title": "Arrive with the basics, not a perfect explanation",
+          "description": "You do not need a polished story to go in. A few real sentences about what is going on is enough.",
+          "bullets": [
+            "Show up a few minutes early if you have a scheduled appointment.",
+            "Bring your ASU ID and any intake instructions you received.",
+            "Start with what feels hardest right now: stress, sleep, panic, homesickness, or not feeling okay."
+          ],
+          "reassurance": "Students often worry they are “not struggling enough” to use counseling. That is not how this works.",
+          "visual": {
+            "icon": "🪑",
+            "eyebrow": "Arrival",
+            "title": "Quiet waiting area and first conversation",
+            "caption": "The first visit usually feels slower and more conversational than people expect."
+          }
+        },
+        {
+          "id": "first-conversation",
+          "title": "Use the first conversation to name the pattern",
+          "description": "The first session is usually about understanding what is happening and what kind of support would help next.",
+          "bullets": [
+            "Say when the stress or symptoms are showing up most.",
+            "Mention school impacts like missed class, sleep problems, or feeling detached.",
+            "Ask what the next step usually looks like after this first visit."
+          ],
+          "visual": {
+            "icon": "🧠",
+            "eyebrow": "Meeting flow",
+            "title": "Turning a vague bad feeling into a clearer support plan",
+            "caption": "You do not have to solve everything in one visit. You are starting the process."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "online",
+      "label": "Online",
+      "summary": "If a virtual visit feels easier, start through the counseling site and follow the online intake or meeting instructions.",
+      "steps": [
+        {
+          "id": "choose-virtual-support",
+          "title": "Choose the virtual path",
+          "description": "Use the counseling site or your appointment instructions to confirm the online meeting process.",
+          "bullets": [
+            "Check whether your appointment or intake step is virtual.",
+            "Save the meeting link or online instructions.",
+            "Make sure you know whether you need to complete any forms first."
+          ],
+          "ctaLabel": "Open ASU counseling",
+          "ctaHref": "https://eoss.asu.edu/counseling/about-us",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "💻",
+            "eyebrow": "Virtual setup",
+            "title": "Private space and the right link",
+            "caption": "The biggest practical need is a quiet place where you can talk honestly."
+          }
+        },
+        {
+          "id": "prepare-privacy",
+          "title": "Set up a private, low-pressure space",
+          "description": "Before the session, choose the quietest place you can manage and keep water, headphones, or notes nearby.",
+          "bullets": [
+            "Join from a private room, parked car, or another space where you can talk.",
+            "Use headphones if that makes you feel safer.",
+            "Write down the first thing you want to say in case your mind blanks."
+          ],
+          "reassurance": "It is common to feel nervous right before joining. You are allowed to start awkwardly and take a second to settle in.",
+          "visual": {
+            "icon": "🎧",
+            "eyebrow": "Before the call",
+            "title": "Small setup changes can make the session easier",
+            "caption": "You do not need a perfect room. You just need enough privacy to be real."
+          }
+        },
+        {
+          "id": "name-immediate-needs",
+          "title": "Name what feels most urgent right now",
+          "description": "The session will usually go better if you start with what is hitting you hardest this week.",
+          "bullets": [
+            "Talk about sleep, stress spikes, panic, loneliness, motivation loss, or feeling numb if those are true.",
+            "Mention if school is already being affected.",
+            "Ask what support options make the most sense after this first conversation."
+          ],
+          "visual": {
+            "icon": "🫶",
+            "eyebrow": "In the session",
+            "title": "Start with the part that feels hardest to carry alone",
+            "caption": "You do not need to summarize your entire life to make the meeting useful."
+          }
+        }
+      ]
+    },
+    {
+      "mode": "drop-in",
+      "label": "Drop-in",
+      "summary": "Use same-day or urgent support when you need to talk to someone sooner instead of waiting for a routine appointment.",
+      "steps": [
+        {
+          "id": "decide-sooner",
+          "title": "Decide whether you need support sooner",
+          "description": "If waiting feels unsafe or unrealistic, use the faster contact option instead of trying to push through it.",
+          "bullets": [
+            "Check the counseling site for urgent help and immediate contact info.",
+            "Use same-day or urgent support if your distress is climbing fast.",
+            "If you are in crisis, follow the crisis instructions instead of waiting for a normal appointment."
+          ],
+          "ctaLabel": "Open ASU counseling",
+          "ctaHref": "https://eoss.asu.edu/counseling/about-us",
+          "ctaExternal": true,
+          "visual": {
+            "icon": "🚨",
+            "eyebrow": "Sooner support",
+            "title": "You do not have to wait until things get worse",
+            "caption": "Urgent support exists because some days should not be handled alone."
+          }
+        },
+        {
+          "id": "start-simple",
+          "title": "Start with the simplest true sentence",
+          "description": "When you reach someone, begin with the clearest true thing you can say right now.",
+          "bullets": [
+            "Try: “I am overwhelmed and it is starting to affect school.”",
+            "Or: “I am not in immediate danger, but I do not think I should handle this by myself.”",
+            "Let the staff guide the next questions."
+          ],
+          "reassurance": "You do not need to perform distress correctly. Honest and simple is enough.",
+          "visual": {
+            "icon": "💬",
+            "eyebrow": "What to say",
+            "title": "One honest sentence opens the door",
+            "caption": "You are allowed to ask for help before the situation becomes unmanageable."
+          }
+        },
+        {
+          "id": "follow-next-step",
+          "title": "Follow the next recommended step the same day",
+          "description": "If they recommend follow-up care, a same-day action plan, or another office, try to set that up before the day ends.",
+          "bullets": [
+            "Write down the next contact, appointment, or coping instruction.",
+            "Save any phone numbers or links they give you.",
+            "If they recommend a follow-up appointment, schedule it while the conversation is still fresh."
+          ],
+          "visual": {
+            "icon": "📌",
+            "eyebrow": "Hold onto momentum",
+            "title": "The next step matters as much as the first contact",
+            "caption": "When you are overwhelmed, a written plan is part of the support."
+          }
+        }
+      ]
+    }
+  ],
+  "questionSet": {
+    "defaultOpener": "Hi, I think I need some support and I am not totally sure how this process works yet.",
+    "defaultProTip": "If your mind goes blank, start with how this is affecting sleep, class attendance, concentration, or your ability to function day to day.",
+    "firstTimeIntro": "Many students use counseling for the first time in college. You do not need to wait for a crisis to count.",
+    "scenarioPlaceholders": {
+      "class": "My stress about school is getting bad enough that it is affecting my focus and sleep.",
+      "money": "Money stress is hitting me hard and I am starting to feel anxious all the time.",
+      "overwhelmed": "I am overwhelmed most days and I do not feel like I am bouncing back on my own.",
+      "schedule": "I am stretched too thin and I am starting to feel like everything is slipping.",
+      "something-else": "I know I am not doing well, but I am having trouble explaining exactly why."
+    },
+    "questionsByYear": {
+      "first-year": [
+        "What usually happens in a first counseling appointment here?",
+        "How do students usually know whether they should keep coming back?",
+        "What can I do this week if stress is already affecting classes or sleep?",
+        "Is there a normal next step after today?",
+        "What is one sign that I should reach out again sooner rather than later?"
+      ],
+      "second-year": [
+        "How can I tell whether what I am feeling is something I should keep getting support for?",
+        "What should I do when stress starts affecting school habits again?",
+        "What support options make the most sense for what I described?",
+        "How do I follow up if I need more help after today?",
+        "What is one thing students usually do too late that I could do earlier?"
+      ],
+      "third-year": [
+        "What kind of support would be most practical with my current academic load?",
+        "How do I keep stress from taking over the rest of the semester?",
+        "What should I do if I notice this affecting motivation, attendance, or concentration more?",
+        "How do I know whether follow-up support is the right move for me?",
+        "What campus support pairs well with counseling if school is part of the problem?"
+      ],
+      "fourth-year-plus": [
+        "What support strategy makes sense if stress is hitting during a high-stakes semester?",
+        "How do I handle this without letting it quietly affect graduation progress?",
+        "What should I watch for if I am telling myself I can just push through it?",
+        "What is the best next step if I need support again after this visit?",
+        "How can I tell the difference between normal stress and something I should not handle alone?"
+      ]
+    }
+  }
+}
