@@ -2917,10 +2917,16 @@ body:has(.story-shell) main {
 .sketch-mini-field select,
 .sketch-schedule-board,
 .sketch-schedule-palette,
+.sketch-dars-hunt {
+  position: relative;
+}
+
 .sketch-dars-panel {
   border: 3px solid var(--sketch-ink);
   border-radius: 1.4rem;
-  background: rgba(255, 250, 240, 0.96);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 250, 240, 0.96)),
+    rgba(255, 250, 240, 0.96);
   filter: url(#sketch);
 }
 
@@ -2944,22 +2950,27 @@ body:has(.story-shell) main {
 }
 
 .sketch-dars-header {
-  align-items: stretch;
   display: grid;
   gap: 0.85rem;
 }
 
-.sketch-dars-identity-grid {
+.sketch-dars-identity-grid,
+.sketch-dars-stat-grid {
   display: grid;
   gap: 0.75rem;
 }
 
-.sketch-dars-info-card {
+.sketch-dars-info-card,
+.sketch-dars-sticky-note,
+.sketch-dars-fail-card {
   border: 3px solid var(--sketch-ink);
   border-radius: 1rem;
+  filter: url(#sketch);
+}
+
+.sketch-dars-info-card {
   padding: 0.8rem 0.9rem;
   background: rgba(255, 255, 255, 0.52);
-  filter: url(#sketch);
 }
 
 .sketch-dars-info-card strong {
@@ -2974,22 +2985,57 @@ body:has(.story-shell) main {
   color: rgba(26, 26, 26, 0.64);
 }
 
-.sketch-dars-stat,
-.sketch-dars-row {
+.sketch-dars-clickable {
+  position: relative;
   width: 100%;
+  border: 3px solid var(--sketch-ink);
+  background: rgba(255, 255, 255, 0.72);
+  filter: url(#sketch);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.sketch-dars-clickable:hover,
+.sketch-dars-clickable:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.08);
+}
+
+.sketch-dars-clickable.is-relevant:hover,
+.sketch-dars-clickable.is-relevant:focus-visible {
+  border-color: rgba(255, 198, 39, 0.92);
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.15) 0 7px,
+      transparent 7px 14px
+    ),
+    rgba(255, 251, 243, 0.98);
+}
+
+.sketch-dars-clickable:active {
+  transform: translateY(0);
+}
+
+.sketch-dars-stat,
+.sketch-dars-row,
+.sketch-dars-prereq-button {
   border-radius: 1rem;
-  padding: 0.75rem 0.85rem;
+  padding: 0.8rem 0.9rem;
   text-align: left;
 }
 
 .sketch-dars-stat strong {
   display: block;
   margin-top: 0.2rem;
-  font-size: 1.45rem;
+  font-size: 1.5rem;
 }
 
 .sketch-dars-stat p {
-  font-size: 1.05rem;
+  font-size: 1.03rem;
 }
 
 .sketch-dars-section + .sketch-dars-section {
@@ -2999,25 +3045,32 @@ body:has(.story-shell) main {
 .sketch-dars-rows {
   margin-top: 0.7rem;
   display: grid;
-  gap: 0.6rem;
+  gap: 0.75rem;
+}
+
+.sketch-dars-row-stack {
+  display: grid;
+  gap: 0.45rem;
 }
 
 .sketch-dars-row {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.38rem;
 }
 
 .sketch-dars-row-top,
 .sketch-dars-row-meta,
-.sketch-task-sidebar-header {
+.sketch-task-sidebar-header,
+.sketch-dars-hunt-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
 }
 
-.sketch-dars-row strong {
-  font-size: 1.1rem;
+.sketch-dars-row strong,
+.sketch-dars-prereq-button strong {
+  font-size: 1.05rem;
 }
 
 .sketch-dars-row p {
@@ -3025,14 +3078,16 @@ body:has(.story-shell) main {
   line-height: 1.45;
 }
 
-.sketch-dars-row-meta {
+.sketch-dars-row-meta,
+.sketch-dars-prereq-button span:not(.sketch-dars-found-stamp) {
   color: rgba(26, 26, 26, 0.62);
   font-size: 0.9rem;
 }
 
 .sketch-dars-status-pill,
-.sketch-dars-hotspot,
-.sketch-task-progress-pill {
+.sketch-task-progress-pill,
+.sketch-dars-inline-note,
+.sketch-dars-timer-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3054,111 +3109,233 @@ body:has(.story-shell) main {
   background: rgba(140, 29, 64, 0.12);
 }
 
-.sketch-dars-hotspot {
-  background: rgba(255, 198, 39, 0.42);
+.sketch-dars-inline-note {
+  background: rgba(255, 198, 39, 0.34);
 }
 
-.sketch-dars-row.is-current-target {
-  background:
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 198, 39, 0.16) 0 8px,
-      transparent 8px 16px
-    ),
-    rgba(255, 250, 240, 0.98);
-}
-
-.sketch-task-list {
+.sketch-dars-prereq-button {
   display: grid;
-  gap: 0.7rem;
-  margin-top: 0.8rem;
-}
-
-.sketch-task-item {
-  align-items: flex-start;
-  justify-content: flex-start;
-  border: 3px solid var(--sketch-ink);
-  border-radius: 1rem;
-  padding: 0.8rem 0.9rem;
-  background: rgba(255, 255, 255, 0.58);
-  filter: url(#sketch);
-}
-
-.sketch-task-item strong {
-  display: block;
-  font-size: 1rem;
-  line-height: 1.3;
-}
-
-.sketch-task-item p {
-  margin-top: 0.22rem;
-  font-size: 0.92rem;
-  line-height: 1.45;
-  color: rgba(26, 26, 26, 0.68);
-}
-
-.sketch-task-item.is-current {
+  gap: 0.3rem;
   background:
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 198, 39, 0.15) 0 7px,
-      transparent 7px 14px
-    ),
-    rgba(255, 250, 240, 0.96);
+    linear-gradient(180deg, rgba(140, 29, 64, 0.08), rgba(255, 255, 255, 0.82)),
+    rgba(255, 255, 255, 0.76);
 }
 
-.sketch-task-bullet {
-  display: inline-grid;
-  place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border: 2px solid var(--sketch-ink);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  filter: url(#sketch);
-  font-size: 0.86rem;
-  flex-shrink: 0;
-}
-
-.sketch-task-item.is-complete span {
-  color: #2e7d32;
-}
-
-.sketch-current-task-card {
-  display: grid;
-  gap: 0.28rem;
-  margin-top: 0.9rem;
-  border: 3px solid var(--sketch-ink);
-  border-radius: 1rem;
-  padding: 0.9rem 1rem;
-  background:
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 198, 39, 0.12) 0 8px,
-      transparent 8px 16px
-    ),
-    rgba(255, 250, 240, 0.98);
-  filter: url(#sketch);
-}
-
-.sketch-current-task-card strong {
-  font-size: 1.08rem;
+.sketch-dars-prereq-button strong {
   line-height: 1.35;
 }
 
-.sketch-current-task-card span {
-  font-size: 0.93rem;
+.sketch-dars-hunt-board {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  background:
+    radial-gradient(circle at top right, rgba(255, 198, 39, 0.18), transparent 36%),
+    rgba(255, 250, 240, 0.84);
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.4rem;
+  filter: url(#sketch);
+}
+
+.sketch-dars-hunt-header strong {
+  display: block;
+  font-size: 1.06rem;
+  line-height: 1.35;
+}
+
+.sketch-dars-hunt-header span {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
   color: rgba(26, 26, 26, 0.66);
 }
 
-.sketch-current-task-card.is-complete {
-  background: rgba(112, 196, 124, 0.16);
+.sketch-dars-timer-pill {
+  min-width: 8.3rem;
+  flex-direction: column;
+  gap: 0.18rem;
+  padding: 0.45rem 0.8rem 0.55rem;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.sketch-dars-timer-pill strong {
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+}
+
+.sketch-dars-timer-pill small {
+  font-size: 0.68rem;
+  color: rgba(26, 26, 26, 0.64);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.sketch-dars-timer-pill.is-live {
+  background: rgba(255, 198, 39, 0.2);
+}
+
+.sketch-dars-timer-pill.is-critical {
+  animation: sketch-dars-timer-pulse 0.9s ease-in-out infinite;
+  background: rgba(198, 40, 40, 0.12);
+}
+
+.sketch-dars-sticky-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sketch-dars-sticky-note {
+  position: relative;
+  display: grid;
+  gap: 0.3rem;
+  overflow: hidden;
+  padding: 0.95rem 1rem 1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 214, 0.98), rgba(255, 243, 188, 0.92)),
+    rgba(255, 248, 214, 0.98);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.08);
+  transform: rotate(var(--sticky-tilt, 0deg));
+  animation: sketch-dars-sticky-enter 420ms ease both;
+}
+
+.sketch-dars-sticky-note strong {
+  font-size: 1rem;
+  line-height: 1.32;
+}
+
+.sketch-dars-sticky-note span,
+.sketch-dars-sticky-caption {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: rgba(26, 26, 26, 0.66);
+}
+
+.sketch-dars-sticky-caption {
+  font-style: normal;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(46, 125, 50, 0.82);
+}
+
+.sketch-dars-sticky-note.is-complete {
+  background:
+    linear-gradient(180deg, rgba(244, 242, 237, 0.98), rgba(255, 246, 210, 0.9)),
+    rgba(255, 248, 214, 0.94);
+  border-color: rgba(192, 145, 17, 0.96);
+}
+
+.sketch-dars-sticky-note.is-just-found {
+  animation:
+    sketch-dars-sticky-enter 420ms ease both,
+    sketch-dars-note-settle 620ms ease both;
+}
+
+.sketch-dars-sticky-pin {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.8rem;
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 2px solid var(--sketch-ink);
+  border-radius: 999px;
+  background: rgba(140, 29, 64, 0.82);
+}
+
+.sketch-dars-found-stamp {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.55rem;
+  border: 2px solid rgba(46, 125, 50, 0.92);
+  border-radius: 999px;
+  color: rgba(46, 125, 50, 0.96);
+  background: rgba(255, 255, 255, 0.86);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  transform: rotate(-12deg);
+  filter: url(#sketch);
+  pointer-events: none;
+}
+
+.sketch-dars-clickable.is-found {
+  border-color: rgba(46, 125, 50, 0.92);
+  background:
+    linear-gradient(180deg, rgba(112, 196, 124, 0.1), rgba(255, 255, 255, 0.82)),
+    rgba(255, 255, 255, 0.82);
+}
+
+.sketch-dars-clickable.is-just-found .sketch-dars-found-stamp,
+.sketch-dars-sticky-note.is-just-found .sketch-dars-found-stamp {
+  animation: sketch-dars-stamp-pop 480ms ease both;
+}
+
+.sketch-task-sidebar-header {
+  align-items: center;
 }
 
 .sketch-dars-summary,
 .sketch-jargon-status {
   font-size: 1rem;
   line-height: 1.55;
+}
+
+.sketch-dars-summary {
+  min-height: 4.75rem;
+  border: 3px dashed rgba(26, 26, 26, 0.28);
+  border-radius: 1rem;
+  padding: 0.95rem 1rem;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.sketch-dars-summary.is-failed {
+  border-color: rgba(122, 32, 32, 0.48);
+  background: rgba(168, 44, 44, 0.08);
+}
+
+.sketch-dars-summary.is-complete {
+  border-color: rgba(46, 125, 50, 0.42);
+  background: rgba(112, 196, 124, 0.1);
+}
+
+.sketch-dars-fail-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(246, 240, 232, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.sketch-dars-fail-card {
+  max-width: 28rem;
+  display: grid;
+  gap: 0.45rem;
+  padding: 1.2rem 1.2rem 1.15rem;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.12) 0 8px,
+      transparent 8px 16px
+    ),
+    rgba(255, 255, 255, 0.96);
+  box-shadow: 0 20px 38px rgba(0, 0, 0, 0.14);
+}
+
+.sketch-dars-fail-card strong {
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.sketch-dars-fail-card span {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(26, 26, 26, 0.72);
 }
 
 .sketch-jargon-board,
@@ -3283,9 +3460,11 @@ body:has(.story-shell) main {
 
 .sketch-jargon-card.is-wrong,
 .sketch-dars-row.is-wrong,
-.sketch-dars-stat.is-wrong {
+.sketch-dars-stat.is-wrong,
+.sketch-dars-prereq-button.is-wrong {
   background: rgba(168, 44, 44, 0.14);
   border-color: rgba(122, 32, 32, 0.9);
+  animation: sketch-dars-wrong-shake 380ms ease;
 }
 
 .sketch-option-card.is-disabled {
@@ -3512,6 +3691,70 @@ body:has(.story-shell) main {
   background: rgba(140, 29, 64, 0.18);
 }
 
+@keyframes sketch-dars-timer-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes sketch-dars-wrong-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+}
+
+@keyframes sketch-dars-stamp-pop {
+  0% {
+    opacity: 0;
+    transform: rotate(-18deg) scale(0.6);
+  }
+  55% {
+    opacity: 1;
+    transform: rotate(-10deg) scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-12deg) scale(1);
+  }
+}
+
+@keyframes sketch-dars-sticky-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) rotate(var(--sticky-tilt, 0deg));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--sticky-tilt, 0deg));
+  }
+}
+
+@keyframes sketch-dars-note-settle {
+  0% {
+    transform: rotate(var(--sticky-tilt, 0deg)) scale(0.96);
+  }
+  60% {
+    transform: rotate(calc(var(--sticky-tilt, 0deg) * 0.5)) scale(1.03);
+  }
+  100% {
+    transform: rotate(var(--sticky-tilt, 0deg)) scale(1);
+  }
+}
+
 @media (min-width: 960px) {
   .sketch-sequence-grid {
     grid-template-columns: minmax(20rem, 0.82fr) minmax(28rem, 1.18fr);
@@ -3549,6 +3792,11 @@ body:has(.story-shell) main {
   }
 
   .sketch-dars-identity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sketch-dars-stat-grid,
+  .sketch-dars-sticky-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
