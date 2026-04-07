@@ -1,6 +1,6 @@
 import finderLogicJson from "@/data/finder_logic.json";
 import resourcesJson from "@/data/asu_resources.json";
-import dashboardRosterJson from "@/data/dashboard-roster.json";
+import dashboardDataJson from "@/data/dashboard-data.json";
 import scholarshipsJson from "@/data/asu_scholarships.json";
 import simulationScriptsJson from "@/data/simulation_scripts.json";
 import advisingWalkthroughJson from "@/data/walkthroughs/advising.json";
@@ -13,6 +13,7 @@ import tutoringWalkthroughJson from "@/data/walkthroughs/tutoring.json";
 
 import type {
   AidStatus,
+  DashboardData,
   DashboardStudent,
   FinderConcern,
   FinderLogic,
@@ -25,6 +26,7 @@ import type {
   ResidencyStatus,
   ResourceWalkthrough,
   Scholarship,
+  SelfCheckIn,
   SimulationScenario,
   StudentYear,
   WalkthroughMode,
@@ -119,8 +121,8 @@ function validateScholarships(input: unknown): Scholarship[] {
   return input as Scholarship[];
 }
 
-function validateDashboardRoster(input: unknown, validSlugs: Set<string>): DashboardStudent[] {
-  invariant(Array.isArray(input), "dashboard-roster.json must export an array");
+function validateDashboardStudents(input: unknown, validSlugs: Set<string>): DashboardStudent[] {
+  invariant(Array.isArray(input), "dashboard-data.json students must export an array");
 
   input.forEach((item, index) => {
     invariant(isRecord(item), `Dashboard student ${index} must be an object`);
@@ -138,6 +140,10 @@ function validateDashboardRoster(input: unknown, validSlugs: Set<string>): Dashb
     );
     invariant(typeof item.isCommuter === "boolean", `Dashboard student ${index} needs isCommuter`);
     invariant(
+      item.commuteMinutes === undefined || typeof item.commuteMinutes === "number",
+      `Dashboard student ${index} needs a numeric commuteMinutes when present`,
+    );
+    invariant(
       typeof item.livesOnCampus === "boolean",
       `Dashboard student ${index} needs livesOnCampus`,
     );
@@ -149,14 +155,26 @@ function validateDashboardRoster(input: unknown, validSlugs: Set<string>): Dashb
       typeof item.hasScholarship === "boolean",
       `Dashboard student ${index} needs hasScholarship`,
     );
+    invariant(isStringArray(item.contextTags), `Dashboard student ${index} needs contextTags`);
+    invariant(typeof item.advisorId === "string", `Dashboard student ${index} needs advisorId`);
+    invariant(typeof item.advisorName === "string", `Dashboard student ${index} needs advisorName`);
+    invariant(
+      typeof item.lastAdvisingVisit === "string",
+      `Dashboard student ${index} needs lastAdvisingVisit`,
+    );
     invariant(
       isStringArray(item.behaviorTags),
       `Dashboard student ${index} needs behaviorTags`,
     );
     invariant(isStringArray(item.strengths), `Dashboard student ${index} needs strengths`);
     invariant(Array.isArray(item.signals), `Dashboard student ${index} needs signals`);
+    invariant(isRecord(item.degree), `Dashboard student ${index} needs degree`);
+    invariant(isRecord(item.coursePerformance), `Dashboard student ${index} needs coursePerformance`);
+    invariant(Array.isArray(item.allCourses), `Dashboard student ${index} needs allCourses`);
+    invariant(isRecord(item.financial), `Dashboard student ${index} needs financial`);
     invariant(isRecord(item.resourceUsage), `Dashboard student ${index} needs resourceUsage`);
     invariant(isRecord(item.simulation), `Dashboard student ${index} needs simulation`);
+    invariant(Array.isArray(item.checkIns), `Dashboard student ${index} needs checkIns`);
     invariant(
       typeof item.concernLevel === "string",
       `Dashboard student ${index} needs concernLevel`,
@@ -165,6 +183,9 @@ function validateDashboardRoster(input: unknown, validSlugs: Set<string>): Dashb
       typeof item.supportFocus === "string",
       `Dashboard student ${index} needs supportFocus`,
     );
+    invariant(Array.isArray(item.observations), `Dashboard student ${index} needs observations`);
+    invariant(Array.isArray(item.advisorNotes), `Dashboard student ${index} needs advisorNotes`);
+    invariant(Array.isArray(item.handoffs), `Dashboard student ${index} needs handoffs`);
     invariant(
       isRecord(item.recommendedResource),
       `Dashboard student ${index} needs recommendedResource`,
@@ -178,13 +199,45 @@ function validateDashboardRoster(input: unknown, validSlugs: Set<string>): Dashb
       typeof item.recommendedResource.reason === "string",
       `Dashboard student ${index} needs recommendedResource.reason`,
     );
-    invariant(
-      Array.isArray(item.outreachHistory),
-      `Dashboard student ${index} needs outreachHistory`,
-    );
+    invariant(Array.isArray(item.timeline), `Dashboard student ${index} needs timeline`);
   });
 
   return input as DashboardStudent[];
+}
+
+function validateDashboardData(input: unknown, validSlugs: Set<string>): DashboardData {
+  invariant(isRecord(input), "dashboard-data.json must export an object");
+  invariant(isRecord(input.faculty), "dashboard-data.json needs faculty");
+  invariant(isRecord(input.advisor), "dashboard-data.json needs advisor");
+  invariant(Array.isArray(input.messages), "dashboard-data.json needs messages");
+  invariant(Array.isArray(input.selfCheckIns), "dashboard-data.json needs selfCheckIns");
+
+  const students = validateDashboardStudents(input.students, validSlugs);
+
+  input.messages.forEach((thread, index) => {
+    invariant(isRecord(thread), `Message thread ${index} must be an object`);
+    invariant(typeof thread.studentId === "string", `Message thread ${index} needs studentId`);
+    invariant(
+      typeof thread.studentInitials === "string",
+      `Message thread ${index} needs studentInitials`,
+    );
+    invariant(Array.isArray(thread.messages), `Message thread ${index} needs messages`);
+  });
+
+  input.selfCheckIns.forEach((checkIn, index) => {
+    invariant(isRecord(checkIn), `Self check-in ${index} must be an object`);
+    invariant(typeof checkIn.studentId === "string", `Self check-in ${index} needs studentId`);
+    invariant(typeof checkIn.week === "number", `Self check-in ${index} needs week`);
+    invariant(typeof checkIn.date === "string", `Self check-in ${index} needs date`);
+  });
+
+  return {
+    faculty: input.faculty as unknown as DashboardData["faculty"],
+    advisor: input.advisor as unknown as DashboardData["advisor"],
+    students,
+    messages: input.messages as unknown as DashboardData["messages"],
+    selfCheckIns: input.selfCheckIns as SelfCheckIn[],
+  };
 }
 
 function validateWalkthrough(input: unknown, validSlugs: Set<string>): ResourceWalkthrough {
@@ -290,10 +343,11 @@ export const finderLogic = validateFinderLogic(
 );
 export const simulationScenarios = validateScenarios(simulationScriptsJson);
 export const scholarships = validateScholarships(scholarshipsJson);
-export const dashboardRoster = validateDashboardRoster(
-  dashboardRosterJson,
+export const dashboardData = validateDashboardData(
+  dashboardDataJson,
   new Set(resources.map((resource) => resource.slug)),
 );
+export const dashboardRoster = dashboardData.students;
 export const walkthroughs = walkthroughSource.map((item) =>
   validateWalkthrough(item, new Set(resources.map((resource) => resource.slug))),
 );
@@ -325,7 +379,7 @@ export function getWalkthroughBySlug(slug: string): ResourceWalkthrough | undefi
 }
 
 export function getDashboardStudentById(id: string): DashboardStudent | undefined {
-  return dashboardRoster.find((student) => student.id === id);
+  return dashboardData.students.find((student) => student.id === id);
 }
 
 export function getSignupHref(resource: Resource): string {

@@ -10,16 +10,16 @@ import {
 } from "@/lib/dashboard";
 import { getResourceBySlug } from "@/lib/data";
 import type {
+  AdvisorEmailFocusArea,
+  AdvisorEmailTone,
   FacultyEmailDraft,
-  FacultyEmailFocusArea,
-  FacultyEmailTone,
   ResourceSlug,
 } from "@/lib/types";
 
-type FacultyEmailRequestBody = {
+type AdvisorEmailRequestBody = {
   studentId?: unknown;
-  professorName?: unknown;
-  courseName?: unknown;
+  advisorName?: unknown;
+  department?: unknown;
   campus?: unknown;
   tone?: unknown;
   focusArea?: unknown;
@@ -32,8 +32,8 @@ type IncomingMessage = {
   content: string;
 };
 
-const VALID_TONES = new Set<FacultyEmailTone>(["warm", "direct", "encouraging"]);
-const VALID_FOCUS = new Set<FacultyEmailFocusArea>([
+const VALID_TONES = new Set<AdvisorEmailTone>(["warm", "direct", "encouraging"]);
+const VALID_FOCUS = new Set<AdvisorEmailFocusArea>([
   "academic",
   "navigation",
   "tutoring",
@@ -108,28 +108,25 @@ function parseDraft(input: string): FacultyEmailDraft | null {
       return null;
     }
 
-    return {
-      subject,
-      body,
-    };
+    return { subject, body };
   } catch {
     return null;
   }
 }
 
-function normalizeBody(input: FacultyEmailRequestBody) {
+function normalizeBody(input: AdvisorEmailRequestBody) {
   return {
     studentId: typeof input.studentId === "string" ? input.studentId : null,
-    professorName: typeof input.professorName === "string" ? input.professorName.trim() : "",
-    courseName: typeof input.courseName === "string" ? input.courseName.trim() : "",
+    advisorName: typeof input.advisorName === "string" ? input.advisorName.trim() : "",
+    department: typeof input.department === "string" ? input.department.trim() : "",
     campus: typeof input.campus === "string" ? input.campus.trim() : "",
     tone:
-      typeof input.tone === "string" && VALID_TONES.has(input.tone as FacultyEmailTone)
-        ? (input.tone as FacultyEmailTone)
+      typeof input.tone === "string" && VALID_TONES.has(input.tone as AdvisorEmailTone)
+        ? (input.tone as AdvisorEmailTone)
         : null,
     focusArea:
-      typeof input.focusArea === "string" && VALID_FOCUS.has(input.focusArea as FacultyEmailFocusArea)
-        ? (input.focusArea as FacultyEmailFocusArea)
+      typeof input.focusArea === "string" && VALID_FOCUS.has(input.focusArea as AdvisorEmailFocusArea)
+        ? (input.focusArea as AdvisorEmailFocusArea)
         : null,
     includeSimLink: Boolean(input.includeSimLink),
     includeResourceType:
@@ -141,13 +138,13 @@ function normalizeBody(input: FacultyEmailRequestBody) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = normalizeBody((await request.json()) as FacultyEmailRequestBody);
+  const body = normalizeBody((await request.json()) as AdvisorEmailRequestBody);
   const model = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
 
-  if (!body.studentId || !body.professorName || !body.courseName || !body.campus || !body.tone || !body.focusArea) {
+  if (!body.studentId || !body.advisorName || !body.department || !body.campus || !body.tone || !body.focusArea) {
     return NextResponse.json(
       {
-        error: "The faculty email request was incomplete. Refresh the page and try again.",
+        error: "The advisor email request was incomplete. Refresh the page and try again.",
       },
       { status: 400 },
     );
@@ -157,7 +154,7 @@ export async function POST(request: NextRequest) {
   if (!student) {
     return NextResponse.json(
       {
-        error: "The selected student could not be found in the faculty roster.",
+        error: "The selected student could not be found in the advisor roster.",
       },
       { status: 404 },
     );
@@ -180,11 +177,11 @@ export async function POST(request: NextRequest) {
     ? badgeMeta.map((badge) => badge.title).join(", ")
     : "No badges earned yet";
 
-  const systemPrompt = `You are writing an email from a university professor to a student in their class. The email should feel warm, specific, and non-threatening. It should never sound like a mass email or a warning.
+  const systemPrompt = `You are writing an email from a university advisor to a student. The email should feel warm, specific, practical, and low-pressure. It should never sound robotic or mass-produced.
 
-PROFESSOR INFO:
-- Name: ${body.professorName}
-- Course: ${body.courseName}
+ADVISOR INFO:
+- Name: ${body.advisorName}
+- Department: ${body.department}
 - Campus: ${body.campus}
 
 STUDENT CONTEXT:
@@ -194,16 +191,24 @@ STUDENT CONTEXT:
 - Major: ${student.major}
 - First-generation student: ${student.isFirstGen ? "Yes" : "No"}
 - Context tags: ${getContextTags(student).join(", ")}
-- Observed strengths: ${student.strengths.join(", ")}
-- Recent signals: ${student.signals
-    .slice(0, 3)
-    .map((signal) => `${signal.date}: ${signal.description}`)
-    .join("; ")}
+- Degree progress: ${student.degree.creditsCompleted}/${student.degree.creditsNeeded}, on track: ${student.degree.onTrack ? "yes" : "needs review"}
+- Last DARS check: ${student.degree.lastDarsCheck}
+- Holds: ${student.degree.holds.length ? student.degree.holds.join(", ") : "None"}
+- All-course snapshot: ${student.allCourses
+    .map((course) => `${course.code} (${course.status})`)
+    .join(", ")}
 - Resource usage summary: ${getResourceSummarySentence(student)}
+- Latest self-check-ins: ${student.checkIns
+    .slice(0, 3)
+    .map((checkIn) => `Week ${checkIn.week}: ${checkIn.mood}, blocker ${checkIn.blocker}, outreach ${checkIn.wantsOutreach ? "yes" : "no"}`)
+    .join("; ")}
+- Recent handoffs: ${student.handoffs
+    .slice(0, 2)
+    .map((handoff) => `${handoff.date}: ${handoff.message}`)
+    .join("; ") || "None"}
 - Simulation progress: ${getSimulationLabel(student.simulation)} with badges ${badgeText}
-- Support focus: ${student.supportFocus}
 
-PROFESSOR SETTINGS:
+ADVISOR SETTINGS:
 - Tone: ${body.tone}
 - Focus area: ${body.focusArea}
 - Include simulation link: ${body.includeSimLink ? "Yes" : "No"}
@@ -213,14 +218,13 @@ ${resource ? `RESOURCE DETAILS:\n- Name: ${resource.name}\n- Location: ${resourc
 
 RULES:
 - Use the student's first name
-- Reference a real strength, not a weakness
-- Normalize the situation with language like "a lot of students..."
+- Make the next step feel concrete and easy to imagine
+- If helpful, mention that a lot of students need help translating campus processes
 - If including a resource, use the exact location, hours, and what-to-expect details above
 - Keep the body under 150 words
-- Do not use the phrases "I noticed you haven't been using resources" or any surveillance wording
-- End in a low-pressure way that does not require a reply
 - Never use the words "first-gen", "first generation", or "first-generation" in the email body
-- If the student is first-gen, do not name that identity. Instead, make the email more concrete about processes, locations, and what to expect
+- If the student is first-gen, do not name that identity. Instead, make the email more specific about locations, process steps, and what the meeting will feel like
+- End in a low-pressure way that does not require a reply
 
 Return raw JSON only in this shape:
 {
@@ -235,7 +239,7 @@ Return raw JSON only in this shape:
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "HTTP-Referer": "https://sundevilconnect.local",
-        "X-Title": "SunDevilConnect Faculty Email",
+        "X-Title": "SunDevilConnect Advisor Email",
       },
       body: JSON.stringify({
         model,
@@ -261,22 +265,19 @@ Return raw JSON only in this shape:
     if (!response.ok) {
       return NextResponse.json(
         {
-          error:
-            data.error?.message ??
-            "The draft generator did not complete the request. Please try again in a moment.",
+          error: data.error?.message || "OpenRouter could not generate an advisor draft right now.",
         },
-        { status: response.status },
+        { status: 502 },
       );
     }
 
-    const reply = extractReply(data.choices?.[0]?.message?.content);
-    const draft = parseDraft(reply);
+    const content = extractReply(data.choices?.[0]?.message?.content);
+    const draft = parseDraft(content);
 
     if (!draft) {
       return NextResponse.json(
         {
-          error:
-            "The draft generator responded without a usable email. Try regenerating or adjust the settings.",
+          error: "The AI draft came back in an unexpected format. Try generating it again.",
         },
         { status: 502 },
       );
@@ -286,8 +287,7 @@ Return raw JSON only in this shape:
   } catch {
     return NextResponse.json(
       {
-        error:
-          "The draft generator is temporarily unavailable. You can still review the student profile and try again shortly.",
+        error: "The advisor draft could not be generated right now. Try again in a moment.",
       },
       { status: 500 },
     );

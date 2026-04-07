@@ -2,60 +2,52 @@
 
 import { useMemo, useState, useTransition } from "react";
 
-import {
-  getDefaultFocusArea,
-  getResourceOptionsForEmail,
-  getSimulationSupportLink,
-} from "@/lib/dashboard";
+import { getDefaultFocusArea, getResourceOptionsForEmail, getSimulationSupportLink } from "@/lib/dashboard";
 import type {
-  DashboardOutreachItem,
+  DashboardEmailFocusArea,
+  DashboardEmailTone,
+  DashboardRole,
   DashboardStudent,
   FacultyEmailDraft,
-  FacultyEmailFocusArea,
-  FacultyEmailTone,
   ResourceSlug,
 } from "@/lib/types";
 
-const toneOptions: Array<{ value: FacultyEmailTone; label: string }> = [
+const toneOptions: Array<{ value: DashboardEmailTone; label: string }> = [
   { value: "warm", label: "Warm" },
   { value: "direct", label: "Direct" },
   { value: "encouraging", label: "Encouraging" },
 ];
 
-const focusOptions: Array<{ value: FacultyEmailFocusArea; label: string }> = [
+const focusOptions: Array<{ value: DashboardEmailFocusArea; label: string }> = [
+  { value: "academic", label: "Academic support" },
   { value: "navigation", label: "Navigation & orientation" },
   { value: "tutoring", label: "Tutoring" },
   { value: "advising", label: "Advising" },
+  { value: "financial", label: "Financial support" },
   { value: "general", label: "General support" },
 ];
 
 interface EmailComposerProps {
+  role: DashboardRole;
   student: DashboardStudent;
-  professorName: string;
-  courseName: string;
+  senderName: string;
   campus: string;
-  onOutreachLogged?: (item: DashboardOutreachItem) => void;
-}
-
-function buildOutreachItem(summary: string): DashboardOutreachItem {
-  return {
-    date: new Date().toISOString(),
-    type: "email",
-    summary,
-  };
+  contextLabel: string;
+  onOutreachLogged?: (summary: string) => void;
 }
 
 export function EmailComposer({
+  role,
   student,
-  professorName,
-  courseName,
+  senderName,
   campus,
+  contextLabel,
   onOutreachLogged,
 }: EmailComposerProps) {
   const resourceOptions = useMemo(() => getResourceOptionsForEmail(student), [student]);
   const simulationLink = getSimulationSupportLink(student);
-  const [tone, setTone] = useState<FacultyEmailTone>("warm");
-  const [focusArea, setFocusArea] = useState<FacultyEmailFocusArea>(getDefaultFocusArea(student));
+  const [tone, setTone] = useState<DashboardEmailTone>("warm");
+  const [focusArea, setFocusArea] = useState<DashboardEmailFocusArea>(getDefaultFocusArea(student));
   const [includeSimLink, setIncludeSimLink] = useState(true);
   const [includeResourceType, setIncludeResourceType] = useState<ResourceSlug | "none">(
     student.recommendedResource.type,
@@ -67,34 +59,43 @@ export function EmailComposer({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const activeDraft = draft
-    ? {
-        subject,
-        body,
-      }
-    : null;
+  const endpoint = role === "faculty" ? "/api/faculty-email" : "/api/advisor-email";
+  const buttonLabel = role === "faculty" ? "Generate faculty draft" : "Generate advisor draft";
 
-  function handleGenerate() {
+  async function handleGenerate() {
     setError(null);
     setFeedback(null);
 
     startTransition(async () => {
       try {
-        const response = await fetch("/api/faculty-email", {
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            studentId: student.id,
-            professorName,
-            courseName,
-            campus,
-            tone,
-            focusArea,
-            includeSimLink,
-            includeResourceType: includeResourceType === "none" ? null : includeResourceType,
-          }),
+          body: JSON.stringify(
+            role === "faculty"
+              ? {
+                  studentId: student.id,
+                  professorName: senderName,
+                  courseName: contextLabel,
+                  campus,
+                  tone,
+                  focusArea,
+                  includeSimLink,
+                  includeResourceType: includeResourceType === "none" ? null : includeResourceType,
+                }
+              : {
+                  studentId: student.id,
+                  advisorName: senderName,
+                  department: contextLabel,
+                  campus,
+                  tone,
+                  focusArea,
+                  includeSimLink,
+                  includeResourceType: includeResourceType === "none" ? null : includeResourceType,
+                },
+          ),
         });
 
         const result = (await response.json()) as
@@ -125,30 +126,22 @@ export function EmailComposer({
   }
 
   async function handleCopy() {
-    if (!activeDraft) return;
+    if (!draft) return;
 
     try {
-      await navigator.clipboard.writeText(`Subject: ${activeDraft.subject}\n\n${activeDraft.body}`);
+      await navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`);
       setFeedback("Draft copied to clipboard.");
-      onOutreachLogged?.(
-        buildOutreachItem(`Copied a personalized ${tone} draft for ${student.firstName}.`),
-      );
+      onOutreachLogged?.(`Copied a ${tone} ${role} draft for ${student.firstName}.`);
     } catch {
-      setError("Clipboard access failed. You can still select the draft text manually.");
+      setError("Clipboard access failed. You can still select the draft manually.");
     }
   }
 
   function handleOpenInMail() {
-    if (!activeDraft) return;
-
-    const href = `mailto:?subject=${encodeURIComponent(activeDraft.subject)}&body=${encodeURIComponent(
-      activeDraft.body,
-    )}`;
-    window.location.href = href;
+    if (!draft) return;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setFeedback("Opened the draft in your mail app.");
-    onOutreachLogged?.(
-      buildOutreachItem(`Opened a personalized ${tone} draft in Mail for ${student.firstName}.`),
-    );
+    onOutreachLogged?.(`Opened a ${tone} ${role} draft in Mail for ${student.firstName}.`);
   }
 
   return (
@@ -157,16 +150,15 @@ export function EmailComposer({
         <div>
           <p className="eyebrow">Write email</p>
           <h2 className="mt-3 text-2xl font-semibold text-[var(--asu-maroon)]">
-            Personalized faculty outreach
+            {role === "faculty" ? "Faculty outreach" : "Advisor outreach"}
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted-ink)]">
-            The draft uses strengths, recent signals, simulation progress, and the recommended
-            support path already connected to this student. It never names sensitive labels in the
-            email body.
+            This draft uses the student’s current dashboard context, resource path, and simulation
+            state. Sensitive labels never appear in the email body.
           </p>
         </div>
         <button type="button" className="button-primary" onClick={handleGenerate} disabled={isPending}>
-          {isPending ? "Generating draft..." : "✨ Generate draft with AI"}
+          {isPending ? "Generating..." : `✨ ${buttonLabel}`}
         </button>
       </div>
 
@@ -176,7 +168,7 @@ export function EmailComposer({
           <select
             className="field-shell"
             value={tone}
-            onChange={(event) => setTone(event.target.value as FacultyEmailTone)}
+            onChange={(event) => setTone(event.target.value as DashboardEmailTone)}
           >
             {toneOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -191,7 +183,7 @@ export function EmailComposer({
           <select
             className="field-shell"
             value={focusArea}
-            onChange={(event) => setFocusArea(event.target.value as FacultyEmailFocusArea)}
+            onChange={(event) => setFocusArea(event.target.value as DashboardEmailFocusArea)}
           >
             {focusOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -227,8 +219,8 @@ export function EmailComposer({
               onChange={(event) => setIncludeSimLink(event.target.checked)}
             />
             <span>
-              Include <strong>{simulationLink.label}</strong> so the student can preview the space
-              or support step before trying it.
+              Include <strong>{simulationLink.label}</strong> so the student can preview the support
+              step before trying it.
             </span>
           </label>
         </div>
@@ -247,7 +239,7 @@ export function EmailComposer({
       ) : null}
 
       <div className="mt-6 rounded-[1.8rem] border border-[rgba(140,29,64,0.12)] bg-[rgba(255,255,255,0.82)] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.05)]">
-        {activeDraft ? (
+        {draft ? (
           <div className="space-y-4">
             <div>
               <p className="text-xs uppercase tracking-[0.16em] text-[var(--muted-ink)]">Subject</p>
@@ -269,7 +261,7 @@ export function EmailComposer({
 
             <div className="flex flex-wrap gap-3">
               <button type="button" className="button-primary" onClick={handleCopy}>
-                Copy to clipboard
+                Copy
               </button>
               <button type="button" className="button-secondary" onClick={handleOpenInMail}>
                 Open in Mail
@@ -283,8 +275,7 @@ export function EmailComposer({
           <div className="rounded-[1.5rem] border border-dashed border-[rgba(140,29,64,0.2)] bg-[rgba(140,29,64,0.03)] px-5 py-8">
             <p className="text-sm font-semibold text-[var(--asu-maroon)]">Generated draft preview</p>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted-ink)]">
-              The first draft will appear here with a subject line, editable body, and direct
-              handoff to your mail client.
+              The draft appears here with an editable subject and body once you generate it.
             </p>
           </div>
         )}

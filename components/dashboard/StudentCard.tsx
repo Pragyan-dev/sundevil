@@ -2,12 +2,11 @@ import Link from "next/link";
 
 import {
   formatDashboardYear,
-  formatSignalDate,
+  getAdvisorStudentSummary,
   getContextTags,
-  getLatestSignal,
-  getResourceSummarySentence,
+  getFacultyStudentSummary,
 } from "@/lib/dashboard";
-import type { DashboardStudent } from "@/lib/types";
+import type { DashboardRole, DashboardStudent } from "@/lib/types";
 
 import { ConcernBadge } from "./ConcernBadge";
 import { ContextTags } from "./ContextTags";
@@ -15,13 +14,20 @@ import { SimulationProgress } from "./SimulationProgress";
 
 interface StudentCardProps {
   student: DashboardStudent;
+  role: DashboardRole;
 }
 
-export function StudentCard({ student }: StudentCardProps) {
-  const latestSignal = getLatestSignal(student);
+export function StudentCard({ student, role }: StudentCardProps) {
+  const tags = getContextTags(student);
+  const detailHref =
+    role === "faculty"
+      ? `/dashboard/faculty/student/${student.id}`
+      : `/dashboard/advisor/student/${student.id}`;
+  const emailHref = `${detailHref}#email-composer`;
+  const messageHref = `/dashboard/messages?role=${role}&student=${student.id}`;
 
   return (
-    <article className="paper-card flex h-full flex-col gap-5 rounded-[1.8rem] border border-[rgba(140,29,64,0.1)] bg-[rgba(255,255,255,0.84)]">
+    <article className="paper-card flex h-full flex-col gap-5 rounded-[1.9rem] border border-[rgba(140,29,64,0.1)] bg-[rgba(255,255,255,0.88)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm uppercase tracking-[0.16em] text-[var(--muted-ink)]">
@@ -34,42 +40,77 @@ export function StudentCard({ student }: StudentCardProps) {
         <ConcernBadge level={student.concernLevel} compact />
       </div>
 
-      <ContextTags tags={getContextTags(student)} />
+      <ContextTags tags={tags} />
 
-      <div className="rounded-[1.5rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.74)] p-5">
-        <p className="text-sm font-semibold text-[var(--asu-maroon)]">Resource snapshot</p>
-        <p className="mt-3 text-base leading-7 text-[var(--ink)]/84">
-          {getResourceSummarySentence(student)}
+      {role === "faculty" ? (
+        <FacultyCardBody student={student} />
+      ) : (
+        <AdvisorCardBody student={student} />
+      )}
+
+      <div className="rounded-[1.45rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.72)] p-5">
+        <SimulationProgress simulation={student.simulation} compact />
+      </div>
+
+      <div className="mt-auto flex flex-wrap gap-3">
+        <Link href={detailHref} className="button-primary">
+          View
+        </Link>
+        <Link href={emailHref} className="button-secondary">
+          Write Email
+        </Link>
+        {role === "faculty" ? (
+          <Link href={`${detailHref}#handoff-form`} className="button-secondary">
+            🤝 Handoff to Advisor
+          </Link>
+        ) : (
+          <Link href={messageHref} className="button-secondary">
+            Reply to Faculty
+          </Link>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function FacultyCardBody({ student }: { student: DashboardStudent }) {
+  const summary = getFacultyStudentSummary(student);
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-[1.45rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.74)] p-5">
+        <p className="text-sm leading-7 text-[var(--ink)]/84">
+          <span className="font-semibold text-[var(--asu-maroon)]">📉 {summary.performance}</span> · 🏫{" "}
+          {summary.attendance}
         </p>
       </div>
 
-      <div className="rounded-[1.5rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.74)] p-5">
-        <p className="text-sm font-semibold text-[var(--asu-maroon)]">Last signal</p>
-        {latestSignal ? (
-          <>
-            <p className="mt-3 text-base leading-7 text-[var(--ink)]/84">{latestSignal.description}</p>
-            <p className="mt-3 text-xs uppercase tracking-[0.16em] text-[var(--muted-ink)]">
-              {formatSignalDate(latestSignal.date)}
-            </p>
-          </>
-        ) : (
-          <p className="mt-3 text-sm leading-7 text-[var(--muted-ink)]">No recent signals logged.</p>
-        )}
+      <div className="rounded-[1.45rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.74)] p-5">
+        <p className="text-sm font-semibold text-[var(--asu-maroon)]">{summary.advisor}</p>
+        <p className="mt-2 text-sm leading-7 text-[var(--muted-ink)]">{summary.advisorTouch}</p>
+      </div>
+    </div>
+  );
+}
+
+function AdvisorCardBody({ student }: { student: DashboardStudent }) {
+  const summary = getAdvisorStudentSummary(student);
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-[1.45rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.74)] p-5">
+        <p className="text-sm font-semibold text-[var(--asu-maroon)]">
+          Degree progress: {summary.degree} · {summary.onTrack}
+        </p>
+        <p className="mt-3 text-sm leading-7 text-[var(--ink)]/84">{summary.courses}</p>
       </div>
 
-      <SimulationProgress simulation={student.simulation} compact />
-
-      <div className="mt-auto flex flex-wrap gap-3">
-        <Link href={`/dashboard/student/${student.id}`} className="button-primary">
-          View Full Profile
-        </Link>
-        <Link href={`/dashboard/student/${student.id}#email-composer`} className="button-secondary">
-          Write Email
-        </Link>
-        <Link href={`/dashboard/student/${student.id}#faculty-notes`} className="button-secondary">
-          Log Check-in
-        </Link>
+      <div className="rounded-[1.45rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.74)] p-5">
+        <p className="text-sm leading-7 text-[var(--ink)]/84">
+          <span className="font-semibold text-[var(--asu-maroon)]">Financial:</span> {summary.financial}
+        </p>
+        <p className="mt-3 text-sm leading-7 text-[var(--muted-ink)]">{summary.facultySignal}</p>
       </div>
-    </article>
+    </div>
   );
 }

@@ -23,8 +23,9 @@ export default function RootLayout({
       lang="en"
       className="h-full scroll-smooth antialiased"
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
     >
-      <body className="min-h-full">
+      <body className="min-h-full" suppressHydrationWarning>
         <div className="app-shell">
           <Navbar />
           <main>{children}</main>

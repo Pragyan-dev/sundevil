@@ -114,11 +114,55 @@ export interface GeneratedQuestionsResult {
   proTip: string;
 }
 
+export type DashboardRole = "faculty" | "advisor";
 export type DashboardCampus = "tempe" | "downtown" | "polytechnic" | "west" | "online";
 export type DashboardConcernLevel = "high" | "watch" | "steady";
 export type DashboardResourceUsageLevel = "never" | "once" | "regular";
-export type FacultyEmailTone = "warm" | "direct" | "encouraging";
-export type FacultyEmailFocusArea = "navigation" | "tutoring" | "advising" | "general";
+export type DashboardMood = "great" | "okay" | "meh" | "struggling" | "drowning";
+export type DashboardBlocker = "none" | "money" | "academics" | "health" | "personal";
+export type AdvisorNoteVisibility = "advisor-only" | "shared-with-faculty";
+export type DashboardTimelineVisibility = "shared" | "advisor-only";
+export type DashboardMessageKind = "handoff" | "reply" | "note";
+export type DashboardTimelineType =
+  | "email"
+  | "handoff"
+  | "reply"
+  | "note"
+  | "resource"
+  | "check-in"
+  | "milestone";
+export type DashboardEmailTone = "warm" | "direct" | "encouraging";
+export type DashboardEmailFocusArea =
+  | "academic"
+  | "navigation"
+  | "tutoring"
+  | "advising"
+  | "financial"
+  | "general";
+export type FacultyEmailTone = DashboardEmailTone;
+export type FacultyEmailFocusArea = DashboardEmailFocusArea;
+export type AdvisorEmailTone = DashboardEmailTone;
+export type AdvisorEmailFocusArea = DashboardEmailFocusArea;
+
+export interface FacultyContext {
+  id: string;
+  name: string;
+  course: {
+    code: string;
+    name: string;
+    campus: string;
+    semester: string;
+    totalStudents: number;
+  };
+}
+
+export interface AdvisorContext {
+  id: string;
+  name: string;
+  department: string;
+  campus: string;
+  totalStudents: number;
+}
 
 export interface DashboardSignal {
   date: string;
@@ -147,10 +191,103 @@ export interface DashboardRecommendedResource {
   reason: string;
 }
 
+export interface DashboardObservation {
+  id: string;
+  date: string;
+  authorName: string;
+  text: string;
+}
+
+export interface DashboardAdvisorNote {
+  id: string;
+  date: string;
+  authorName: string;
+  text: string;
+  visibility: AdvisorNoteVisibility;
+}
+
 export interface DashboardOutreachItem {
   date: string;
   type: "email" | "check-in" | "note";
   summary: string;
+}
+
+export interface DashboardDegreeProgress {
+  creditsCompleted: number;
+  creditsNeeded: number;
+  onTrack: boolean;
+  lastDarsCheck: string;
+  holds: string[];
+  eligibleScholarships: number;
+}
+
+export interface DashboardCoursePerformance {
+  quizScores: number[];
+  hwAverage: number;
+  attendance: { attended: number; total: number };
+  officeHoursVisits: number;
+  weeklyMissedLectures: number;
+}
+
+export interface DashboardCourseStatus {
+  code: string;
+  professorName: string;
+  status: "fine" | "okay" | "struggling";
+  facultySignals: string[];
+}
+
+export interface DashboardFinancialSnapshot {
+  scholarshipAmount: number;
+  financialCoachingVisits: number;
+  unappliedScholarships: number;
+}
+
+export interface SelfCheckIn {
+  studentId: string;
+  week: number;
+  mood: DashboardMood;
+  blocker: DashboardBlocker;
+  wantsOutreach: boolean;
+  date: string;
+}
+
+export interface HandoffRecord {
+  id: string;
+  fromId: string;
+  fromName: string;
+  fromRole: DashboardRole;
+  toId: string;
+  toName: string;
+  date: string;
+  message: string;
+  acknowledged: boolean;
+}
+
+export interface SharedTimelineEvent {
+  id: string;
+  date: string;
+  type: DashboardTimelineType;
+  actorId: string;
+  actorName: string;
+  actorRole: DashboardRole | "student" | "system";
+  summary: string;
+  visibility?: DashboardTimelineVisibility;
+}
+
+export interface DashboardMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: DashboardRole;
+  date: string;
+  type: DashboardMessageKind;
+  text: string;
+}
+
+export interface MessageThread {
+  studentId: string;
+  studentInitials: string;
+  messages: DashboardMessage[];
 }
 
 export interface DashboardStudent {
@@ -164,19 +301,42 @@ export interface DashboardStudent {
   isFirstGen: boolean;
   isInternational: boolean;
   isCommuter: boolean;
+  commuteMinutes?: number;
   livesOnCampus: boolean;
   workHoursPerWeek: number;
   hasScholarship: boolean;
+  contextTags: string[];
+  advisorId: string;
+  advisorName: string;
+  lastAdvisingVisit: string;
   behaviorTags: string[];
   strengths: string[];
   signals: DashboardSignal[];
+  degree: DashboardDegreeProgress;
+  coursePerformance: DashboardCoursePerformance;
+  allCourses: DashboardCourseStatus[];
+  financial: DashboardFinancialSnapshot;
   resourceUsage: DashboardResourceUsage;
   simulation: DashboardSimulationStatus;
+  checkIns: SelfCheckIn[];
   concernLevel: DashboardConcernLevel;
   supportFocus: string;
+  observations: DashboardObservation[];
+  advisorNotes: DashboardAdvisorNote[];
+  handoffs: HandoffRecord[];
   recommendedResource: DashboardRecommendedResource;
-  outreachHistory: DashboardOutreachItem[];
+  timeline: SharedTimelineEvent[];
 }
+
+export interface DashboardData {
+  faculty: FacultyContext;
+  advisor: AdvisorContext;
+  students: DashboardStudent[];
+  messages: MessageThread[];
+  selfCheckIns: SelfCheckIn[];
+}
+
+export type DashboardDemoState = DashboardData;
 
 export interface CohortPattern {
   id: string;

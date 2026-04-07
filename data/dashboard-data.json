@@ -1,0 +1,1359 @@
+{
+  "faculty": {
+    "id": "faculty-prof-chen",
+    "name": "Prof. Chen",
+    "course": {
+      "code": "CSE 110",
+      "name": "Principles of Programming",
+      "campus": "Tempe",
+      "semester": "Fall 2026",
+      "totalStudents": 42
+    }
+  },
+  "advisor": {
+    "id": "advisor-rivera",
+    "name": "Rivera, A.",
+    "department": "SCAI Undergraduate Advising",
+    "campus": "Tempe",
+    "totalStudents": 85
+  },
+  "students": [
+    {
+      "id": "marisol-soto",
+      "initials": "M.S.",
+      "firstName": "Marisol",
+      "pronouns": "she/her",
+      "year": "first-year",
+      "major": "Computer Science",
+      "campus": "tempe",
+      "isFirstGen": true,
+      "isInternational": false,
+      "isCommuter": true,
+      "commuteMinutes": 40,
+      "livesOnCampus": false,
+      "workHoursPerWeek": 8,
+      "hasScholarship": false,
+      "contextTags": ["No family in AZ"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-08-14T10:00:00",
+      "behaviorTags": ["Quiet in lecture", "Shows up early"],
+      "strengths": ["Shows up early to lecture", "Writes detailed notes", "Stayed through the full lecture"],
+      "signals": [
+        {
+          "date": "2026-09-10T15:30:00",
+          "description": "Mentioned in office hours that money has been stressing her out since the bookstore charges hit.",
+          "type": "concern"
+        },
+        {
+          "date": "2026-09-09T12:10:00",
+          "description": "Quiz 2 score dropped to 48% after a shaky Week 4.",
+          "type": "concern"
+        },
+        {
+          "date": "2026-09-08T08:55:00",
+          "description": "Still arrived early and took notes through the whole lecture.",
+          "type": "positive"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 12,
+        "creditsNeeded": 120,
+        "onTrack": true,
+        "lastDarsCheck": "2026-08-14T10:00:00",
+        "holds": [],
+        "eligibleScholarships": 3
+      },
+      "coursePerformance": {
+        "quizScores": [52, 48],
+        "hwAverage": 65,
+        "attendance": { "attended": 8, "total": 10 },
+        "officeHoursVisits": 1,
+        "weeklyMissedLectures": 2
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "struggling",
+          "facultySignals": ["Quiz trend declined from 52% to 48%", "Money stress mentioned in office hours"]
+        },
+        {
+          "code": "MAT 265",
+          "professorName": "Prof. Patel",
+          "status": "okay",
+          "facultySignals": ["Midterm prep seems inconsistent"]
+        },
+        {
+          "code": "ENG 101",
+          "professorName": "Prof. Ruiz",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 0,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 3
+      },
+      "resourceUsage": {
+        "officeHours": "once",
+        "tutoring": "never",
+        "advising": "once",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": false,
+        "currentDay": 0,
+        "completed": false,
+        "badges": [],
+        "confidence": 34
+      },
+      "checkIns": [
+        {
+          "studentId": "marisol-soto",
+          "week": 3,
+          "mood": "okay",
+          "blocker": "none",
+          "wantsOutreach": false,
+          "date": "2026-09-01T18:10:00"
+        },
+        {
+          "studentId": "marisol-soto",
+          "week": 4,
+          "mood": "meh",
+          "blocker": "academics",
+          "wantsOutreach": false,
+          "date": "2026-09-07T18:15:00"
+        },
+        {
+          "studentId": "marisol-soto",
+          "week": 5,
+          "mood": "struggling",
+          "blocker": "money",
+          "wantsOutreach": true,
+          "date": "2026-09-10T18:20:00"
+        }
+      ],
+      "concernLevel": "high",
+      "supportFocus": "Quiz scores are slipping while money stress and uncertainty about next steps are piling up at the same time.",
+      "observations": [
+        {
+          "id": "obs-marisol-1",
+          "date": "2026-09-08T09:50:00",
+          "authorName": "Prof. Chen",
+          "text": "Shows up early but still sits in the back and rarely makes eye contact."
+        },
+        {
+          "id": "obs-marisol-2",
+          "date": "2026-09-10T14:20:00",
+          "authorName": "Prof. Chen",
+          "text": "Came to office hours, seemed nervous, but stayed long enough to ask one real question."
+        }
+      ],
+      "advisorNotes": [
+        {
+          "id": "note-marisol-1",
+          "date": "2026-08-21T11:20:00",
+          "authorName": "Advisor Rivera",
+          "text": "Orientation advising visit. Student seemed unsure whether CS is the right fit but wanted to try the first semester before deciding.",
+          "visibility": "shared-with-faculty"
+        },
+        {
+          "id": "note-marisol-2",
+          "date": "2026-09-10T17:00:00",
+          "authorName": "Advisor Rivera",
+          "text": "Financial stress appears to be overtaking academic focus. Prioritize coaching referral and a DARS refresh this week.",
+          "visibility": "advisor-only"
+        }
+      ],
+      "handoffs": [
+        {
+          "id": "handoff-marisol-1",
+          "fromId": "faculty-prof-chen",
+          "fromName": "Prof. Chen",
+          "fromRole": "faculty",
+          "toId": "advisor-rivera",
+          "toName": "Advisor Rivera",
+          "date": "2026-09-10T16:10:00",
+          "message": "M.S. mentioned in office hours that she's worried about money. Quiz scores also dropped this week. Might need a financial coaching referral.",
+          "acknowledged": false
+        }
+      ],
+      "recommendedResource": {
+        "type": "tutoring",
+        "reason": "The fastest academic support move is tutoring, but the advisor view should pair that with financial coaching."
+      },
+      "timeline": [
+        {
+          "id": "timeline-marisol-1",
+          "date": "2026-09-10T18:20:00",
+          "type": "check-in",
+          "actorId": "marisol-soto",
+          "actorName": "Marisol",
+          "actorRole": "student",
+          "summary": "Self-check-in: struggling · money · asked for someone to reach out.",
+          "visibility": "shared"
+        },
+        {
+          "id": "timeline-marisol-2",
+          "date": "2026-09-10T16:10:00",
+          "type": "handoff",
+          "actorId": "faculty-prof-chen",
+          "actorName": "Prof. Chen",
+          "actorRole": "faculty",
+          "summary": "Sent a handoff to Advisor Rivera about financial stress and declining quiz scores.",
+          "visibility": "shared"
+        },
+        {
+          "id": "timeline-marisol-3",
+          "date": "2026-09-10T15:20:00",
+          "type": "email",
+          "actorId": "faculty-prof-chen",
+          "actorName": "Prof. Chen",
+          "actorRole": "faculty",
+          "summary": "Sent a tutoring-focused outreach email after office hours.",
+          "visibility": "shared"
+        },
+        {
+          "id": "timeline-marisol-4",
+          "date": "2026-09-10T14:20:00",
+          "type": "resource",
+          "actorId": "marisol-soto",
+          "actorName": "Marisol",
+          "actorRole": "student",
+          "summary": "Attended office hours once in CSE 110.",
+          "visibility": "shared"
+        },
+        {
+          "id": "timeline-marisol-5",
+          "date": "2026-08-21T11:20:00",
+          "type": "note",
+          "actorId": "advisor-rivera",
+          "actorName": "Advisor Rivera",
+          "actorRole": "advisor",
+          "summary": "Logged a shared advising note after orientation.",
+          "visibility": "shared"
+        }
+      ]
+    },
+    {
+      "id": "jalen-thomas",
+      "initials": "J.T.",
+      "firstName": "Jalen",
+      "pronouns": "he/him",
+      "year": "first-year",
+      "major": "Software Engineering",
+      "campus": "tempe",
+      "isFirstGen": true,
+      "isInternational": false,
+      "isCommuter": false,
+      "livesOnCampus": true,
+      "workHoursPerWeek": 10,
+      "hasScholarship": false,
+      "contextTags": ["Morning job"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-09-03T11:40:00",
+      "behaviorTags": ["Asks clarifying questions", "Calendar user"],
+      "strengths": ["Uses calendar reminders", "Introduced himself after class", "Already checked DARS independently"],
+      "signals": [
+        {
+          "date": "2026-09-10T10:15:00",
+          "description": "Tutoring visit this week appeared to help; quiz score held steady in the low 80s.",
+          "type": "positive"
+        },
+        {
+          "date": "2026-09-09T12:00:00",
+          "description": "Downloaded all syllabi and updated his calendar again after Quiz 2.",
+          "type": "positive"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 13,
+        "creditsNeeded": 120,
+        "onTrack": true,
+        "lastDarsCheck": "2026-09-03T11:40:00",
+        "holds": [],
+        "eligibleScholarships": 1
+      },
+      "coursePerformance": {
+        "quizScores": [81, 84],
+        "hwAverage": 88,
+        "attendance": { "attended": 10, "total": 10 },
+        "officeHoursVisits": 0,
+        "weeklyMissedLectures": 0
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "fine",
+          "facultySignals": ["Asked useful clarifying questions after class"]
+        },
+        {
+          "code": "MAT 265",
+          "professorName": "Prof. Patel",
+          "status": "okay",
+          "facultySignals": ["Needs to keep up practice sets"]
+        },
+        {
+          "code": "ASU 101",
+          "professorName": "Prof. Burns",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 0,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 1
+      },
+      "resourceUsage": {
+        "officeHours": "never",
+        "tutoring": "once",
+        "advising": "once",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": true,
+        "currentDay": 3,
+        "completed": false,
+        "badges": ["classroom-navigator", "dars-scout", "advisor-check-in", "tutor-trial"],
+        "confidence": 68
+      },
+      "checkIns": [
+        {
+          "studentId": "jalen-thomas",
+          "week": 5,
+          "mood": "okay",
+          "blocker": "none",
+          "wantsOutreach": false,
+          "date": "2026-09-10T18:00:00"
+        }
+      ],
+      "concernLevel": "steady",
+      "supportFocus": "Keep momentum steady and avoid over-messaging a student who is already using support effectively.",
+      "observations": [
+        {
+          "id": "obs-jalen-1",
+          "date": "2026-09-09T10:30:00",
+          "authorName": "Prof. Chen",
+          "text": "Keeps a visible planner and references it when deadlines move."
+        }
+      ],
+      "advisorNotes": [
+        {
+          "id": "note-jalen-1",
+          "date": "2026-09-03T11:40:00",
+          "authorName": "Advisor Rivera",
+          "text": "Student already using DARS and asked good sequencing questions.",
+          "visibility": "shared-with-faculty"
+        }
+      ],
+      "handoffs": [],
+      "recommendedResource": {
+        "type": "career-services",
+        "reason": "Student is stable enough for future-planning nudges rather than urgent intervention."
+      },
+      "timeline": [
+        {
+          "id": "timeline-jalen-1",
+          "date": "2026-09-09T16:15:00",
+          "type": "resource",
+          "actorId": "jalen-thomas",
+          "actorName": "Jalen",
+          "actorRole": "student",
+          "summary": "Used tutoring for the first time this week.",
+          "visibility": "shared"
+        },
+        {
+          "id": "timeline-jalen-2",
+          "date": "2026-09-03T11:40:00",
+          "type": "note",
+          "actorId": "advisor-rivera",
+          "actorName": "Advisor Rivera",
+          "actorRole": "advisor",
+          "summary": "Shared advising note: student seems organized and proactive.",
+          "visibility": "shared"
+        }
+      ]
+    },
+    {
+      "id": "noor-khan",
+      "initials": "N.K.",
+      "firstName": "Noor",
+      "pronouns": "she/they",
+      "year": "first-year",
+      "major": "Data Science",
+      "campus": "tempe",
+      "isFirstGen": true,
+      "isInternational": true,
+      "isCommuter": true,
+      "commuteMinutes": 25,
+      "livesOnCampus": false,
+      "workHoursPerWeek": 0,
+      "hasScholarship": true,
+      "contextTags": ["Reads everything"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-09-01T13:45:00",
+      "behaviorTags": ["Strong quiz prep habits", "Overthinks emails"],
+      "strengths": ["Comes prepared with written questions", "Reads announcements early", "Attends lecture consistently"],
+      "signals": [
+        {
+          "date": "2026-09-09T15:20:00",
+          "description": "Told a peer she rewrote an office-hours email three times and never sent it.",
+          "type": "concern"
+        },
+        {
+          "date": "2026-09-08T09:05:00",
+          "description": "Attendance is consistent across all three classes.",
+          "type": "positive"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 12,
+        "creditsNeeded": 120,
+        "onTrack": true,
+        "lastDarsCheck": "2026-09-01T13:45:00",
+        "holds": [],
+        "eligibleScholarships": 2
+      },
+      "coursePerformance": {
+        "quizScores": [79, 77],
+        "hwAverage": 82,
+        "attendance": { "attended": 10, "total": 10 },
+        "officeHoursVisits": 0,
+        "weeklyMissedLectures": 0
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "okay",
+          "facultySignals": ["Office-hours hesitation despite good preparation"]
+        },
+        {
+          "code": "MAT 266",
+          "professorName": "Prof. Lewis",
+          "status": "fine",
+          "facultySignals": []
+        },
+        {
+          "code": "ENG 101",
+          "professorName": "Prof. Ruiz",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 2500,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 1
+      },
+      "resourceUsage": {
+        "officeHours": "never",
+        "tutoring": "never",
+        "advising": "once",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": true,
+        "currentDay": 4,
+        "completed": false,
+        "badges": ["classroom-navigator", "dars-scout", "advisor-check-in", "tutor-trial", "office-hours-drafted"],
+        "confidence": 61
+      },
+      "checkIns": [],
+      "concernLevel": "watch",
+      "supportFocus": "The barrier is not willingness to work; it is uncertainty about office-hours etiquette and how to walk in without feeling foolish.",
+      "observations": [
+        {
+          "id": "obs-noor-1",
+          "date": "2026-09-09T10:50:00",
+          "authorName": "Prof. Chen",
+          "text": "Well prepared, but still hovers outside the office-hours threshold."
+        }
+      ],
+      "advisorNotes": [
+        {
+          "id": "note-noor-1",
+          "date": "2026-09-01T13:45:00",
+          "authorName": "Advisor Rivera",
+          "text": "Responds well when the process is broken into concrete steps.",
+          "visibility": "shared-with-faculty"
+        }
+      ],
+      "handoffs": [],
+      "recommendedResource": {
+        "type": "advising",
+        "reason": "Concrete process translation works well for this student and can extend to office-hours confidence."
+      },
+      "timeline": [
+        {
+          "id": "timeline-noor-1",
+          "date": "2026-09-09T15:20:00",
+          "type": "milestone",
+          "actorId": "faculty-prof-chen",
+          "actorName": "Prof. Chen",
+          "actorRole": "faculty",
+          "summary": "Observed office-hours hesitation despite solid preparation.",
+          "visibility": "shared"
+        }
+      ]
+    },
+    {
+      "id": "eli-romero",
+      "initials": "E.R.",
+      "firstName": "Eli",
+      "pronouns": "he/they",
+      "year": "first-year",
+      "major": "Informatics",
+      "campus": "tempe",
+      "isFirstGen": true,
+      "isInternational": false,
+      "isCommuter": true,
+      "commuteMinutes": 35,
+      "livesOnCampus": false,
+      "workHoursPerWeek": 18,
+      "hasScholarship": false,
+      "contextTags": ["Low portal confidence"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-08-28T15:10:00",
+      "behaviorTags": ["Works evenings", "Stays after class once"],
+      "strengths": ["Responds well to direct asks", "Shows interest in Python concepts", "Will admit when the portal is confusing"],
+      "signals": [
+        {
+          "date": "2026-09-10T19:10:00",
+          "description": "Said MyASU feels important but too dense to know what is urgent.",
+          "type": "concern"
+        },
+        {
+          "date": "2026-09-09T12:40:00",
+          "description": "Did not open the advising follow-up link after class.",
+          "type": "concern"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 11,
+        "creditsNeeded": 120,
+        "onTrack": true,
+        "lastDarsCheck": "2026-08-28T15:10:00",
+        "holds": ["Immunization"],
+        "eligibleScholarships": 2
+      },
+      "coursePerformance": {
+        "quizScores": [64, 58],
+        "hwAverage": 69,
+        "attendance": { "attended": 9, "total": 10 },
+        "officeHoursVisits": 0,
+        "weeklyMissedLectures": 1
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "okay",
+          "facultySignals": ["Portal confusion seems to block follow-through"]
+        },
+        {
+          "code": "MAT 265",
+          "professorName": "Prof. Patel",
+          "status": "struggling",
+          "facultySignals": ["Late practice work twice this month"]
+        },
+        {
+          "code": "ASU 101",
+          "professorName": "Prof. Burns",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 0,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 2
+      },
+      "resourceUsage": {
+        "officeHours": "never",
+        "tutoring": "never",
+        "advising": "once",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": true,
+        "currentDay": 5,
+        "completed": false,
+        "badges": ["classroom-navigator", "dars-scout", "myasu-cleanup"],
+        "confidence": 49
+      },
+      "checkIns": [
+        {
+          "studentId": "eli-romero",
+          "week": 5,
+          "mood": "meh",
+          "blocker": "academics",
+          "wantsOutreach": false,
+          "date": "2026-09-10T18:05:00"
+        }
+      ],
+      "concernLevel": "high",
+      "supportFocus": "MyASU and follow-up tasks are not translating into action, which is turning small admin friction into academic risk.",
+      "observations": [
+        {
+          "id": "obs-eli-1",
+          "date": "2026-09-08T10:20:00",
+          "authorName": "Prof. Chen",
+          "text": "Stayed after class once to ask if all enrollment documents were finished."
+        }
+      ],
+      "advisorNotes": [
+        {
+          "id": "note-eli-1",
+          "date": "2026-08-28T15:10:00",
+          "authorName": "Advisor Rivera",
+          "text": "Portal tasks need a more concrete checklist than the student currently has.",
+          "visibility": "shared-with-faculty"
+        }
+      ],
+      "handoffs": [],
+      "recommendedResource": {
+        "type": "advising",
+        "reason": "This student needs a concrete DARS/MyASU translation rather than a generic reminder."
+      },
+      "timeline": [
+        {
+          "id": "timeline-eli-1",
+          "date": "2026-09-10T18:05:00",
+          "type": "check-in",
+          "actorId": "eli-romero",
+          "actorName": "Eli",
+          "actorRole": "student",
+          "summary": "Self-check-in: meh · academics.",
+          "visibility": "shared"
+        }
+      ]
+    },
+    {
+      "id": "ramon-perez",
+      "initials": "R.P.",
+      "firstName": "Ramon",
+      "pronouns": "he/him",
+      "year": "second-year",
+      "major": "Computer Systems Engineering",
+      "campus": "tempe",
+      "isFirstGen": false,
+      "isInternational": false,
+      "isCommuter": true,
+      "commuteMinutes": 30,
+      "livesOnCampus": false,
+      "workHoursPerWeek": 20,
+      "hasScholarship": false,
+      "contextTags": ["Caregiving at home"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-08-26T09:30:00",
+      "behaviorTags": ["Tired in lecture", "Stays to the end"],
+      "strengths": ["Still shows up even on hard weeks", "Completes labs when present", "Answers peers quietly"],
+      "signals": [
+        {
+          "date": "2026-09-10T11:30:00",
+          "description": "Looked exhausted in lecture but stayed the whole time.",
+          "type": "concern"
+        },
+        {
+          "date": "2026-09-09T18:30:00",
+          "description": "Self-check-in marked personal strain and requested outreach.",
+          "type": "concern"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 28,
+        "creditsNeeded": 120,
+        "onTrack": true,
+        "lastDarsCheck": "2026-08-26T09:30:00",
+        "holds": [],
+        "eligibleScholarships": 1
+      },
+      "coursePerformance": {
+        "quizScores": [73, 69],
+        "hwAverage": 71,
+        "attendance": { "attended": 7, "total": 10 },
+        "officeHoursVisits": 0,
+        "weeklyMissedLectures": 1
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "okay",
+          "facultySignals": ["Tired but present; may need a quiet check-in"]
+        },
+        {
+          "code": "PHY 121",
+          "professorName": "Prof. Grant",
+          "status": "struggling",
+          "facultySignals": ["Missed one lab this month"]
+        },
+        {
+          "code": "ENG 302",
+          "professorName": "Prof. Vega",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 0,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 1
+      },
+      "resourceUsage": {
+        "officeHours": "never",
+        "tutoring": "never",
+        "advising": "once",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": false,
+        "currentDay": 0,
+        "completed": false,
+        "badges": [],
+        "confidence": 30
+      },
+      "checkIns": [
+        {
+          "studentId": "ramon-perez",
+          "week": 4,
+          "mood": "meh",
+          "blocker": "personal",
+          "wantsOutreach": false,
+          "date": "2026-09-03T18:05:00"
+        },
+        {
+          "studentId": "ramon-perez",
+          "week": 5,
+          "mood": "struggling",
+          "blocker": "personal",
+          "wantsOutreach": true,
+          "date": "2026-09-09T18:30:00"
+        }
+      ],
+      "concernLevel": "high",
+      "supportFocus": "The student is still attending, but outside pressure is leaking into class and they explicitly asked for outreach.",
+      "observations": [
+        {
+          "id": "obs-ramon-1",
+          "date": "2026-09-10T11:30:00",
+          "authorName": "Prof. Chen",
+          "text": "Seemed tired but stayed the full lecture and kept his notes out."
+        }
+      ],
+      "advisorNotes": [
+        {
+          "id": "note-ramon-1",
+          "date": "2026-09-09T19:10:00",
+          "authorName": "Advisor Rivera",
+          "text": "Could not reach student by phone yet. Asked faculty to try a quick human check-in after class if possible.",
+          "visibility": "shared-with-faculty"
+        }
+      ],
+      "handoffs": [
+        {
+          "id": "handoff-ramon-1",
+          "fromId": "advisor-rivera",
+          "fromName": "Advisor Rivera",
+          "fromRole": "advisor",
+          "toId": "faculty-prof-chen",
+          "toName": "Prof. Chen",
+          "date": "2026-09-09T19:10:00",
+          "message": "R.P. self-check-in said 'struggling' with a personal blocker. If you see him in class, a quick check-in would help.",
+          "acknowledged": false
+        }
+      ],
+      "recommendedResource": {
+        "type": "student-success-center",
+        "reason": "A broad, low-pressure support entry point fits the current uncertainty better than a narrow referral."
+      },
+      "timeline": [
+        {
+          "id": "timeline-ramon-1",
+          "date": "2026-09-10T11:30:00",
+          "type": "reply",
+          "actorId": "faculty-prof-chen",
+          "actorName": "Prof. Chen",
+          "actorRole": "faculty",
+          "summary": "Replied that Ramon was in lecture and she would try to catch him after Wednesday's class.",
+          "visibility": "shared"
+        },
+        {
+          "id": "timeline-ramon-2",
+          "date": "2026-09-09T19:10:00",
+          "type": "handoff",
+          "actorId": "advisor-rivera",
+          "actorName": "Advisor Rivera",
+          "actorRole": "advisor",
+          "summary": "Asked Prof. Chen to try a quick in-class check-in after the self-check-in request.",
+          "visibility": "shared"
+        },
+        {
+          "id": "timeline-ramon-3",
+          "date": "2026-09-09T18:30:00",
+          "type": "check-in",
+          "actorId": "ramon-perez",
+          "actorName": "Ramon",
+          "actorRole": "student",
+          "summary": "Self-check-in: struggling · personal · asked for outreach.",
+          "visibility": "shared"
+        }
+      ]
+    },
+    {
+      "id": "priya-nair",
+      "initials": "P.N.",
+      "firstName": "Priya",
+      "pronouns": "she/her",
+      "year": "second-year",
+      "major": "Information Technology",
+      "campus": "tempe",
+      "isFirstGen": false,
+      "isInternational": true,
+      "isCommuter": false,
+      "livesOnCampus": true,
+      "workHoursPerWeek": 12,
+      "hasScholarship": true,
+      "contextTags": ["Enrollment hold"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-07-15T13:00:00",
+      "behaviorTags": ["Professional emails", "Asks when confused"],
+      "strengths": ["Quick to follow up once the task is clear", "Shows up for class regularly"],
+      "signals": [
+        {
+          "date": "2026-09-09T17:00:00",
+          "description": "Asked whether an enrollment hold could affect next semester registration.",
+          "type": "concern"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 30,
+        "creditsNeeded": 120,
+        "onTrack": true,
+        "lastDarsCheck": "2026-07-15T13:00:00",
+        "holds": ["Transcript"],
+        "eligibleScholarships": 2
+      },
+      "coursePerformance": {
+        "quizScores": [76, 74],
+        "hwAverage": 79,
+        "attendance": { "attended": 9, "total": 10 },
+        "officeHoursVisits": 0,
+        "weeklyMissedLectures": 0
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "okay",
+          "facultySignals": ["Mild drop after Quiz 2, still recoverable"]
+        },
+        {
+          "code": "IFT 201",
+          "professorName": "Prof. Hall",
+          "status": "fine",
+          "facultySignals": []
+        },
+        {
+          "code": "MAT 210",
+          "professorName": "Prof. West",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 3500,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 2
+      },
+      "resourceUsage": {
+        "officeHours": "never",
+        "tutoring": "never",
+        "advising": "never",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": false,
+        "currentDay": 0,
+        "completed": false,
+        "badges": [],
+        "confidence": 38
+      },
+      "checkIns": [],
+      "concernLevel": "watch",
+      "supportFocus": "The clearest risk is institutional friction: an old hold, stale DARS, and no recent advising touch.",
+      "observations": [
+        {
+          "id": "obs-priya-1",
+          "date": "2026-09-09T17:00:00",
+          "authorName": "Prof. Chen",
+          "text": "Directly asked a procedural question after class, which is usually a good sign."
+        }
+      ],
+      "advisorNotes": [],
+      "handoffs": [],
+      "recommendedResource": {
+        "type": "advising",
+        "reason": "A DARS review and hold-clearing appointment would resolve the main risk quickly."
+      },
+      "timeline": [
+        {
+          "id": "timeline-priya-1",
+          "date": "2026-09-09T17:00:00",
+          "type": "milestone",
+          "actorId": "faculty-prof-chen",
+          "actorName": "Prof. Chen",
+          "actorRole": "faculty",
+          "summary": "Student surfaced an enrollment-hold question after class.",
+          "visibility": "shared"
+        }
+      ]
+    },
+    {
+      "id": "dante-gomez",
+      "initials": "D.G.",
+      "firstName": "Dante",
+      "pronouns": "he/him",
+      "year": "first-year",
+      "major": "Computer Science",
+      "campus": "tempe",
+      "isFirstGen": true,
+      "isInternational": false,
+      "isCommuter": true,
+      "commuteMinutes": 50,
+      "livesOnCampus": false,
+      "workHoursPerWeek": 16,
+      "hasScholarship": false,
+      "contextTags": ["No DARS check"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-08-15T10:45:00",
+      "behaviorTags": ["Quiet", "Leaves quickly after class"],
+      "strengths": ["Still submits homework even when quiz scores lag", "Tries to stay invisible rather than disruptive"],
+      "signals": [
+        {
+          "date": "2026-09-10T13:40:00",
+          "description": "Quiz 2 came back at 54% and the student left quickly without asking questions.",
+          "type": "concern"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 11,
+        "creditsNeeded": 120,
+        "onTrack": false,
+        "lastDarsCheck": "2026-08-15T10:45:00",
+        "holds": [],
+        "eligibleScholarships": 2
+      },
+      "coursePerformance": {
+        "quizScores": [61, 54],
+        "hwAverage": 67,
+        "attendance": { "attended": 8, "total": 10 },
+        "officeHoursVisits": 0,
+        "weeklyMissedLectures": 1
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "struggling",
+          "facultySignals": ["Quiz scores below passing comfort range"]
+        },
+        {
+          "code": "MAT 265",
+          "professorName": "Prof. Patel",
+          "status": "okay",
+          "facultySignals": []
+        },
+        {
+          "code": "ENG 101",
+          "professorName": "Prof. Ruiz",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 0,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 2
+      },
+      "resourceUsage": {
+        "officeHours": "never",
+        "tutoring": "never",
+        "advising": "never",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": true,
+        "currentDay": 1,
+        "completed": false,
+        "badges": [],
+        "confidence": 29
+      },
+      "checkIns": [],
+      "concernLevel": "high",
+      "supportFocus": "This is a classic quiet slide: quiz decline, no advising, no tutoring, and no DARS check after orientation.",
+      "observations": [
+        {
+          "id": "obs-dante-1",
+          "date": "2026-09-10T13:40:00",
+          "authorName": "Prof. Chen",
+          "text": "Looked like he wanted to leave before anyone could talk to him."
+        }
+      ],
+      "advisorNotes": [],
+      "handoffs": [],
+      "recommendedResource": {
+        "type": "tutoring",
+        "reason": "The immediate academic intervention is tutoring, but advisor follow-up should also cover DARS and planning."
+      },
+      "timeline": []
+    },
+    {
+      "id": "leah-park",
+      "initials": "L.P.",
+      "firstName": "Leah",
+      "pronouns": "she/her",
+      "year": "second-year",
+      "major": "Computer Science",
+      "campus": "tempe",
+      "isFirstGen": false,
+      "isInternational": false,
+      "isCommuter": false,
+      "livesOnCampus": true,
+      "workHoursPerWeek": 6,
+      "hasScholarship": true,
+      "contextTags": ["Peer mentor"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-09-02T10:30:00",
+      "behaviorTags": ["Helps classmates", "Confident in office hours"],
+      "strengths": ["Uses tutoring proactively", "Shares resources with peers", "Strong attendance"],
+      "signals": [
+        {
+          "date": "2026-09-09T14:00:00",
+          "description": "Used tutoring again before Quiz 2 and encouraged a classmate to go with her.",
+          "type": "positive"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 31,
+        "creditsNeeded": 120,
+        "onTrack": true,
+        "lastDarsCheck": "2026-09-02T10:30:00",
+        "holds": [],
+        "eligibleScholarships": 1
+      },
+      "coursePerformance": {
+        "quizScores": [88, 91],
+        "hwAverage": 93,
+        "attendance": { "attended": 10, "total": 10 },
+        "officeHoursVisits": 1,
+        "weeklyMissedLectures": 0
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "fine",
+          "facultySignals": ["Models healthy support use"]
+        },
+        {
+          "code": "CSE 205",
+          "professorName": "Prof. Chen",
+          "status": "fine",
+          "facultySignals": []
+        },
+        {
+          "code": "MAT 266",
+          "professorName": "Prof. Lewis",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 4000,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 0
+      },
+      "resourceUsage": {
+        "officeHours": "once",
+        "tutoring": "regular",
+        "advising": "once",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": true,
+        "currentDay": 5,
+        "completed": true,
+        "badges": ["classroom-navigator", "dars-scout", "advisor-check-in", "tutor-trial", "office-hours-drafted", "office-hours-visited", "myasu-cleanup"],
+        "confidence": 82
+      },
+      "checkIns": [
+        {
+          "studentId": "leah-park",
+          "week": 5,
+          "mood": "great",
+          "blocker": "none",
+          "wantsOutreach": false,
+          "date": "2026-09-10T17:10:00"
+        }
+      ],
+      "concernLevel": "steady",
+      "supportFocus": "No intervention needed right now; this student is a model of proactive support use.",
+      "observations": [
+        {
+          "id": "obs-leah-1",
+          "date": "2026-09-09T14:00:00",
+          "authorName": "Prof. Chen",
+          "text": "Encouraged another student to use tutoring."
+        }
+      ],
+      "advisorNotes": [],
+      "handoffs": [],
+      "recommendedResource": {
+        "type": "career-services",
+        "reason": "Future-facing planning makes more sense than support triage."
+      },
+      "timeline": [
+        {
+          "id": "timeline-leah-1",
+          "date": "2026-09-09T14:00:00",
+          "type": "resource",
+          "actorId": "leah-park",
+          "actorName": "Leah",
+          "actorRole": "student",
+          "summary": "Used tutoring again and encouraged a classmate to go too.",
+          "visibility": "shared"
+        }
+      ]
+    },
+    {
+      "id": "sasha-cho",
+      "initials": "S.C.",
+      "firstName": "Sasha",
+      "pronouns": "they/them",
+      "year": "third-year",
+      "major": "Software Engineering",
+      "campus": "tempe",
+      "isFirstGen": false,
+      "isInternational": false,
+      "isCommuter": false,
+      "livesOnCampus": true,
+      "workHoursPerWeek": 0,
+      "hasScholarship": true,
+      "contextTags": ["Barrett Honors"],
+      "advisorId": "advisor-rivera",
+      "advisorName": "Rivera, A.",
+      "lastAdvisingVisit": "2026-08-30T10:10:00",
+      "behaviorTags": ["Calm in class", "Peer resource"],
+      "strengths": ["Keeps a steady routine", "Helps normalize resource use for others"],
+      "signals": [
+        {
+          "date": "2026-09-08T13:30:00",
+          "description": "No current concerns; stable across course work and planning tasks.",
+          "type": "positive"
+        }
+      ],
+      "degree": {
+        "creditsCompleted": 64,
+        "creditsNeeded": 120,
+        "onTrack": true,
+        "lastDarsCheck": "2026-08-30T10:10:00",
+        "holds": [],
+        "eligibleScholarships": 1
+      },
+      "coursePerformance": {
+        "quizScores": [86, 89],
+        "hwAverage": 90,
+        "attendance": { "attended": 10, "total": 10 },
+        "officeHoursVisits": 1,
+        "weeklyMissedLectures": 0
+      },
+      "allCourses": [
+        {
+          "code": "CSE 110",
+          "professorName": "Prof. Chen",
+          "status": "fine",
+          "facultySignals": []
+        },
+        {
+          "code": "CSE 310",
+          "professorName": "Prof. Gomez",
+          "status": "fine",
+          "facultySignals": []
+        },
+        {
+          "code": "IFT 301",
+          "professorName": "Prof. Hall",
+          "status": "fine",
+          "facultySignals": []
+        }
+      ],
+      "financial": {
+        "scholarshipAmount": 4500,
+        "financialCoachingVisits": 0,
+        "unappliedScholarships": 0
+      },
+      "resourceUsage": {
+        "officeHours": "once",
+        "tutoring": "regular",
+        "advising": "regular",
+        "counseling": "never",
+        "financialCoaching": "never"
+      },
+      "simulation": {
+        "started": true,
+        "currentDay": 5,
+        "completed": true,
+        "badges": ["classroom-navigator", "dars-scout", "advisor-check-in", "tutor-trial", "office-hours-drafted", "office-hours-visited", "wellness-door-open", "myasu-cleanup"],
+        "confidence": 88
+      },
+      "checkIns": [],
+      "concernLevel": "steady",
+      "supportFocus": "No urgent barrier. This student mostly needs continuation, not intervention.",
+      "observations": [],
+      "advisorNotes": [],
+      "handoffs": [],
+      "recommendedResource": {
+        "type": "career-services",
+        "reason": "Ready for forward-looking advising and career planning."
+      },
+      "timeline": []
+    }
+  ],
+  "messages": [
+    {
+      "studentId": "marisol-soto",
+      "studentInitials": "M.S.",
+      "messages": [
+        {
+          "id": "msg-marisol-1",
+          "senderId": "faculty-prof-chen",
+          "senderName": "Prof. Chen",
+          "senderRole": "faculty",
+          "date": "2026-09-10T16:10:00",
+          "type": "handoff",
+          "text": "M.S. mentioned she's worried about money during office hours. Quiz scores also dropped (52 → 48). Might need financial coaching referral."
+        },
+        {
+          "id": "msg-marisol-2",
+          "senderId": "advisor-rivera",
+          "senderName": "Advisor Rivera",
+          "senderRole": "advisor",
+          "date": "2026-09-10T17:40:00",
+          "type": "reply",
+          "text": "Thanks for flagging. Her self-check-in also showed money as a blocker. I'll reach out today about financial coaching and the scholarships she hasn't applied to."
+        }
+      ]
+    },
+    {
+      "studentId": "ramon-perez",
+      "studentInitials": "R.P.",
+      "messages": [
+        {
+          "id": "msg-ramon-1",
+          "senderId": "advisor-rivera",
+          "senderName": "Advisor Rivera",
+          "senderRole": "advisor",
+          "date": "2026-09-09T19:10:00",
+          "type": "note",
+          "text": "R.P. self-check-in said 'struggling' with a personal blocker. I haven't been able to reach him yet. If you see him in class, a quick check-in would help."
+        },
+        {
+          "id": "msg-ramon-2",
+          "senderId": "faculty-prof-chen",
+          "senderName": "Prof. Chen",
+          "senderRole": "faculty",
+          "date": "2026-09-10T11:30:00",
+          "type": "reply",
+          "text": "R.P. was in lecture today. Seemed tired but stayed the whole time. I'll try to catch him after Wednesday's class."
+        }
+      ]
+    }
+  ],
+  "selfCheckIns": [
+    {
+      "studentId": "marisol-soto",
+      "week": 3,
+      "mood": "okay",
+      "blocker": "none",
+      "wantsOutreach": false,
+      "date": "2026-09-01T18:10:00"
+    },
+    {
+      "studentId": "marisol-soto",
+      "week": 4,
+      "mood": "meh",
+      "blocker": "academics",
+      "wantsOutreach": false,
+      "date": "2026-09-07T18:15:00"
+    },
+    {
+      "studentId": "marisol-soto",
+      "week": 5,
+      "mood": "struggling",
+      "blocker": "money",
+      "wantsOutreach": true,
+      "date": "2026-09-10T18:20:00"
+    },
+    {
+      "studentId": "ramon-perez",
+      "week": 4,
+      "mood": "meh",
+      "blocker": "personal",
+      "wantsOutreach": false,
+      "date": "2026-09-03T18:05:00"
+    },
+    {
+      "studentId": "ramon-perez",
+      "week": 5,
+      "mood": "struggling",
+      "blocker": "personal",
+      "wantsOutreach": true,
+      "date": "2026-09-09T18:30:00"
+    },
+    {
+      "studentId": "eli-romero",
+      "week": 5,
+      "mood": "meh",
+      "blocker": "academics",
+      "wantsOutreach": false,
+      "date": "2026-09-10T18:05:00"
+    },
+    {
+      "studentId": "jalen-thomas",
+      "week": 5,
+      "mood": "okay",
+      "blocker": "none",
+      "wantsOutreach": false,
+      "date": "2026-09-10T18:00:00"
+    },
+    {
+      "studentId": "leah-park",
+      "week": 5,
+      "mood": "great",
+      "blocker": "none",
+      "wantsOutreach": false,
+      "date": "2026-09-10T17:10:00"
+    }
+  ]
+}
