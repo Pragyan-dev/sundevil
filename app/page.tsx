@@ -21,6 +21,14 @@ export default function Home() {
       label: "Play your first week",
     },
     {
+      eyebrow: "Spatial explorer",
+      title: "Explore Campus",
+      description:
+        "Walk a sketch-style Tempe map, step up to real buildings, and see what tutoring, advising, counseling, and DARS feel like before you need them.",
+      href: "/campus",
+      label: "Open campus map",
+    },
+    {
       eyebrow: "Live feature",
       title: "Chat With Us",
       description:
@@ -72,6 +80,9 @@ export default function Home() {
               <Link href="/simulate" className="button-gold">
                 Play your first week
               </Link>
+              <Link href="/campus" className="button-ghost-light">
+                Explore campus
+              </Link>
               <Link href="/finder" className="button-ghost-light">
                 Find support now
               </Link>
@@ -121,15 +132,19 @@ export default function Home() {
           </article>
         </section>
 
-        <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {featureCards.map((card, index) => (
+        <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+          {featureCards.map((card) => (
             <ResourceCard
               key={card.title}
               eyebrow={card.eyebrow}
               title={card.title}
               description={card.description}
-              detail={index === 2 ? "This route is the one real external integration in the project." : undefined}
-              featured={index === 0}
+              detail={
+                card.title === "Chat With Us"
+                  ? "This route is the one real external integration in the project."
+                  : undefined
+              }
+              featured={card.title === "Find Resources"}
               links={[{ href: card.href, label: card.label }]}
             />
           ))}

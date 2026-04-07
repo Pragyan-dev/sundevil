@@ -1,0 +1,269 @@
+{
+  "mapWidth": 2800,
+  "mapHeight": 1900,
+  "spawnX": 280,
+  "spawnY": 462,
+  "buildings": [
+    {
+      "id": "tooker",
+      "name": "Tooker House",
+      "label": "Your Dorm",
+      "icon": "🏠",
+      "x": 170,
+      "y": 250,
+      "width": 210,
+      "height": 150,
+      "entranceX": 280,
+      "entranceY": 430,
+      "interactionType": "dialog",
+      "interactionTarget": "tooker-intro",
+      "npc": {
+        "name": "Jordan",
+        "role": "roommate",
+        "avatar": "jordan",
+        "greeting": "Ready to check out campus? The tutoring spot in Hayden is way less intimidating once you actually see it.",
+        "followUp": "Hit the important stops, then come back here and tell me what you found."
+      },
+      "realLocation": null
+    },
+    {
+      "id": "byeng",
+      "name": "BYENG 210 Lecture Hall",
+      "label": "Lecture Hall",
+      "icon": "🎓",
+      "x": 870,
+      "y": 170,
+      "width": 250,
+      "height": 155,
+      "entranceX": 995,
+      "entranceY": 350,
+      "interactionType": "dialog",
+      "interactionTarget": "byeng-preview",
+      "npc": {
+        "name": "Prof. Chen",
+        "role": "faculty",
+        "avatar": "prof-chen",
+        "greeting": "First week is mostly translation work. Syllabus, DARS, office hours, course codes. Nobody walks in knowing the whole map."
+      },
+      "realLocation": null
+    },
+    {
+      "id": "hayden",
+      "name": "Hayden Library Tutoring Center",
+      "label": "Tutoring Center",
+      "icon": "📚",
+      "x": 1720,
+      "y": 250,
+      "width": 260,
+      "height": 165,
+      "entranceX": 1850,
+      "entranceY": 435,
+      "interactionType": "walkthrough",
+      "interactionTarget": "tutoring",
+      "npc": {
+        "name": "Desk Aide",
+        "role": "front desk",
+        "avatar": "desk-aide",
+        "greeting": "Hey, welcome in. Show your Sun Card, tell me the class, and we'll point you to the right table.",
+        "followUp": "Most students just walk in, sit down, and work through a few problems on the whiteboard with a tutor."
+      },
+      "realLocation": {
+        "address": "Hayden Library, Concourse Level C-41",
+        "hours": "Mon-Thur 10am-6pm, Fri 10am-3pm",
+        "phone": "480-965-3074",
+        "mapLink": "https://gis.m.asu.edu/asucampus/?find=LIB"
+      }
+    },
+    {
+      "id": "wexler",
+      "name": "Math Tutoring Center",
+      "label": "Math Tutoring",
+      "icon": "📐",
+      "x": 340,
+      "y": 900,
+      "width": 210,
+      "height": 165,
+      "entranceX": 445,
+      "entranceY": 1085,
+      "interactionType": "walkthrough",
+      "interactionTarget": "tutoring",
+      "npc": {
+        "name": "Math Tutor",
+        "role": "tutor",
+        "avatar": "tutor",
+        "greeting": "If you're in MAT 117 through calculus, this is the place. Bring your problem set and we'll work line by line.",
+        "followUp": "You do not need a perfect question. A half-finished homework page is enough to start."
+      },
+      "realLocation": {
+        "address": "Wexler Hall 116",
+        "hours": "Mon-Thur 10am-6pm, Fri 10am-3pm",
+        "phone": "480-965-9976",
+        "mapLink": "https://gis.m.asu.edu/asucampus/?find=WXLR"
+      }
+    },
+    {
+      "id": "centerpoint",
+      "name": "SCAI Advising Center",
+      "label": "Advising Office",
+      "icon": "🗺️",
+      "x": 1080,
+      "y": 800,
+      "width": 250,
+      "height": 165,
+      "entranceX": 1205,
+      "entranceY": 983,
+      "interactionType": "walkthrough",
+      "interactionTarget": "advising",
+      "npc": {
+        "name": "Front Desk",
+        "role": "advisor",
+        "avatar": "advisor-rivera",
+        "greeting": "Hi there. If you're not sure whether you need advising, that's exactly what advising is for.",
+        "followUp": "We can help with DARS, class planning, holds, and what to do next semester. You don't need a polished script."
+      },
+      "realLocation": {
+        "address": "Centerpoint, Suite 105, 660 S. Mill Ave",
+        "hours": "Mon-Fri 8am-12pm, 1pm-5pm",
+        "phone": "480-727-3520",
+        "mapLink": "https://gis.m.asu.edu/asucampus/?find=CTRPT"
+      }
+    },
+    {
+      "id": "counseling",
+      "name": "ASU Counseling Services",
+      "label": "Counseling",
+      "icon": "💚",
+      "x": 2060,
+      "y": 700,
+      "width": 250,
+      "height": 165,
+      "entranceX": 2185,
+      "entranceY": 883,
+      "interactionType": "walkthrough",
+      "interactionTarget": "counseling",
+      "npc": {
+        "name": "Receptionist",
+        "role": "counselor",
+        "avatar": "counselor-park",
+        "greeting": "You do not need a crisis to come in here. Same-day sessions are common, and the first step is just talking to the front desk.",
+        "followUp": "Everything here is confidential and free for students."
+      },
+      "realLocation": {
+        "address": "Student Services Building",
+        "hours": "Mon-Fri 8am-5pm",
+        "phone": "480-965-6146",
+        "mapLink": null
+      }
+    },
+    {
+      "id": "carey",
+      "name": "W.P. Carey Tutoring Center",
+      "label": "Business Tutoring",
+      "icon": "💼",
+      "x": 700,
+      "y": 1400,
+      "width": 210,
+      "height": 165,
+      "entranceX": 805,
+      "entranceY": 1583,
+      "interactionType": "walkthrough",
+      "interactionTarget": "tutoring",
+      "npc": {
+        "name": "Business Tutor",
+        "role": "tutor",
+        "avatar": "tutor",
+        "greeting": "Accounting, finance, stats, econ. This room is mostly students comparing notes and asking one problem at a time.",
+        "followUp": "If business classes start stacking up, this is a good reset point."
+      },
+      "realLocation": {
+        "address": "BA 201",
+        "hours": "Mon-Thur 11am-5pm, Fri 11am-3pm",
+        "phone": "480-965-8033",
+        "mapLink": "https://gis.m.asu.edu/asucampus/?find=BA"
+      }
+    },
+    {
+      "id": "ecg",
+      "name": "Engineering Tutoring Center",
+      "label": "Eng Tutoring",
+      "icon": "⚙️",
+      "x": 1490,
+      "y": 1350,
+      "width": 255,
+      "height": 170,
+      "entranceX": 1618,
+      "entranceY": 1538,
+      "interactionType": "walkthrough",
+      "interactionTarget": "tutoring",
+      "npc": {
+        "name": "CS Tutor",
+        "role": "tutor",
+        "avatar": "tutor",
+        "greeting": "CSE 110? Totally normal. People bring in code, rough pseudocode, or just a screenshot of the error.",
+        "followUp": "You sit with a tutor, talk through what you tried, and build the next step from there."
+      },
+      "realLocation": {
+        "address": "ECG 104",
+        "hours": "Mon-Thur 9am-10pm, Fri 9am-7pm, Sat-Sun 10am-5pm",
+        "phone": null,
+        "mapLink": null
+      }
+    },
+    {
+      "id": "computerlab",
+      "name": "Computer Lab",
+      "label": "Check DARS",
+      "icon": "💻",
+      "x": 2230,
+      "y": 1390,
+      "width": 245,
+      "height": 165,
+      "entranceX": 2352,
+      "entranceY": 1573,
+      "interactionType": "minigame",
+      "interactionTarget": "dars-explorer",
+      "npc": null,
+      "realLocation": null
+    }
+  ],
+  "paths": [
+    { "from": "tooker", "to": "byeng", "type": "horizontal" },
+    { "from": "byeng", "to": "hayden", "type": "connector" },
+    { "from": "tooker", "to": "wexler", "type": "vertical" },
+    { "from": "byeng", "to": "centerpoint", "type": "connector" },
+    { "from": "hayden", "to": "counseling", "type": "vertical" },
+    { "from": "wexler", "to": "centerpoint", "type": "horizontal" },
+    { "from": "centerpoint", "to": "counseling", "type": "horizontal" },
+    { "from": "wexler", "to": "carey", "type": "connector" },
+    { "from": "centerpoint", "to": "ecg", "type": "connector" },
+    { "from": "counseling", "to": "computerlab", "type": "connector" },
+    { "from": "carey", "to": "ecg", "type": "horizontal" },
+    { "from": "ecg", "to": "computerlab", "type": "horizontal" }
+  ],
+  "decorations": [
+    { "type": "palm_tree", "x": 470, "y": 170 },
+    { "type": "palm_tree", "x": 1400, "y": 120 },
+    { "type": "bench", "x": 1380, "y": 520 },
+    { "type": "palm_tree", "x": 640, "y": 640 },
+    { "type": "palm_tree", "x": 2410, "y": 470 },
+    { "type": "bench", "x": 1760, "y": 910 },
+    { "type": "palm_tree", "x": 1040, "y": 1220 },
+    { "type": "bench", "x": 1110, "y": 1510 },
+    { "type": "palm_tree", "x": 1980, "y": 1310 },
+    { "type": "palm_tree", "x": 2470, "y": 1610 },
+    { "type": "bench", "x": 360, "y": 1260 },
+    { "type": "palm_tree", "x": 1750, "y": 260 }
+  ],
+  "quests": [
+    { "id": "q1", "label": "Find the tutoring center", "buildingId": "hayden" },
+    { "id": "q2", "label": "Check your DARS", "buildingId": "computerlab" },
+    { "id": "q3", "label": "Visit the advising office", "buildingId": "centerpoint" },
+    { "id": "q4", "label": "Talk to the counselor", "buildingId": "counseling" },
+    {
+      "id": "q5",
+      "label": "Return to your dorm",
+      "buildingId": "tooker",
+      "requires": ["q1", "q2", "q3", "q4"]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import finderLogicJson from "@/data/finder_logic.json";
 import resourcesJson from "@/data/asu_resources.json";
+import campusMapJson from "@/data/campus-map.json";
 import dashboardDataJson from "@/data/dashboard-data.json";
 import scholarshipsJson from "@/data/asu_scholarships.json";
 import simulationScriptsJson from "@/data/simulation_scripts.json";
@@ -13,6 +14,8 @@ import tutoringWalkthroughJson from "@/data/walkthroughs/tutoring.json";
 
 import type {
   AidStatus,
+  CampusMapData,
+  CampusQuest,
   DashboardData,
   DashboardStudent,
   FinderConcern,
@@ -240,6 +243,187 @@ function validateDashboardData(input: unknown, validSlugs: Set<string>): Dashboa
   };
 }
 
+function validateCampusMapData(input: unknown, validSlugs: Set<string>): CampusMapData {
+  invariant(isRecord(input), "campus-map.json must export an object");
+  invariant(typeof input.mapWidth === "number", "campus-map.json needs mapWidth");
+  invariant(typeof input.mapHeight === "number", "campus-map.json needs mapHeight");
+  invariant(typeof input.spawnX === "number", "campus-map.json needs spawnX");
+  invariant(typeof input.spawnY === "number", "campus-map.json needs spawnY");
+  invariant(Array.isArray(input.buildings), "campus-map.json needs buildings");
+  invariant(Array.isArray(input.paths), "campus-map.json needs paths");
+  invariant(Array.isArray(input.decorations), "campus-map.json needs decorations");
+  invariant(Array.isArray(input.quests), "campus-map.json needs quests");
+
+  const dialogTargets = new Set(["tooker-intro", "byeng-preview"]);
+  const minigameTargets = new Set(["dars-explorer"]);
+  const interactionTypes = new Set(["dialog", "walkthrough", "minigame"]);
+  const buildingIds = new Set<string>();
+
+  input.buildings.forEach((building, index) => {
+    invariant(isRecord(building), `Campus building ${index} must be an object`);
+    invariant(typeof building.id === "string", `Campus building ${index} needs id`);
+    invariant(!buildingIds.has(building.id), `Duplicate campus building id: ${building.id}`);
+    buildingIds.add(building.id);
+    invariant(typeof building.name === "string", `Campus building ${index} needs name`);
+    invariant(typeof building.label === "string", `Campus building ${index} needs label`);
+    invariant(typeof building.icon === "string", `Campus building ${index} needs icon`);
+    invariant(typeof building.x === "number", `Campus building ${index} needs x`);
+    invariant(typeof building.y === "number", `Campus building ${index} needs y`);
+    invariant(typeof building.width === "number", `Campus building ${index} needs width`);
+    invariant(typeof building.height === "number", `Campus building ${index} needs height`);
+    invariant(
+      typeof building.entranceX === "number",
+      `Campus building ${index} needs entranceX`,
+    );
+    invariant(
+      typeof building.entranceY === "number",
+      `Campus building ${index} needs entranceY`,
+    );
+    invariant(
+      typeof building.interactionType === "string" &&
+        interactionTypes.has(building.interactionType),
+      `Campus building ${index} needs a valid interactionType`,
+    );
+
+    if (building.interactionTarget !== undefined) {
+      invariant(
+        typeof building.interactionTarget === "string",
+        `Campus building ${index} interactionTarget must be a string`,
+      );
+
+      if (building.interactionType === "dialog") {
+        invariant(
+          dialogTargets.has(building.interactionTarget),
+          `Campus dialog target ${building.interactionTarget} is invalid`,
+        );
+      }
+
+      if (building.interactionType === "walkthrough") {
+        invariant(
+          validSlugs.has(building.interactionTarget),
+          `Campus walkthrough target ${building.interactionTarget} is invalid`,
+        );
+      }
+
+      if (building.interactionType === "minigame") {
+        invariant(
+          minigameTargets.has(building.interactionTarget),
+          `Campus minigame target ${building.interactionTarget} is invalid`,
+        );
+      }
+    }
+
+    if (building.npc !== undefined && building.npc !== null) {
+      invariant(isRecord(building.npc), `Campus building ${index} npc must be an object`);
+      invariant(typeof building.npc.name === "string", `Campus building ${index} npc needs name`);
+      invariant(typeof building.npc.role === "string", `Campus building ${index} npc needs role`);
+      invariant(
+        typeof building.npc.avatar === "string",
+        `Campus building ${index} npc needs avatar`,
+      );
+      invariant(
+        typeof building.npc.greeting === "string",
+        `Campus building ${index} npc needs greeting`,
+      );
+    }
+
+    if (building.realLocation !== undefined && building.realLocation !== null) {
+      invariant(
+        isRecord(building.realLocation),
+        `Campus building ${index} realLocation must be an object`,
+      );
+      invariant(
+        typeof building.realLocation.address === "string",
+        `Campus building ${index} realLocation needs address`,
+      );
+      invariant(
+        typeof building.realLocation.hours === "string",
+        `Campus building ${index} realLocation needs hours`,
+      );
+      invariant(
+        building.realLocation.phone === null || typeof building.realLocation.phone === "string",
+        `Campus building ${index} realLocation phone must be string or null`,
+      );
+      invariant(
+        building.realLocation.mapLink === null || typeof building.realLocation.mapLink === "string",
+        `Campus building ${index} realLocation mapLink must be string or null`,
+      );
+    }
+  });
+
+  input.paths.forEach((path, index) => {
+    invariant(isRecord(path), `Campus path ${index} must be an object`);
+    invariant(
+      typeof path.from === "string" && buildingIds.has(path.from),
+      `Campus path ${index} needs a valid from building`,
+    );
+    invariant(
+      typeof path.to === "string" && buildingIds.has(path.to),
+      `Campus path ${index} needs a valid to building`,
+    );
+    invariant(
+      typeof path.type === "string" &&
+        new Set(["horizontal", "vertical", "connector"]).has(path.type),
+      `Campus path ${index} needs a valid type`,
+    );
+  });
+
+  input.decorations.forEach((decoration, index) => {
+    invariant(isRecord(decoration), `Campus decoration ${index} must be an object`);
+    invariant(
+      typeof decoration.type === "string" &&
+        new Set(["palm_tree", "bench"]).has(decoration.type),
+      `Campus decoration ${index} needs a valid type`,
+    );
+    invariant(typeof decoration.x === "number", `Campus decoration ${index} needs x`);
+    invariant(typeof decoration.y === "number", `Campus decoration ${index} needs y`);
+  });
+
+  const questIds = new Set<string>();
+
+  input.quests.forEach((quest, index) => {
+    invariant(isRecord(quest), `Campus quest ${index} must be an object`);
+    invariant(typeof quest.id === "string", `Campus quest ${index} needs id`);
+    invariant(!questIds.has(quest.id), `Duplicate campus quest id: ${quest.id}`);
+    questIds.add(quest.id);
+    invariant(typeof quest.label === "string", `Campus quest ${index} needs label`);
+    invariant(
+      typeof quest.buildingId === "string" && buildingIds.has(quest.buildingId),
+      `Campus quest ${index} needs a valid buildingId`,
+    );
+    if (quest.requires !== undefined) {
+      invariant(
+        isStringArray(quest.requires),
+        `Campus quest ${index} requires must be a string array`,
+      );
+    }
+  });
+
+  input.quests.forEach((quest, index) => {
+    if (!isRecord(quest) || !Array.isArray(quest.requires)) {
+      return;
+    }
+
+    quest.requires.forEach((requirement) =>
+      invariant(
+        typeof requirement === "string" && questIds.has(requirement),
+        `Campus quest ${index} has invalid prerequisite ${requirement}`,
+      ),
+    );
+  });
+
+  return {
+    mapWidth: input.mapWidth as number,
+    mapHeight: input.mapHeight as number,
+    spawnX: input.spawnX as number,
+    spawnY: input.spawnY as number,
+    buildings: input.buildings as CampusMapData["buildings"],
+    paths: input.paths as CampusMapData["paths"],
+    decorations: input.decorations as CampusMapData["decorations"],
+    quests: (input.quests as CampusQuest[]).map((quest) => ({ ...quest, completed: false })),
+  };
+}
+
 function validateWalkthrough(input: unknown, validSlugs: Set<string>): ResourceWalkthrough {
   invariant(isRecord(input), "Walkthrough must be an object");
   invariant(typeof input.slug === "string", "Walkthrough needs a slug");
@@ -343,6 +527,10 @@ export const finderLogic = validateFinderLogic(
 );
 export const simulationScenarios = validateScenarios(simulationScriptsJson);
 export const scholarships = validateScholarships(scholarshipsJson);
+export const campusMap = validateCampusMapData(
+  campusMapJson,
+  new Set(resources.map((resource) => resource.slug)),
+);
 export const dashboardData = validateDashboardData(
   dashboardDataJson,
   new Set(resources.map((resource) => resource.slug)),

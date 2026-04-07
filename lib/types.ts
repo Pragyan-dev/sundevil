@@ -114,6 +114,91 @@ export interface GeneratedQuestionsResult {
   proTip: string;
 }
 
+export type CampusInteractionType = "dialog" | "walkthrough" | "minigame";
+export type CampusDialogTarget = "tooker-intro" | "byeng-preview";
+export type CampusNpcAvatar = CharacterId | "tutor" | "desk-aide";
+export type CampusDirection = "up" | "down" | "left" | "right";
+
+export interface CampusNpc {
+  name: string;
+  role: string;
+  avatar: CampusNpcAvatar;
+  greeting: string;
+  followUp?: string;
+}
+
+export interface CampusRealLocation {
+  address: string;
+  hours: string;
+  phone: string | null;
+  mapLink: string | null;
+}
+
+export interface CampusBuilding {
+  id: string;
+  name: string;
+  label: string;
+  icon: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  entranceX: number;
+  entranceY: number;
+  interactionType: CampusInteractionType;
+  interactionTarget?: CampusDialogTarget | ResourceSlug | MiniGameType;
+  npc?: CampusNpc | null;
+  realLocation?: CampusRealLocation | null;
+}
+
+export interface CampusPath {
+  from: string;
+  to: string;
+  type: "horizontal" | "vertical" | "connector";
+}
+
+export interface CampusDecoration {
+  type: "palm_tree" | "bench";
+  x: number;
+  y: number;
+}
+
+export interface CampusQuest {
+  id: string;
+  label: string;
+  buildingId: string;
+  completed?: boolean;
+  requires?: string[];
+}
+
+export interface CampusMapData {
+  mapWidth: number;
+  mapHeight: number;
+  spawnX: number;
+  spawnY: number;
+  buildings: CampusBuilding[];
+  paths: CampusPath[];
+  decorations: CampusDecoration[];
+  quests: CampusQuest[];
+}
+
+export interface CampusPlayer {
+  x: number;
+  y: number;
+  direction: CampusDirection;
+  isMoving: boolean;
+  frame: 0 | 1;
+}
+
+export interface CampusGameState {
+  player: CampusPlayer;
+  camera: { x: number; y: number };
+  quests: CampusQuest[];
+  nearBuilding: string | null;
+  activeInteraction: string | null;
+  discoveredBuildings: string[];
+}
+
 export type DashboardRole = "faculty" | "advisor";
 export type DashboardCampus = "tempe" | "downtown" | "polytechnic" | "west" | "online";
 export type DashboardConcernLevel = "high" | "watch" | "steady";
