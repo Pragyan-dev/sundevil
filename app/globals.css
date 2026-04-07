@@ -3593,6 +3593,471 @@ body:has(.story-shell) main {
   opacity: 0.5;
 }
 
+.sketch-budget-hud,
+.sketch-budget-stage,
+.sketch-budget-stage-wide,
+.sketch-budget-envelope-grid,
+.sketch-budget-choice-grid,
+.sketch-budget-week-log-grid,
+.sketch-budget-delta-grid,
+.sketch-budget-change-list,
+.sketch-budget-rule-list,
+.sketch-budget-ending-stats {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sketch-budget-hud {
+  grid-template-columns: repeat(auto-fit, minmax(8.6rem, 1fr));
+}
+
+.sketch-budget-hud-card,
+.sketch-budget-briefing-card,
+.sketch-budget-month-log,
+.sketch-budget-board,
+.sketch-budget-side-panel,
+.sketch-budget-tray-card,
+.sketch-budget-envelope,
+.sketch-budget-event-stage,
+.sketch-budget-receipt-card,
+.sketch-budget-choice-card,
+.sketch-budget-recap-card,
+.sketch-budget-delta-card,
+.sketch-budget-change-row,
+.sketch-budget-ending-card,
+.sketch-budget-recap-strip,
+.sketch-budget-recap-warning,
+.sketch-budget-resource-hint,
+.sketch-budget-week-log {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.2rem;
+  background: rgba(255, 250, 240, 0.94);
+  filter: url(#sketch);
+}
+
+.sketch-budget-hud-card,
+.sketch-budget-delta-card {
+  padding: 0.75rem 0.9rem;
+}
+
+.sketch-budget-hud-card strong,
+.sketch-budget-delta-card strong {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 1.25rem;
+}
+
+.sketch-budget-hud-card.is-danger {
+  background: rgba(168, 44, 44, 0.12);
+}
+
+.sketch-budget-stage {
+  align-items: start;
+}
+
+.sketch-budget-briefing-card,
+.sketch-budget-month-log,
+.sketch-budget-board,
+.sketch-budget-side-panel,
+.sketch-budget-event-stage,
+.sketch-budget-recap-card,
+.sketch-budget-ending-card {
+  padding: 1rem;
+}
+
+.sketch-budget-briefing-card {
+  gap: 0.9rem;
+  background:
+    radial-gradient(circle at top left, rgba(255, 198, 39, 0.22), transparent 34%),
+    rgba(255, 250, 240, 0.96);
+}
+
+.sketch-budget-briefing-card h3,
+.sketch-budget-receipt-card h3,
+.sketch-budget-recap-card h3,
+.sketch-budget-ending-card h3 {
+  font-size: 1.55rem;
+  line-height: 1.1;
+}
+
+.sketch-budget-briefing-card p,
+.sketch-budget-receipt-card p,
+.sketch-budget-choice-card p,
+.sketch-budget-week-log p,
+.sketch-budget-recap-card p,
+.sketch-budget-ending-card p {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: rgba(26, 26, 26, 0.74);
+}
+
+.sketch-budget-pressure-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.sketch-budget-pressure-row span,
+.sketch-budget-ending-stats span {
+  border: 2px solid rgba(26, 26, 26, 0.82);
+  border-radius: 999px;
+  padding: 0.38rem 0.65rem;
+  background: rgba(255, 255, 255, 0.78);
+  filter: url(#sketch);
+  font-size: 0.88rem;
+}
+
+.sketch-budget-rule-list {
+  padding-left: 1.1rem;
+}
+
+.sketch-budget-rule-list li {
+  line-height: 1.5;
+}
+
+.sketch-budget-month-log {
+  gap: 0.9rem;
+}
+
+.sketch-budget-board,
+.sketch-budget-side-panel,
+.sketch-budget-event-stage {
+  gap: 0.95rem;
+}
+
+.sketch-budget-tray-card {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.9rem 1rem;
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 198, 39, 0.1) 0 10px, transparent 10px 20px),
+    rgba(255, 255, 255, 0.9);
+}
+
+.sketch-budget-tray-card strong {
+  display: block;
+  font-size: 1.2rem;
+}
+
+.sketch-budget-tray-card span {
+  font-size: 0.9rem;
+  color: rgba(26, 26, 26, 0.7);
+}
+
+.sketch-budget-chip-tray,
+.sketch-budget-envelope-chip-row,
+.sketch-budget-envelope-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.sketch-budget-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.1rem;
+  padding: 0.32rem 0.6rem;
+  border: 2px solid var(--sketch-ink);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 198, 39, 0.94), rgba(240, 158, 25, 0.9));
+  filter: url(#sketch);
+  font-size: 0.74rem;
+  line-height: 1;
+  color: rgba(26, 26, 26, 0.92);
+  box-shadow: 0 8px 18px rgba(196, 120, 18, 0.14);
+}
+
+.sketch-budget-chip-loose {
+  animation: sketch-budget-chip-settle 320ms ease both;
+}
+
+.sketch-budget-chip-ghost {
+  min-width: 2.2rem;
+  padding: 0.18rem 0.2rem;
+  background: rgba(255, 198, 39, 0.12);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.sketch-budget-chip-ghost.is-covered {
+  background: rgba(255, 198, 39, 0.34);
+}
+
+.sketch-budget-envelope {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(249, 242, 227, 0.94));
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease;
+}
+
+.sketch-budget-envelope:hover,
+.sketch-budget-envelope:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(219, 145, 26, 0.92);
+  box-shadow: 0 18px 28px rgba(0, 0, 0, 0.08);
+}
+
+.sketch-budget-envelope-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sketch-budget-envelope-head strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 1.15rem;
+}
+
+.sketch-budget-envelope p,
+.sketch-budget-envelope-reco {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(26, 26, 26, 0.68);
+}
+
+.sketch-budget-envelope-chip-row .sketch-budget-chip {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.sketch-budget-envelope-chip-row .sketch-budget-chip:hover,
+.sketch-budget-envelope-chip-row .sketch-budget-chip:focus-visible {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.sketch-budget-receipt-card {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  animation: sketch-budget-card-reveal 220ms ease both;
+}
+
+.sketch-budget-receipt-card.accent-gold {
+  background:
+    radial-gradient(circle at top right, rgba(255, 198, 39, 0.22), transparent 32%),
+    rgba(255, 250, 240, 0.95);
+}
+
+.sketch-budget-receipt-card.accent-maroon {
+  background:
+    radial-gradient(circle at top right, rgba(140, 29, 64, 0.12), transparent 34%),
+    rgba(255, 250, 240, 0.95);
+}
+
+.sketch-budget-receipt-card.accent-teal {
+  background:
+    radial-gradient(circle at top right, rgba(37, 166, 154, 0.18), transparent 34%),
+    rgba(255, 250, 240, 0.95);
+}
+
+.sketch-budget-receipt-card.accent-green {
+  background:
+    radial-gradient(circle at top right, rgba(102, 187, 106, 0.18), transparent 34%),
+    rgba(255, 250, 240, 0.95);
+}
+
+.sketch-budget-receipt-top,
+.sketch-budget-log-header,
+.sketch-budget-choice-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.sketch-budget-receipt-top span {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  color: rgba(26, 26, 26, 0.62);
+}
+
+.sketch-budget-receipt-price {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  line-height: 1;
+}
+
+.sketch-budget-resource-hint {
+  padding: 0.75rem 0.85rem;
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 198, 39, 0.1) 0 8px, transparent 8px 16px),
+    rgba(255, 255, 255, 0.84);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: rgba(26, 26, 26, 0.74);
+}
+
+.sketch-budget-choice-card {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.95rem;
+  text-align: left;
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.sketch-budget-choice-card:hover,
+.sketch-budget-choice-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(219, 145, 26, 0.92);
+  box-shadow: 0 16px 24px rgba(0, 0, 0, 0.08);
+}
+
+.sketch-budget-choice-card.is-support {
+  background:
+    radial-gradient(circle at top left, rgba(255, 198, 39, 0.18), transparent 30%),
+    rgba(255, 250, 240, 0.95);
+}
+
+.sketch-budget-choice-header strong {
+  font-size: 1.02rem;
+  line-height: 1.35;
+}
+
+.sketch-budget-choice-header span,
+.sketch-budget-choice-card small,
+.sketch-budget-week-log span,
+.sketch-budget-change-row span {
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: rgba(26, 26, 26, 0.66);
+}
+
+.sketch-budget-week-log-grid {
+  gap: 0.7rem;
+}
+
+.sketch-budget-week-log {
+  padding: 0.85rem 0.9rem;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.sketch-budget-week-log strong,
+.sketch-budget-change-row strong {
+  display: block;
+  margin: 0.2rem 0;
+  font-size: 1rem;
+}
+
+.sketch-budget-week-log.is-current {
+  background: rgba(255, 198, 39, 0.18);
+}
+
+.sketch-budget-week-log.is-support {
+  background: rgba(112, 196, 124, 0.18);
+}
+
+.sketch-budget-week-log.is-rough {
+  background: rgba(168, 44, 44, 0.1);
+}
+
+.sketch-budget-week-log.is-upcoming {
+  opacity: 0.7;
+}
+
+.sketch-budget-delta-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sketch-budget-delta-card span {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: rgba(26, 26, 26, 0.62);
+  text-transform: uppercase;
+}
+
+.sketch-budget-recap-strip,
+.sketch-budget-recap-warning {
+  padding: 0.8rem 0.9rem;
+}
+
+.sketch-budget-recap-strip strong,
+.sketch-budget-recap-warning {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.sketch-budget-recap-warning {
+  background: rgba(168, 44, 44, 0.1);
+  color: rgba(92, 18, 18, 0.92);
+}
+
+.sketch-budget-change-list {
+  gap: 0.7rem;
+}
+
+.sketch-budget-change-row {
+  padding: 0.75rem 0.85rem;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.sketch-budget-ending-card {
+  display: grid;
+  gap: 0.95rem;
+  animation: sketch-budget-card-reveal 260ms ease both;
+}
+
+.sketch-budget-ending-card.is-strong {
+  background:
+    radial-gradient(circle at top left, rgba(102, 187, 106, 0.18), transparent 34%),
+    rgba(255, 250, 240, 0.97);
+}
+
+.sketch-budget-ending-card.is-holding {
+  background:
+    radial-gradient(circle at top left, rgba(255, 198, 39, 0.18), transparent 34%),
+    rgba(255, 250, 240, 0.97);
+}
+
+.sketch-budget-ending-card.is-crisis {
+  background:
+    radial-gradient(circle at top left, rgba(140, 29, 64, 0.12), transparent 34%),
+    rgba(255, 250, 240, 0.97);
+}
+
+.sketch-budget-ending-card blockquote {
+  margin: 0;
+  padding-left: 0.9rem;
+  border-left: 3px solid rgba(26, 26, 26, 0.72);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+@keyframes sketch-budget-chip-settle {
+  0% {
+    transform: translateY(-4px) scale(0.96);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes sketch-budget-card-reveal {
+  0% {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
 .sketch-mini-field {
   display: grid;
   gap: 0.35rem;
@@ -3812,6 +4277,27 @@ body:has(.story-shell) main {
   .sketch-budget-grid {
     grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.95fr);
     align-items: start;
+  }
+
+  .sketch-budget-stage {
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+  }
+
+  .sketch-budget-stage-wide {
+    grid-template-columns: minmax(0, 1.22fr) minmax(18rem, 0.78fr);
+    align-items: start;
+  }
+
+  .sketch-budget-envelope-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sketch-budget-choice-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sketch-budget-delta-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .sketch-scholarship-grid {
