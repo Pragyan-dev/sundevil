@@ -1564,6 +1564,361 @@ body:has(.story-shell) main {
   gap: 1rem;
 }
 
+.sim-weekbook-stage {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(255, 198, 39, 0.18), transparent 16%),
+    radial-gradient(circle at 88% 14%, rgba(140, 29, 64, 0.1), transparent 18%),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(243, 232, 212, 0.96));
+}
+
+.sim-weekbook-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0.9rem 0.8rem 5.4rem;
+  border-radius: 2rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 10%),
+    repeating-linear-gradient(
+      180deg,
+      rgba(140, 29, 64, 0.08) 0,
+      rgba(140, 29, 64, 0.08) 1px,
+      transparent 1px,
+      transparent 32px
+    ),
+    radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 100%);
+  background-size: auto, auto, 18px 18px;
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.sim-weekbook-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+}
+
+.sim-weekbook-sidebar,
+.sim-weekbook-main,
+.sim-weekbook-rail {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.sim-weekbook-card {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.7rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7), transparent 18%),
+    rgba(255, 250, 240, 0.94);
+  box-shadow: 0 14px 0 rgba(140, 29, 64, 0.06);
+  filter: url(#sketch);
+}
+
+.sim-weekbook-calendar,
+.sim-weekbook-tasks,
+.sim-weekbook-focus,
+.sim-weekbook-status,
+.sim-weekbook-buddy-card,
+.sim-weekbook-scene-frame {
+  padding: 1rem;
+}
+
+.sim-weekbook-section-head,
+.sim-weekbook-meter-copy,
+.sim-weekbook-stat-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.sim-weekbook-section-head h2,
+.sim-weekbook-calendar-item h3,
+.sim-weekbook-task-item h3,
+.sim-weekbook-focus strong,
+.sim-weekbook-buddy-copy strong {
+  font-family: var(--font-sketch-display), cursive;
+}
+
+.sim-weekbook-section-head h2 {
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+  line-height: 0.95;
+}
+
+.sim-weekbook-section-copy,
+.sim-weekbook-calendar-item p,
+.sim-weekbook-task-item p,
+.sim-weekbook-focus p,
+.sim-weekbook-mini-note span,
+.sim-weekbook-buddy-copy p {
+  color: rgba(26, 26, 26, 0.72);
+}
+
+.sim-weekbook-scribble {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.3rem 0.8rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 999px;
+  background: rgba(255, 198, 39, 0.78);
+  font-family: var(--font-sketch-display), cursive;
+  font-size: 0.84rem;
+  transform: rotate(-4deg);
+}
+
+.sim-weekbook-calendar-list,
+.sim-weekbook-task-list {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.sim-weekbook-calendar-item,
+.sim-weekbook-task-item,
+.sim-weekbook-mini-note {
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.72);
+  filter: url(#sketch);
+}
+
+.sim-weekbook-calendar-item {
+  display: grid;
+  grid-template-columns: 3.35rem minmax(0, 1fr);
+  gap: 0.8rem;
+  padding: 0.8rem;
+}
+
+.sim-weekbook-calendar-item strong {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 2.2rem;
+  border-radius: 0.85rem;
+  background: rgba(140, 29, 64, 0.1);
+  padding-top: 0.45rem;
+  color: var(--sketch-maroon);
+  font-family: var(--font-sketch-display), cursive;
+  font-size: 0.92rem;
+}
+
+.sim-weekbook-calendar-item.is-now {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.14) 0 8px,
+      transparent 8px 16px
+    ),
+    rgba(255, 255, 255, 0.84);
+}
+
+.sim-weekbook-calendar-item.is-now strong {
+  background: var(--sketch-maroon);
+  color: #fff;
+}
+
+.sim-weekbook-task-board {
+  display: grid;
+  gap: 1rem;
+}
+
+.sim-weekbook-task-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: start;
+  padding: 0.8rem;
+}
+
+.sim-weekbook-task-check {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 0.7rem;
+  background: rgba(255, 255, 255, 0.92);
+  font-family: var(--font-sketch-display), cursive;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.sim-weekbook-task-item.is-done {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 198, 39, 0.16) 0 8px,
+      transparent 8px 16px
+    ),
+    rgba(255, 255, 255, 0.88);
+}
+
+.sim-weekbook-task-item.is-done .sim-weekbook-task-check {
+  background: var(--sketch-gold);
+}
+
+.sim-weekbook-focus {
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+  background:
+    linear-gradient(180deg, rgba(140, 29, 64, 0.1), transparent 32%),
+    rgba(255, 247, 232, 0.94);
+}
+
+.sim-weekbook-focus strong {
+  font-size: clamp(1.2rem, 2.8vw, 1.55rem);
+  color: var(--sketch-maroon);
+}
+
+.sim-weekbook-mini-note {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.75rem 0.85rem;
+}
+
+.sim-weekbook-mini-note strong {
+  font-family: var(--font-sketch-display), cursive;
+  font-size: 1rem;
+}
+
+.sim-weekbook-mini-note-preview {
+  background:
+    linear-gradient(180deg, rgba(140, 29, 64, 0.1), transparent 32%),
+    rgba(255, 255, 255, 0.8);
+}
+
+.sim-weekbook-hud {
+  background:
+    linear-gradient(180deg, rgba(255, 198, 39, 0.12), transparent 36%),
+    rgba(255, 250, 240, 0.98);
+}
+
+.sim-weekbook-scene-frame {
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 18%),
+    rgba(248, 239, 225, 0.96);
+}
+
+.sim-weekbook-status {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.sim-weekbook-meter {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.sim-weekbook-meter-copy strong {
+  font-family: var(--font-sketch-display), cursive;
+  font-size: 1.1rem;
+}
+
+.sim-weekbook-meter-track {
+  overflow: hidden;
+  height: 1rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  filter: url(#sketch);
+}
+
+.sim-weekbook-meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18) 0 7px,
+      transparent 7px 14px
+    ),
+    var(--sketch-gold);
+}
+
+.sim-weekbook-meter-fill.is-happy {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.16) 0 7px,
+      transparent 7px 14px
+    ),
+    var(--sketch-maroon);
+}
+
+.sim-weekbook-stat-row {
+  gap: 0.7rem;
+}
+
+.sim-weekbook-stat-row .sim-weekbook-mini-note {
+  flex: 1 1 0;
+}
+
+.sim-weekbook-buddy-card {
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+  background:
+    radial-gradient(circle at top right, rgba(255, 198, 39, 0.16), transparent 28%),
+    rgba(255, 248, 236, 0.96);
+}
+
+.sim-weekbook-buddy-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 10rem;
+  border: 3px solid var(--sketch-ink);
+  border-radius: 1.3rem;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.sim-weekbook-buddy {
+  width: min(100%, 8.5rem);
+  height: auto;
+}
+
+.sim-weekbook-buddy-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sim-weekbook-buddy-copy strong {
+  font-size: 1.15rem;
+  line-height: 1.1;
+}
+
+.sim-weekbook-doodles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sim-weekbook-doodle {
+  position: absolute;
+  width: min(24vw, 9rem);
+  height: auto;
+  opacity: 0.22;
+}
+
+.sim-weekbook-doodle-palm {
+  top: 5.2rem;
+  left: 0.45rem;
+  transform: rotate(-8deg);
+}
+
+.sim-weekbook-doodle-cactus {
+  right: 0.35rem;
+  bottom: 7rem;
+  transform: rotate(6deg);
+}
+
 .sim-hud {
   position: relative;
   z-index: 2;
@@ -1685,6 +2040,24 @@ body:has(.story-shell) main {
   flex: 1;
   align-items: end;
   animation: sim-paper-slide 300ms ease;
+}
+
+@media (min-width: 640px) {
+  .sim-weekbook-task-board {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.72fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sim-weekbook-layout {
+    grid-template-columns: minmax(14rem, 0.34fr) minmax(0, 1fr) minmax(14rem, 0.34fr);
+  }
+
+  .sim-weekbook-sidebar,
+  .sim-weekbook-rail {
+    position: sticky;
+    top: 1rem;
+  }
 }
 
 .sim-character-column {
@@ -5086,5 +5459,236 @@ body:has(.story-shell) main {
     min-width: 6.5rem;
     min-height: 3.6rem;
     font-size: 1rem;
+  }
+}
+
+body:has(.resource-sim-shell) {
+  background:
+    radial-gradient(circle at top left, rgba(255, 198, 39, 0.26), transparent 26%),
+    radial-gradient(circle at top right, rgba(140, 29, 64, 0.22), transparent 28%),
+    linear-gradient(180deg, #8c1d40 0%, #5f1631 24%, #3b1115 100%);
+}
+
+body:has(.resource-sim-shell)::before {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.14) 0 2px, transparent 2px 100%),
+    radial-gradient(circle at 82% 22%, rgba(255, 198, 39, 0.12) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
+  background-size: 30px 30px, 24px 24px, auto;
+  opacity: 0.32;
+}
+
+body:has(.resource-sim-shell) header {
+  display: none;
+}
+
+body:has(.resource-sim-shell) main {
+  min-height: 100vh;
+}
+
+.resource-sim-shell {
+  position: relative;
+  color: #fff6eb;
+  font-family: var(--font-sim-body), sans-serif;
+}
+
+.resource-sim-shell * {
+  font-family: inherit;
+}
+
+.resource-reward-popup {
+  animation: resource-rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.resource-map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 25%),
+    radial-gradient(circle at 18% 18%, rgba(255, 198, 39, 0.12), transparent 16%),
+    radial-gradient(circle at 84% 82%, rgba(255, 255, 255, 0.08), transparent 18%);
+}
+
+.resource-map-node {
+  z-index: 1;
+}
+
+.resource-map-guide {
+  left: var(--guide-x-mobile);
+  top: var(--guide-y-mobile);
+  transition:
+    left 180ms ease,
+    top 180ms ease,
+    transform 180ms ease;
+}
+
+.resource-map-node > div:first-child {
+  animation: resource-node-settle 360ms cubic-bezier(0.18, 0.88, 0.24, 1);
+}
+
+.resource-map-node:hover > div:first-child,
+.resource-map-node:focus-visible > div:first-child {
+  transform: translateY(-4px);
+}
+
+.resource-map-node-zooming > div:first-child {
+  animation: resource-node-zoom 280ms ease forwards;
+}
+
+.resource-node-complete {
+  box-shadow:
+    0 0 0 4px rgba(255, 242, 201, 0.18),
+    0 18px 48px rgba(255, 198, 39, 0.24);
+}
+
+.resource-avatar-pop {
+  animation:
+    resource-pop 420ms cubic-bezier(0.18, 0.88, 0.24, 1),
+    resource-float 4.2s ease-in-out 420ms infinite;
+}
+
+.resource-reward-glow {
+  background:
+    radial-gradient(circle at top right, rgba(255, 198, 39, 0.32), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(140, 29, 64, 0.14), transparent 26%);
+}
+
+.resource-chat-bubble {
+  animation: resource-chat-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.resource-ready-modal {
+  animation: resource-pop 320ms cubic-bezier(0.18, 0.88, 0.24, 1);
+}
+
+.resource-confetti-piece {
+  position: absolute;
+  top: -1.25rem;
+  width: 0.7rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  opacity: 0;
+  animation-name: resource-confetti-fall;
+  animation-timing-function: cubic-bezier(0.22, 0.86, 0.24, 1);
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+.resource-typing-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #8c1d40;
+  animation: resource-typing 900ms infinite ease-in-out;
+}
+
+.resource-typing-dot:nth-child(2) {
+  animation-delay: 100ms;
+}
+
+.resource-typing-dot:nth-child(3) {
+  animation-delay: 200ms;
+}
+
+@keyframes resource-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes resource-pop {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes resource-node-settle {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes resource-node-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.26);
+  }
+}
+
+@keyframes resource-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes resource-chat-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes resource-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.85) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(170px) scale(1) rotate(140deg);
+  }
+}
+
+@keyframes resource-typing {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .resource-map-node {
+    left: var(--node-x) !important;
+    top: var(--node-y) !important;
+  }
+
+  .resource-map-guide {
+    left: var(--guide-x) !important;
+    top: var(--guide-y) !important;
   }
 }

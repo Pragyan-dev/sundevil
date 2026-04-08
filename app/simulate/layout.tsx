@@ -1,15 +1,15 @@
-import { Patrick_Hand, Permanent_Marker } from "next/font/google";
+import { Fredoka, Nunito } from "next/font/google";
 
-const patrickHand = Patrick_Hand({
+const nunito = Nunito({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-sketch-body",
+  variable: "--font-sim-body",
+  display: "swap",
 });
 
-const permanentMarker = Permanent_Marker({
+const fredoka = Fredoka({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-sketch-display",
+  variable: "--font-sim-display",
+  display: "swap",
 });
 
 export default function SimulateLayout({
@@ -18,22 +18,7 @@ export default function SimulateLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className={`${patrickHand.variable} ${permanentMarker.variable}`}>
-      <svg
-        aria-hidden="true"
-        className="pointer-events-none absolute h-0 w-0 overflow-hidden"
-      >
-        <filter id="sketch">
-          <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="3" result="noise" />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="1.5"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </svg>
+    <div className={`${nunito.variable} ${fredoka.variable}`}>
       {children}
     </div>
   );
