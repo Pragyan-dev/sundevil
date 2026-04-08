@@ -12,6 +12,7 @@ import { ChatScreen } from "@/components/simulation/ChatScreen";
 import { MapScreen } from "@/components/simulation/MapScreen";
 import { RewardPopup } from "@/components/simulation/RewardPopup";
 import { SuccessCoachScreen } from "@/components/simulation/SuccessCoachScreen";
+import { WeekSimulator } from "@/components/simulation/week/WeekSimulator";
 import type {
   BadgeDefinition,
   ChatChoice,
@@ -182,6 +183,7 @@ function getNewBadgeIds(
 
 export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProps) {
   const previewWorldId = previewSlug ? previewWorldBySlug[previewSlug] : null;
+  const [featureMode, setFeatureMode] = useState<"resource-map" | "week-sim">("resource-map");
   const [isHydrated, setIsHydrated] = useState(false);
   const [screen, setScreen] = useState<"map" | "chat" | "success-coach">(
     previewWorldId ? "chat" : "map",
@@ -708,6 +710,11 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     });
   }
 
+  function handleLaunchResourceWorldFromWeek(worldId: ResourceWorldId) {
+    setFeatureMode("resource-map");
+    openWorldFromMap(worldId);
+  }
+
   const earnedBadges = resourceDiscoveryBadges.map((badge) => ({
     ...badge,
     earned: progress.earnedBadgeIds.includes(badge.id),
@@ -748,7 +755,34 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 text-sm">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            {!previewWorldId ? (
+              <div className="flex rounded-full border border-white/14 bg-white/10 p-1">
+                <button
+                  type="button"
+                  onClick={() => setFeatureMode("resource-map")}
+                  className={`rounded-full px-4 py-2 font-bold transition ${
+                    featureMode === "resource-map"
+                      ? "bg-[#ffc627] text-[#2c1116]"
+                      : "text-white hover:text-[#ffc627]"
+                  }`}
+                >
+                  Resource map
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFeatureMode("week-sim")}
+                  className={`rounded-full px-4 py-2 font-bold transition ${
+                    featureMode === "week-sim"
+                      ? "bg-[#ffc627] text-[#2c1116]"
+                      : "text-white hover:text-[#ffc627]"
+                  }`}
+                >
+                  Week simulator
+                </button>
+              </div>
+            ) : null}
+
             <span className="rounded-full bg-white/12 px-3 py-2 font-bold text-white">
               🔱 {progress.points}
             </span>
@@ -761,7 +795,9 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
           </div>
         </div>
 
-        {screen === "map" || !activeWorld || !activeScenario ? (
+        {!previewWorldId && featureMode === "week-sim" ? (
+          <WeekSimulator onLaunchResourceWorld={handleLaunchResourceWorldFromWeek} />
+        ) : screen === "map" || !activeWorld || !activeScenario ? (
           <MapScreen
             worlds={visibleWorlds}
             progress={progress}

@@ -6,6 +6,7 @@ import { ChoiceButtons } from "@/components/simulation/ChoiceButtons";
 import { ProgressBar } from "@/components/simulation/ProgressBar";
 import type {
   ChatChoice,
+  RenderedChatMessage,
   ResourceScenario,
   ResourceWorld,
   ScenarioStep,
