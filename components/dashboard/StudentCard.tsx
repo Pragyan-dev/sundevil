@@ -1,11 +1,6 @@
 import Link from "next/link";
 
-import {
-  formatDashboardYear,
-  getAdvisorStudentSummary,
-  getContextTags,
-  getFacultyStudentSummary,
-} from "@/lib/dashboard";
+import { formatDashboardYear, getAdvisorStudentSummary, getContextTags, getFacultyStudentSummary } from "@/lib/dashboard";
 import type { DashboardRole, DashboardStudent } from "@/lib/types";
 
 import { ConcernBadge } from "./ConcernBadge";
@@ -24,7 +19,6 @@ export function StudentCard({ student, role }: StudentCardProps) {
       ? `/dashboard/faculty/student/${student.id}`
       : `/dashboard/advisor/student/${student.id}`;
   const emailHref = `${detailHref}#email-composer`;
-  const messageHref = `/dashboard/messages?role=${role}&student=${student.id}`;
 
   return (
     <article className="paper-card flex h-full flex-col gap-5 rounded-[1.9rem] border border-[rgba(140,29,64,0.1)] bg-[rgba(255,255,255,0.88)]">
@@ -60,14 +54,10 @@ export function StudentCard({ student, role }: StudentCardProps) {
           Write Email
         </Link>
         {role === "faculty" ? (
-          <Link href={`${detailHref}#handoff-form`} className="button-secondary">
-            🤝 Handoff to Advisor
+          <Link href={`${detailHref}#flag-form`} className="button-secondary">
+            Flag for Advisor Review
           </Link>
-        ) : (
-          <Link href={messageHref} className="button-secondary">
-            Reply to Faculty
-          </Link>
-        )}
+        ) : null}
       </div>
     </article>
   );

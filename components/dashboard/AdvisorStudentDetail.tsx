@@ -6,7 +6,7 @@ import { ContextTags } from "./ContextTags";
 import { DegreeProgress } from "./DegreeProgress";
 import { EmailComposer } from "./EmailComposer";
 import { FinancialSnapshot } from "./FinancialSnapshot";
-import { HandoffReply } from "./HandoffReply";
+import { FlagReviewPanel } from "./FlagReviewPanel";
 import { NoteLogger } from "./NoteLogger";
 import { RecommendationEngine } from "./RecommendationEngine";
 import { ResourceEngagementBar } from "./ResourceEngagementBar";
@@ -97,7 +97,7 @@ export function AdvisorStudentDetail({ studentId }: { studentId: string }) {
               }
             />
 
-            <HandoffReply student={student} />
+            <FlagReviewPanel student={student} />
             <NoteLogger role="advisor" studentId={student.id} authorName={data.advisor.name} />
           </div>
         </div>

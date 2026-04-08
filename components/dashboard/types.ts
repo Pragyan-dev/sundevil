@@ -3,5 +3,5 @@ export type ReturnTypeGetDashboardCounts = {
   watchClosely: number;
   onTrack: number;
   emailsSent: number;
-  handoffsToAdvisor: number;
+  flagsRaised: number;
 };

@@ -202,9 +202,9 @@ STUDENT CONTEXT:
     .slice(0, 3)
     .map((checkIn) => `Week ${checkIn.week}: ${checkIn.mood}, blocker ${checkIn.blocker}, outreach ${checkIn.wantsOutreach ? "yes" : "no"}`)
     .join("; ")}
-- Recent handoffs: ${student.handoffs
-    .slice(0, 2)
-    .map((handoff) => `${handoff.date}: ${handoff.message}`)
+- Recent flags and notes: ${student.flags
+    .slice(0, 3)
+    .map((flag) => `${flag.createdAt}: ${flag.message}`)
     .join("; ") || "None"}
 - Simulation progress: ${getSimulationLabel(student.simulation)} with badges ${badgeText}
 

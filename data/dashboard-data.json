@@ -168,17 +168,17 @@
           "visibility": "advisor-only"
         }
       ],
-      "handoffs": [
+      "flags": [
         {
-          "id": "handoff-marisol-1",
-          "fromId": "faculty-prof-chen",
-          "fromName": "Prof. Chen",
-          "fromRole": "faculty",
-          "toId": "advisor-rivera",
-          "toName": "Advisor Rivera",
-          "date": "2026-09-10T16:10:00",
+          "id": "flag-marisol-1",
+          "kind": "review",
+          "status": "open",
+          "createdByRole": "faculty",
+          "createdById": "faculty-prof-chen",
+          "createdByName": "Prof. Chen",
+          "createdAt": "2026-09-10T16:10:00",
           "message": "M.S. mentioned in office hours that she's worried about money. Quiz scores also dropped this week. Might need a financial coaching referral.",
-          "acknowledged": false
+          "resolutionNote": ""
         }
       ],
       "recommendedResource": {
@@ -199,11 +199,11 @@
         {
           "id": "timeline-marisol-2",
           "date": "2026-09-10T16:10:00",
-          "type": "handoff",
+          "type": "flag-created",
           "actorId": "faculty-prof-chen",
           "actorName": "Prof. Chen",
           "actorRole": "faculty",
-          "summary": "Sent a handoff to Advisor Rivera about financial stress and declining quiz scores.",
+          "summary": "Flagged for advisor review about financial stress and declining quiz scores.",
           "visibility": "shared"
         },
         {
@@ -353,7 +353,7 @@
           "visibility": "shared-with-faculty"
         }
       ],
-      "handoffs": [],
+      "flags": [],
       "recommendedResource": {
         "type": "career-services",
         "reason": "Student is stable enough for future-planning nudges rather than urgent intervention."
@@ -488,7 +488,7 @@
           "visibility": "shared-with-faculty"
         }
       ],
-      "handoffs": [],
+      "flags": [],
       "recommendedResource": {
         "type": "advising",
         "reason": "Concrete process translation works well for this student and can extend to office-hours confidence."
@@ -622,7 +622,7 @@
           "visibility": "shared-with-faculty"
         }
       ],
-      "handoffs": [],
+      "flags": [],
       "recommendedResource": {
         "type": "advising",
         "reason": "This student needs a concrete DARS/MyASU translation rather than a generic reminder."
@@ -764,17 +764,17 @@
           "visibility": "shared-with-faculty"
         }
       ],
-      "handoffs": [
+      "flags": [
         {
-          "id": "handoff-ramon-1",
-          "fromId": "advisor-rivera",
-          "fromName": "Advisor Rivera",
-          "fromRole": "advisor",
-          "toId": "faculty-prof-chen",
-          "toName": "Prof. Chen",
-          "date": "2026-09-09T19:10:00",
+          "id": "flag-ramon-1",
+          "kind": "advisor-note",
+          "status": "open",
+          "createdByRole": "advisor",
+          "createdById": "advisor-rivera",
+          "createdByName": "Advisor Rivera",
+          "createdAt": "2026-09-09T19:10:00",
           "message": "R.P. self-check-in said 'struggling' with a personal blocker. If you see him in class, a quick check-in would help.",
-          "acknowledged": false
+          "resolutionNote": ""
         }
       ],
       "recommendedResource": {
@@ -795,11 +795,11 @@
         {
           "id": "timeline-ramon-2",
           "date": "2026-09-09T19:10:00",
-          "type": "handoff",
+          "type": "flag-created",
           "actorId": "advisor-rivera",
           "actorName": "Advisor Rivera",
           "actorRole": "advisor",
-          "summary": "Asked Prof. Chen to try a quick in-class check-in after the self-check-in request.",
+          "summary": "Left an advisor note asking for a quick in-class check-in after the self-check-in request.",
           "visibility": "shared"
         },
         {
@@ -907,7 +907,7 @@
         }
       ],
       "advisorNotes": [],
-      "handoffs": [],
+      "flags": [],
       "recommendedResource": {
         "type": "advising",
         "reason": "A DARS review and hold-clearing appointment would resolve the main risk quickly."
@@ -1019,7 +1019,7 @@
         }
       ],
       "advisorNotes": [],
-      "handoffs": [],
+      "flags": [],
       "recommendedResource": {
         "type": "tutoring",
         "reason": "The immediate academic intervention is tutoring, but advisor follow-up should also cover DARS and planning."
@@ -1128,7 +1128,7 @@
         }
       ],
       "advisorNotes": [],
-      "handoffs": [],
+      "flags": [],
       "recommendedResource": {
         "type": "career-services",
         "reason": "Future-facing planning makes more sense than support triage."
@@ -1232,7 +1232,7 @@
       "supportFocus": "No urgent barrier. This student mostly needs continuation, not intervention.",
       "observations": [],
       "advisorNotes": [],
-      "handoffs": [],
+      "flags": [],
       "recommendedResource": {
         "type": "career-services",
         "reason": "Ready for forward-looking advising and career planning."

@@ -3,7 +3,8 @@ import type { SharedTimelineEvent } from "@/lib/types";
 
 const iconMap: Record<SharedTimelineEvent["type"], string> = {
   email: "📧",
-  handoff: "🤝",
+  "flag-created": "🚩",
+  "flag-resolved": "✅",
   reply: "📝",
   note: "🗒️",
   resource: "📍",

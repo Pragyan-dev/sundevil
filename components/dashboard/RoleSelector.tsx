@@ -11,7 +11,7 @@ export function RoleSelector() {
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted-ink)]">
             Pick the role you want to demo. Faculty sees course-level signals and outreach actions.
-            Advisors see cross-course context, incoming handoffs, and institutional flags.
+            Advisors see cross-course context, flagged students, and institutional support gaps.
           </p>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
@@ -19,13 +19,13 @@ export function RoleSelector() {
               href="/dashboard/faculty"
               icon="🎓"
               title="Faculty"
-              body="View students in your course, scan the class quickly, write personalized outreach, and hand a student to advising when the issue goes beyond the classroom."
+              body="View students in your course, scan the class quickly, write personalized outreach, and attach async advisor flags when the issue goes beyond the classroom."
             />
             <RoleCard
               href="/dashboard/advisor"
               icon="🗺️"
               title="Advisor"
-              body="View assigned students across all courses, triage incoming handoffs, spot DARS and support gaps, and coordinate care with faculty in one shared thread."
+              body="View assigned students across all courses, triage flagged students on your own time, spot DARS and support gaps, and use shared threads only for follow-up."
             />
           </div>
         </div>

@@ -32,9 +32,9 @@ const cards = [
     accent: "border-[rgba(140,29,64,0.14)] bg-[rgba(140,29,64,0.05)] text-[var(--asu-maroon)]",
   },
   {
-    key: "handoffsToAdvisor",
-    icon: "🤝",
-    label: "Handoffs",
+    key: "flagsRaised",
+    icon: "🚩",
+    label: "Flags Raised",
     accent: "border-[rgba(255,198,39,0.24)] bg-[rgba(255,198,39,0.12)] text-[var(--asu-maroon)]",
   },
 ] as const;
@@ -44,7 +44,7 @@ export type FacultyQuickCounts = {
   watchClosely: number;
   onTrack: number;
   emailsSent: number;
-  handoffsToAdvisor: number;
+  flagsRaised: number;
 };
 
 export function FacultyCourseHeader({

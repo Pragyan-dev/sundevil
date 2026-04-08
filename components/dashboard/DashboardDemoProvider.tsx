@@ -13,24 +13,33 @@ import type {
   AdvisorNoteVisibility,
   DashboardData,
   DashboardDemoState,
+  DashboardFlag,
   DashboardMessage,
   DashboardRole,
   DashboardStudent,
-  HandoffRecord,
   SelfCheckIn,
   SharedTimelineEvent,
 } from "@/lib/types";
 
-type HandoffPayload = {
+type FlagPayload = {
   studentId: string;
-  handoff: HandoffRecord;
-  threadMessage: DashboardMessage;
+  flag: DashboardFlag;
   timelineEvent: SharedTimelineEvent;
 };
 
 type CheckInPayload = {
   studentId: string;
   checkIn: SelfCheckIn;
+  timelineEvent: SharedTimelineEvent;
+};
+
+type ResolveFlagPayload = {
+  studentId: string;
+  flagId: string;
+  resolvedAt: string;
+  resolvedById: string;
+  resolvedByName: string;
+  resolutionNote?: string;
   timelineEvent: SharedTimelineEvent;
 };
 
@@ -58,8 +67,8 @@ type DashboardDemoContextValue = {
     senderRole: DashboardRole;
     text: string;
   }) => void;
-  applyHandoffResult: (payload: HandoffPayload) => void;
-  acknowledgeHandoff: (studentId: string, handoffId: string) => void;
+  applyFlagResult: (payload: FlagPayload) => void;
+  resolveFlag: (payload: ResolveFlagPayload) => void;
   applyCheckInResult: (payload: CheckInPayload) => void;
   resetDemo: () => void;
 };
@@ -81,7 +90,7 @@ function makeId(prefix: string) {
 function sortStudentTimeline(student: DashboardStudent) {
   student.timeline.sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
   student.checkIns.sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
-  student.handoffs.sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
+  student.flags.sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt));
   student.observations.sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
   student.advisorNotes.sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
 }
@@ -252,39 +261,39 @@ export function DashboardDemoProvider({
           return next;
         });
       },
-      applyHandoffResult(payload) {
+      applyFlagResult(payload) {
         setData((current) => {
           const next = cloneData(current);
           const student = next.students.find((item) => item.id === payload.studentId);
           if (!student) return current;
 
-          student.handoffs.unshift(payload.handoff);
+          student.flags.unshift(payload.flag);
           student.timeline.unshift(payload.timelineEvent);
-
-          const existingThread = next.messages.find((thread) => thread.studentId === payload.studentId);
-          if (existingThread) {
-            existingThread.messages.push(payload.threadMessage);
-          } else {
-            next.messages.push({
-              studentId: payload.studentId,
-              studentInitials: student.initials,
-              messages: [payload.threadMessage],
-            });
-          }
 
           sortStudentTimeline(student);
           return next;
         });
       },
-      acknowledgeHandoff(studentId, handoffId) {
+      resolveFlag({ studentId, flagId, resolvedAt, resolvedById, resolvedByName, resolutionNote, timelineEvent }) {
         setData((current) => {
           const next = cloneData(current);
           const student = next.students.find((item) => item.id === studentId);
           if (!student) return current;
 
-          student.handoffs = student.handoffs.map((handoff) =>
-            handoff.id === handoffId ? { ...handoff, acknowledged: true } : handoff,
+          student.flags = student.flags.map((flag) =>
+            flag.id === flagId && flag.kind === "review"
+              ? {
+                  ...flag,
+                  status: "resolved",
+                  resolvedAt,
+                  resolvedById,
+                  resolvedByName,
+                  resolutionNote,
+                }
+              : flag,
           );
+          student.timeline.unshift(timelineEvent);
+          sortStudentTimeline(student);
 
           return next;
         });

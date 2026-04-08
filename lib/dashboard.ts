@@ -28,7 +28,7 @@ export type FacultySignal = {
 
 export type AdvisorIncomingItem = {
   id: string;
-  type: "handoff" | "check-in";
+  type: "flag" | "check-in";
   studentId: string;
   studentInitials: string;
   studentName: string;
@@ -92,12 +92,12 @@ const moodLabelMap = {
   drowning: "drowning",
 } as const;
 
-export const dashboardStorageKey = "asu-unlocked-dashboard-v2";
+export const dashboardStorageKey = "asu-unlocked-dashboard-v3";
 
 const timelineAnchorDate = (() => {
   const candidateDates = dashboardData.students.flatMap((student) => [
     ...student.timeline.map((event) => event.date),
-    ...student.handoffs.map((handoff) => handoff.date),
+    ...student.flags.flatMap((flag) => [flag.createdAt, flag.resolvedAt].filter(Boolean) as string[]),
     ...student.observations.map((note) => note.date),
     ...student.advisorNotes.map((note) => note.date),
     ...student.checkIns.map((checkIn) => checkIn.date),
@@ -401,6 +401,34 @@ export function getPatternTitle(pattern: CohortPattern) {
   }
 }
 
+export function getReviewFlags(student: DashboardStudent) {
+  return student.flags.filter((flag) => flag.kind === "review");
+}
+
+export function getOpenReviewFlags(student: DashboardStudent) {
+  return getReviewFlags(student)
+    .filter((flag) => flag.status === "open")
+    .sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt));
+}
+
+export function getFacultyRaisedFlags(student: DashboardStudent) {
+  return student.flags
+    .filter((flag) => flag.createdByRole === "faculty")
+    .sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt));
+}
+
+export function getLatestFacultyReviewFlag(student: DashboardStudent) {
+  return getFacultyRaisedFlags(student).find((flag) => flag.kind === "review") ?? null;
+}
+
+export function getLatestOpenFacultyReviewFlag(student: DashboardStudent) {
+  return getFacultyRaisedFlags(student).find((flag) => flag.kind === "review" && flag.status === "open") ?? null;
+}
+
+export function getLatestResolvedFacultyReviewFlag(student: DashboardStudent) {
+  return getFacultyRaisedFlags(student).find((flag) => flag.kind === "review" && flag.status === "resolved") ?? null;
+}
+
 export function getDashboardCounts(students: DashboardStudent[]) {
   return {
     needsOutreach: students.filter((student) => student.concernLevel === "high").length,
@@ -414,8 +442,10 @@ export function getDashboardCounts(students: DashboardStudent[]) {
         ).length,
       0,
     ),
-    handoffsToAdvisor: students.reduce(
-      (count, student) => count + student.handoffs.filter((handoff) => handoff.fromRole === "faculty").length,
+    flagsRaised: students.reduce(
+      (count, student) =>
+        count +
+        student.flags.filter((flag) => flag.kind === "review" && flag.createdByRole === "faculty").length,
       0,
     ),
   };
@@ -519,7 +549,7 @@ export function getPatternById(id: string): CohortPattern | undefined {
 function getLastContactDate(student: DashboardStudent): number {
   const dates = [
     ...student.timeline.map((event) => event.date),
-    ...student.handoffs.map((handoff) => handoff.date),
+    ...student.flags.flatMap((flag) => [flag.createdAt, flag.resolvedAt].filter(Boolean) as string[]),
     ...student.observations.map((note) => note.date),
     ...student.advisorNotes.map((note) => note.date),
     ...student.checkIns.map((checkIn) => checkIn.date),
@@ -618,7 +648,8 @@ export function getResourceEngagementSummary(student: DashboardStudent) {
 function isMoneyFlag(student: DashboardStudent) {
   return (
     getLatestCheckIn(student)?.blocker === "money" ||
-    student.handoffs.some((handoff) => handoff.message.toLowerCase().includes("money")) ||
+    student.flags.some((flag) => flag.message.toLowerCase().includes("money")) ||
+    student.advisorNotes.some((note) => note.text.toLowerCase().includes("money")) ||
     student.supportFocus.toLowerCase().includes("money")
   );
 }
@@ -645,7 +676,7 @@ export function getAdvisorAssessment(student: DashboardStudent) {
   }
 
   if (isMoneyFlag(student)) {
-    parts.push("Money pressure is showing up directly in both faculty signal and self-check-in language.");
+    parts.push("Money pressure is showing up directly in current flags, notes, and self-check-in language.");
   }
 
   if (noResources) {
@@ -719,18 +750,18 @@ export function getAdvisorRecommendations(student: DashboardStudent): AdvisorRec
 }
 
 export function getAdvisorIncomingItems(students: DashboardStudent[]): AdvisorIncomingItem[] {
-  const handoffs = students.flatMap((student) =>
-    student.handoffs
-      .filter((handoff) => !handoff.acknowledged)
-      .map((handoff) => ({
-        id: handoff.id,
-        type: "handoff" as const,
+  const flags = students.flatMap((student) =>
+    student.flags
+      .filter((flag) => flag.kind === "review" && flag.status === "open" && flag.createdByRole === "faculty")
+      .map((flag) => ({
+        id: flag.id,
+        type: "flag" as const,
         studentId: student.id,
         studentInitials: student.initials,
         studentName: student.firstName,
-        date: handoff.date,
-        sourceLabel: `Handoff from ${handoff.fromName}`,
-        summary: handoff.message,
+        date: flag.createdAt,
+        sourceLabel: `Flagged by ${flag.createdByName}`,
+        summary: flag.message,
       })),
   );
 
@@ -755,7 +786,16 @@ export function getAdvisorIncomingItems(students: DashboardStudent[]): AdvisorIn
     ];
   });
 
-  return [...handoffs, ...checkIns].sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
+  const incomingRank: Record<AdvisorIncomingItem["type"], number> = {
+    flag: 0,
+    "check-in": 1,
+  };
+
+  return [...flags, ...checkIns].sort((left, right) => {
+    const rankDiff = incomingRank[left.type] - incomingRank[right.type];
+    if (rankDiff !== 0) return rankDiff;
+    return Date.parse(right.date) - Date.parse(left.date);
+  });
 }
 
 export function getAdvisorAlerts(students: DashboardStudent[]): AdvisorAlert[] {
@@ -828,21 +868,28 @@ export function getFacultyStudentSummary(student: DashboardStudent) {
     student.coursePerformance.weeklyMissedLectures > 0
       ? `Missed ${student.coursePerformance.weeklyMissedLectures} lectures this week`
       : "Full attendance this week";
+  const openFlag = getLatestOpenFacultyReviewFlag(student);
+  const resolvedFlag = getLatestResolvedFacultyReviewFlag(student);
 
   return {
     performance: latestQuiz ? `Quiz ${student.coursePerformance.quizScores.length}: ${latestQuiz}%` : "No quiz yet",
     attendance: lectureCopy,
     simulation: `${getSimulationLabel(student.simulation)} · Badges ${student.simulation.badges.length}/8`,
     advisor: `Advisor: ${student.advisorName}`,
-    advisorTouch: getLatestSharedAdvisorNote(student)
-      ? `Last advisor note: ${formatRelativeDate(getLatestSharedAdvisorNote(student)!.date)}`
-      : `Last advisor contact: ${formatRelativeDate(student.lastAdvisingVisit)}`,
+    advisorTouch: openFlag
+      ? `Flagged for advisor review ${formatRelativeDate(openFlag.createdAt)}`
+      : resolvedFlag
+        ? `Resolved by advisor ${formatRelativeDate(resolvedFlag.resolvedAt ?? resolvedFlag.createdAt)}`
+        : getLatestSharedAdvisorNote(student)
+          ? `Last advisor note: ${formatRelativeDate(getLatestSharedAdvisorNote(student)!.date)}`
+          : `Last advisor contact: ${formatRelativeDate(student.lastAdvisingVisit)}`,
   };
 }
 
 export function getAdvisorStudentSummary(student: DashboardStudent) {
   const struggling = student.allCourses.filter((course) => course.status === "struggling");
-  const latestHandoff = [...student.handoffs].sort((left, right) => Date.parse(right.date) - Date.parse(left.date))[0];
+  const latestOpenFlag = getLatestOpenFacultyReviewFlag(student);
+  const latestResolvedFlag = getLatestResolvedFacultyReviewFlag(student);
 
   return {
     degree: `${student.degree.creditsCompleted}/${student.degree.creditsNeeded} credits`,
@@ -854,11 +901,13 @@ export function getAdvisorStudentSummary(student: DashboardStudent) {
       student.financial.scholarshipAmount > 0
         ? `Scholarship: $${student.financial.scholarshipAmount.toLocaleString()}/yr`
         : "No scholarship on file",
-    facultySignal: latestHandoff
-      ? `${latestHandoff.fromName}: ${latestHandoff.message}`
+    facultySignal: latestOpenFlag
+      ? `Open faculty flag: ${latestOpenFlag.message}`
+      : latestResolvedFlag?.resolutionNote
+        ? `Resolved flag note: ${latestResolvedFlag.resolutionNote}`
       : struggling.length
         ? `Faculty concern in ${struggling.map((course) => course.code).join(", ")}`
-        : "No active faculty handoff",
+        : "No active faculty flags",
   };
 }
 

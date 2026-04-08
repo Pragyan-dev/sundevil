@@ -5,17 +5,13 @@ import Link from "next/link";
 import { formatRelativeDate } from "@/lib/dashboard";
 import type { AdvisorIncomingItem } from "@/lib/dashboard";
 
-import { useDashboardDemoState } from "./DashboardDemoProvider";
-
 export function IncomingQueue({ items }: { items: AdvisorIncomingItem[] }) {
-  const { acknowledgeHandoff } = useDashboardDemoState();
-
   return (
     <section className="paper-card">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">Incoming</p>
-          <h2 className="mt-3 text-3xl font-semibold text-[var(--asu-maroon)]">New flags to triage</h2>
+          <p className="eyebrow">Flagged students</p>
+          <h2 className="mt-3 text-3xl font-semibold text-[var(--asu-maroon)]">Async triage queue</h2>
         </div>
         <span className="pill">{items.length} active</span>
       </div>
@@ -42,30 +38,14 @@ export function IncomingQueue({ items }: { items: AdvisorIncomingItem[] }) {
               <Link href={`/dashboard/advisor/student/${item.studentId}`} className="button-primary">
                 View Student
               </Link>
-              {item.type === "handoff" ? (
-                <>
-                  <button
-                    type="button"
-                    className="button-secondary"
-                    onClick={() => acknowledgeHandoff(item.studentId, item.id)}
-                  >
-                    Acknowledge
-                  </button>
-                  <Link
-                    href={`/dashboard/messages?role=advisor&student=${item.studentId}`}
-                    className="button-secondary"
-                  >
-                    Respond to Faculty
-                  </Link>
-                </>
-              ) : (
+              {item.type === "check-in" ? (
                 <Link
                   href={`/dashboard/advisor/student/${item.studentId}#email-composer`}
                   className="button-secondary"
                 >
                   Reach Out
                 </Link>
-              )}
+              ) : null}
             </div>
           </article>
         ))}

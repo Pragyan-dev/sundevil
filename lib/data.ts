@@ -188,7 +188,7 @@ function validateDashboardStudents(input: unknown, validSlugs: Set<string>): Das
     );
     invariant(Array.isArray(item.observations), `Dashboard student ${index} needs observations`);
     invariant(Array.isArray(item.advisorNotes), `Dashboard student ${index} needs advisorNotes`);
-    invariant(Array.isArray(item.handoffs), `Dashboard student ${index} needs handoffs`);
+    invariant(Array.isArray(item.flags), `Dashboard student ${index} needs flags`);
     invariant(
       isRecord(item.recommendedResource),
       `Dashboard student ${index} needs recommendedResource`,

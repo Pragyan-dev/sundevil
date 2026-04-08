@@ -4,9 +4,11 @@ import { useMemo } from "react";
 
 import {
   dashboardClassContext,
+  formatRelativeDate,
   formatDashboardYear,
   getContextTags,
   getFacultyRead,
+  getFacultyRaisedFlags,
   getFacultyVisibleTimeline,
   getSuggestedCheckInPrompts,
   getUsageText,
@@ -15,7 +17,7 @@ import {
 import { ConcernBadge } from "./ConcernBadge";
 import { ContextTags } from "./ContextTags";
 import { EmailComposer } from "./EmailComposer";
-import { HandoffForm } from "./HandoffForm";
+import { FlagForm } from "./FlagForm";
 import { NoteLogger } from "./NoteLogger";
 import { ResourceEngagementBar } from "./ResourceEngagementBar";
 import { SharedTimeline } from "./SharedTimeline";
@@ -26,6 +28,7 @@ export function FacultyStudentDetail({ studentId }: { studentId: string }) {
   const { data, getStudentById, logOutreach } = useDashboardDemoState();
   const student = getStudentById(studentId);
   const prompts = useMemo(() => (student ? getSuggestedCheckInPrompts(student) : []), [student]);
+  const facultyFlags = useMemo(() => (student ? getFacultyRaisedFlags(student) : []), [student]);
 
   if (!student) {
     return null;
@@ -77,6 +80,37 @@ export function FacultyStudentDetail({ studentId }: { studentId: string }) {
                     • {observation.text}
                   </article>
                 ))}
+              </div>
+            </section>
+
+            <section className="paper-card">
+              <p className="eyebrow">Advisor-facing items</p>
+              <div className="mt-5 space-y-3">
+                {facultyFlags.length ? (
+                  facultyFlags.map((flag) => (
+                    <article
+                      key={flag.id}
+                      className="rounded-[1.35rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.76)] p-4 text-sm leading-7 text-[var(--ink)]/84"
+                    >
+                      <p className="font-semibold text-[var(--asu-maroon)]">
+                        {flag.kind === "review"
+                          ? flag.status === "open"
+                            ? "Flagged for advisor review"
+                            : "Resolved by advisor"
+                          : "Advisor note sent"}{" "}
+                        · {formatRelativeDate(flag.resolvedAt ?? flag.createdAt)}
+                      </p>
+                      <p className="mt-2">{flag.message}</p>
+                      {flag.resolutionNote ? (
+                        <p className="mt-2 text-[var(--muted-ink)]">Shared resolution note: {flag.resolutionNote}</p>
+                      ) : null}
+                    </article>
+                  ))
+                ) : (
+                  <article className="rounded-[1.35rem] border border-[rgba(140,29,64,0.08)] bg-[rgba(255,255,255,0.76)] p-4 text-sm leading-7 text-[var(--muted-ink)]">
+                    No advisor-facing flags or notes yet.
+                  </article>
+                )}
               </div>
             </section>
 
@@ -150,7 +184,7 @@ export function FacultyStudentDetail({ studentId }: { studentId: string }) {
               }
             />
 
-            <HandoffForm student={student} />
+            <FlagForm student={student} />
 
             <section className="paper-card">
               <p className="eyebrow">Current support status</p>

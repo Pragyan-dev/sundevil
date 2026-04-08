@@ -208,9 +208,12 @@ export type DashboardBlocker = "none" | "money" | "academics" | "health" | "pers
 export type AdvisorNoteVisibility = "advisor-only" | "shared-with-faculty";
 export type DashboardTimelineVisibility = "shared" | "advisor-only";
 export type DashboardMessageKind = "handoff" | "reply" | "note";
+export type DashboardFlagKind = "review" | "advisor-note";
+export type DashboardFlagStatus = "open" | "resolved";
 export type DashboardTimelineType =
   | "email"
-  | "handoff"
+  | "flag-created"
+  | "flag-resolved"
   | "reply"
   | "note"
   | "resource"
@@ -336,16 +339,19 @@ export interface SelfCheckIn {
   date: string;
 }
 
-export interface HandoffRecord {
+export interface DashboardFlag {
   id: string;
-  fromId: string;
-  fromName: string;
-  fromRole: DashboardRole;
-  toId: string;
-  toName: string;
-  date: string;
+  kind: DashboardFlagKind;
+  status: DashboardFlagStatus;
+  createdByRole: DashboardRole;
+  createdById: string;
+  createdByName: string;
+  createdAt: string;
   message: string;
-  acknowledged: boolean;
+  resolvedAt?: string;
+  resolvedById?: string;
+  resolvedByName?: string;
+  resolutionNote?: string;
 }
 
 export interface SharedTimelineEvent {
@@ -408,7 +414,7 @@ export interface DashboardStudent {
   supportFocus: string;
   observations: DashboardObservation[];
   advisorNotes: DashboardAdvisorNote[];
-  handoffs: HandoffRecord[];
+  flags: DashboardFlag[];
   recommendedResource: DashboardRecommendedResource;
   timeline: SharedTimelineEvent[];
 }
