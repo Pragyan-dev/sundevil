@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import {
   previewWorldBySlug,
   resourceDiscoveryBadges,
+  resourceDiscoveryVisibleMapWorldIds,
   resourceWorlds,
 } from "@/data/resource-discovery-worlds";
 import { ChatScreen } from "@/components/simulation/ChatScreen";
@@ -164,7 +165,7 @@ function getNewBadgeIds(
 
   if (
     !progress.earnedBadgeIds.includes("explorer") &&
-    progress.completedWorldIds.length === resourceWorlds.length
+    resourceDiscoveryVisibleMapWorldIds.every((worldId) => progress.completedWorldIds.includes(worldId))
   ) {
     nextBadgeIds.push("explorer");
   }
@@ -300,6 +301,17 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
   }, []);
 
   const unlockedWorldIds = useMemo(() => getUnlockedWorldIds(), []);
+  const visibleWorlds = useMemo(
+    () => resourceWorlds.filter((world) => resourceDiscoveryVisibleMapWorldIds.includes(world.id)),
+    [],
+  );
+  const visibleCompletedWorldCount = useMemo(
+    () =>
+      resourceDiscoveryVisibleMapWorldIds.filter((worldId) =>
+        progress.completedWorldIds.includes(worldId),
+      ).length,
+    [progress.completedWorldIds],
+  );
   const activeWorld = useMemo(() => getWorld(activeWorldId), [activeWorldId]);
   const activeScenario = activeWorld?.scenarios[activeScenarioIndex] ?? null;
   const stepMap = useMemo(
@@ -741,7 +753,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
               🔱 {progress.points}
             </span>
             <span className="rounded-full bg-white/12 px-3 py-2 font-bold text-white">
-              {progress.completedWorldIds.length}/{resourceWorlds.length} cleared
+              {visibleCompletedWorldCount}/{visibleWorlds.length} cleared
             </span>
             <span className="rounded-full bg-white/12 px-3 py-2 font-bold text-white">
               {isPending ? "moving..." : "live"}
@@ -751,7 +763,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
 
         {screen === "map" || !activeWorld || !activeScenario ? (
           <MapScreen
-            worlds={resourceWorlds}
+            worlds={visibleWorlds}
             progress={progress}
             unlockedWorldIds={unlockedWorldIds}
             hoveredWorldId={hoveredWorldId}

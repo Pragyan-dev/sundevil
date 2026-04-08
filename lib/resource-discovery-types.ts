@@ -12,6 +12,7 @@ export type ResourceWorldId =
   | "first-gen-support"
   | "academic-advising"
   | "tutoring"
+  | "explore-asu"
   | "financial-aid"
   | "career-services"
   | "counseling"

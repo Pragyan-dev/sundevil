@@ -1,0 +1,118 @@
+import type { ScholarshipCoachMetadata } from "./scholarship-coach-core";
+
+export const scholarshipCoachMetadata: Record<string, ScholarshipCoachMetadata> = {
+  "scholarship-nam-u": {
+    deadlineIso: "2026-11-01",
+    essayRequired: false,
+    estimatedEffortHours: 2,
+    requirements: ["Admissions profile", "Academic record", "Renewal review each year"],
+    essayPrompts: ["What academic goals make you a strong investment for ASU?"],
+    reminderLabel: "Check this early because it ties closely to admission timing.",
+  },
+  "scholarship-obama": {
+    deadlineIso: "2026-10-15",
+    essayRequired: true,
+    estimatedEffortHours: 5,
+    requirements: ["FAFSA on file", "Arizona residency confirmation", "Need-based review"],
+    essayPrompts: ["How would this scholarship change your ability to stay enrolled and focused?"],
+    reminderLabel: "Move early so FAFSA and aid review are not the bottleneck.",
+  },
+  "scholarship-general-clas": {
+    deadlineIso: "2026-03-15",
+    essayRequired: true,
+    estimatedEffortHours: 4,
+    requirements: ["College scholarship application", "Short statement", "Academic profile"],
+    essayPrompts: ["What are you building at ASU, and how does your major connect to that plan?"],
+    reminderLabel: "This is broad enough that it is worth keeping in your active list.",
+  },
+  "scholarship-first-gen-zone": {
+    deadlineIso: "2026-04-20",
+    essayRequired: true,
+    estimatedEffortHours: 3,
+    requirements: ["First-generation status", "Success program participation", "Short reflection"],
+    essayPrompts: ["Describe one barrier you have navigated as a first-gen student and what support helped."],
+    reminderLabel: "This one is especially worth drafting early if you are first-gen.",
+  },
+  "scholarship-fulton": {
+    deadlineIso: "2026-02-18",
+    essayRequired: true,
+    estimatedEffortHours: 4,
+    requirements: ["Engineering enrollment", "Resume or activity list", "Short response"],
+    essayPrompts: ["What engineering problem or area keeps your attention, and why?"],
+    reminderLabel: "Engineering students should keep this near the top of the queue.",
+  },
+  "scholarship-business": {
+    deadlineIso: "2026-02-22",
+    essayRequired: true,
+    estimatedEffortHours: 4,
+    requirements: ["Business enrollment", "Short essay", "Academic standing review"],
+    essayPrompts: ["How are you preparing to create impact through business or leadership?"],
+    reminderLabel: "If business is your lane, this is one of the cleaner ASU fits.",
+  },
+  "scholarship-teachers": {
+    deadlineIso: "2026-02-25",
+    essayRequired: true,
+    estimatedEffortHours: 4,
+    requirements: ["Education pathway", "Short essay", "Academic profile"],
+    essayPrompts: ["Why does teaching matter to you, and what kind of classroom do you hope to shape?"],
+    reminderLabel: "Education majors should save this before it gets crowded with spring work.",
+  },
+  "scholarship-health": {
+    deadlineIso: "2026-03-05",
+    essayRequired: true,
+    estimatedEffortHours: 5,
+    requirements: ["Health-related program", "Statement of interest", "Academic review"],
+    essayPrompts: ["What motivates your path into health, wellness, or community care?"],
+    reminderLabel: "This one usually takes a little more writing time, so do not leave it late.",
+  },
+  "scholarship-science": {
+    deadlineIso: "2026-05-01",
+    essayRequired: false,
+    estimatedEffortHours: 2,
+    requirements: ["STEM enrollment", "Short activity summary", "Standing review"],
+    essayPrompts: ["What has helped you persist in STEM even when classes got difficult?"],
+    reminderLabel: "Because it is lower effort, it is a good fast win to submit.",
+  },
+  "scholarship-transfer": {
+    deadlineIso: "2026-08-15",
+    essayRequired: false,
+    estimatedEffortHours: 2,
+    requirements: ["Transfer admission profile", "Transcript review"],
+    essayPrompts: ["How has transferring shaped what you want from your ASU experience?"],
+    reminderLabel: "Keep this visible if your path into ASU is through transfer credits.",
+  },
+  "scholarship-resident": {
+    deadlineIso: "2026-09-01",
+    essayRequired: false,
+    estimatedEffortHours: 2,
+    requirements: ["Arizona residency", "FAFSA on file", "Need review"],
+    essayPrompts: ["What would a little more financial stability change for you this year at ASU?"],
+    reminderLabel: "This is lighter lift, but it depends on FAFSA timing.",
+  },
+  "scholarship-community": {
+    deadlineIso: "2026-03-20",
+    essayRequired: true,
+    estimatedEffortHours: 3,
+    requirements: ["Service or leadership examples", "Short reflection", "Academic standing"],
+    essayPrompts: ["Where have you already shown up for other people, and what did that teach you?"],
+    reminderLabel: "Good option if your resume has service, leadership, or peer support work.",
+  },
+};
+
+export const defaultScholarshipSnippets = [
+  {
+    id: "impact",
+    title: "Impact story",
+    body: "One challenge I have been working through is balancing coursework, responsibilities outside class, and long-term goals without losing momentum.",
+  },
+  {
+    id: "asu-fit",
+    title: "Why ASU",
+    body: "ASU feels like the right place for me because it combines strong academic pathways with support systems I can actually use when things get hard.",
+  },
+  {
+    id: "goal",
+    title: "Future goal",
+    body: "This scholarship would give me more space to focus on learning, stay consistent, and keep moving toward my degree goals.",
+  },
+] as const;
