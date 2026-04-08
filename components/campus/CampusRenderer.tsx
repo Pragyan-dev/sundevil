@@ -279,13 +279,93 @@ function drawQuestMarker(ctx: CanvasRenderingContext2D, building: CampusBuilding
   ctx.restore();
 }
 
+function drawBuildingWithImage(
+  ctx: CanvasRenderingContext2D,
+  building: CampusBuilding,
+  image: HTMLImageElement,
+  isNearby: boolean,
+  isCurrentGoal: boolean,
+  promptLabel: string | null,
+) {
+  const { x, y, width, height } = building;
+  const radius = 12;
+
+  ctx.save();
+
+  ctx.shadowColor = "rgba(31, 24, 16, 0.25)";
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetY = 4;
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, radius);
+  ctx.fillStyle = "#fffdfa";
+  ctx.fill();
+  ctx.shadowColor = "transparent";
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, radius);
+  ctx.clip();
+  ctx.drawImage(image, x, y, width, height);
+
+  const gradientY = y + height * 0.55;
+  const gradient = ctx.createLinearGradient(0, gradientY, 0, y + height);
+  gradient.addColorStop(0, "rgba(31, 24, 16, 0)");
+  gradient.addColorStop(1, "rgba(31, 24, 16, 0.6)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(x, gradientY, width, height - height * 0.55);
+  ctx.restore();
+
+  ctx.lineWidth = isNearby ? 5 : 3;
+  ctx.strokeStyle = isNearby ? "#d6a100" : isCurrentGoal ? "#8c1d40" : "rgba(31,24,16,0.35)";
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, radius);
+  ctx.stroke();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = "#1f1810";
+  ctx.lineWidth = 3;
+  ctx.font = '22px "Patrick Hand", cursive';
+  ctx.textAlign = "center";
+  ctx.strokeText(building.label, x + width / 2, y + height - 14);
+  ctx.fillText(building.label, x + width / 2, y + height - 14);
+
+  ctx.beginPath();
+  ctx.moveTo(building.entranceX - 20, building.entranceY - 22);
+  ctx.lineTo(building.entranceX + 20, building.entranceY - 22);
+  ctx.strokeStyle = isNearby ? "#d6a100" : "rgba(31,24,16,0.45)";
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  if (promptLabel) {
+    const bubbleY = y - 74;
+    ctx.fillStyle = "#ffc627";
+    ctx.strokeStyle = "#1f1810";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.roundRect(x + 22, bubbleY, width - 44, 36, 18);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#1f1810";
+    ctx.font = '18px "Patrick Hand", cursive';
+    ctx.fillText(promptLabel, x + width / 2, bubbleY + 24);
+  }
+
+  ctx.restore();
+}
+
 function drawBuilding(
   ctx: CanvasRenderingContext2D,
   building: CampusBuilding,
   isNearby: boolean,
   isCurrentGoal: boolean,
   promptLabel: string | null,
+  image?: HTMLImageElement,
 ) {
+  if (image && image.complete && image.naturalWidth > 0) {
+    drawBuildingWithImage(ctx, building, image, isNearby, isCurrentGoal, promptLabel);
+    return;
+  }
+
   ctx.save();
   drawWobblyRect(ctx, building.x, building.y, building.width, building.height, building.x + building.y);
   ctx.fillStyle = isCurrentGoal ? "rgba(255, 198, 39, 0.12)" : "#fffdfa";
@@ -385,6 +465,7 @@ export function renderCampusScene({
   nearBuildingId,
   currentQuestBuildingId,
   discoveredBuildingIds,
+  buildingImages,
   time,
 }: {
   ctx: CanvasRenderingContext2D;
@@ -396,6 +477,7 @@ export function renderCampusScene({
   nearBuildingId: string | null;
   currentQuestBuildingId: string | null;
   discoveredBuildingIds: string[];
+  buildingImages: Map<string, HTMLImageElement>;
   time: number;
 }) {
   ctx.clearRect(0, 0, viewportWidth, viewportHeight);
@@ -421,6 +503,7 @@ export function renderCampusScene({
       nearBuildingId === building.id,
       currentQuestBuildingId === building.id,
       nearBuildingId === building.id ? "Enter" : null,
+      buildingImages.get(building.id),
     );
     if (discoveredBuildingIds.includes(building.id)) {
       drawDiscoveredStamp(ctx, building);

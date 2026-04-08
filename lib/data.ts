@@ -313,6 +313,13 @@ function validateCampusMapData(input: unknown, validSlugs: Set<string>): CampusM
       }
     }
 
+    if (building.photo !== undefined && building.photo !== null) {
+      invariant(
+        typeof building.photo === "string",
+        `Campus building ${index} photo must be a string or null`,
+      );
+    }
+
     if (building.npc !== undefined && building.npc !== null) {
       invariant(isRecord(building.npc), `Campus building ${index} npc must be an object`);
       invariant(typeof building.npc.name === "string", `Campus building ${index} npc needs name`);

@@ -149,6 +149,7 @@ export interface CampusBuilding {
   interactionTarget?: CampusDialogTarget | ResourceSlug | MiniGameType;
   npc?: CampusNpc | null;
   realLocation?: CampusRealLocation | null;
+  photo?: string | null;
 }
 
 export interface CampusPath {

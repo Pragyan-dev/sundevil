@@ -4797,6 +4797,28 @@ body:has(.story-shell) main {
   color: #1d170f;
 }
 
+.campus-modal-photo {
+  margin-top: 0.75rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.campus-modal-photo-img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.campus-summary-thumb {
+  display: block;
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
 .campus-modal-minigame,
 .campus-modal-dialog {
   margin-top: 1rem;

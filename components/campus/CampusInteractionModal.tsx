@@ -167,6 +167,16 @@ export default function CampusInteractionModal({
           </button>
         </div>
 
+        {building.photo ? (
+          <div className="campus-modal-photo">
+            <img
+              src={building.photo}
+              alt={`${building.name} exterior`}
+              className="campus-modal-photo-img"
+            />
+          </div>
+        ) : null}
+
         {building.interactionType === "minigame" ? (
           <div className="campus-modal-minigame">
             <p className="campus-modal-support-copy">

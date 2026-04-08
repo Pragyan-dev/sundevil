@@ -24,7 +24,8 @@
         "greeting": "Ready to check out campus? The tutoring spot in Hayden is way less intimidating once you actually see it.",
         "followUp": "Hit the important stops, then come back here and tell me what you found."
       },
-      "realLocation": null
+      "realLocation": null,
+      "photo": "/campus/tooker-house.svg"
     },
     {
       "id": "byeng",
@@ -45,7 +46,8 @@
         "avatar": "prof-chen",
         "greeting": "First week is mostly translation work. Syllabus, DARS, office hours, course codes. Nobody walks in knowing the whole map."
       },
-      "realLocation": null
+      "realLocation": null,
+      "photo": "/campus/byeng-210.svg"
     },
     {
       "id": "hayden",
@@ -72,7 +74,8 @@
         "hours": "Mon-Thur 10am-6pm, Fri 10am-3pm",
         "phone": "480-965-3074",
         "mapLink": "https://gis.m.asu.edu/asucampus/?find=LIB"
-      }
+      },
+      "photo": "/campus/hayden-library.svg"
     },
     {
       "id": "wexler",
@@ -99,7 +102,8 @@
         "hours": "Mon-Thur 10am-6pm, Fri 10am-3pm",
         "phone": "480-965-9976",
         "mapLink": "https://gis.m.asu.edu/asucampus/?find=WXLR"
-      }
+      },
+      "photo": "/campus/wexler-hall.svg"
     },
     {
       "id": "centerpoint",
@@ -126,7 +130,8 @@
         "hours": "Mon-Fri 8am-12pm, 1pm-5pm",
         "phone": "480-727-3520",
         "mapLink": "https://gis.m.asu.edu/asucampus/?find=CTRPT"
-      }
+      },
+      "photo": "/campus/centerpoint-advising.svg"
     },
     {
       "id": "counseling",
@@ -153,7 +158,8 @@
         "hours": "Mon-Fri 8am-5pm",
         "phone": "480-965-6146",
         "mapLink": null
-      }
+      },
+      "photo": "/campus/counseling-services.svg"
     },
     {
       "id": "carey",
@@ -180,7 +186,8 @@
         "hours": "Mon-Thur 11am-5pm, Fri 11am-3pm",
         "phone": "480-965-8033",
         "mapLink": "https://gis.m.asu.edu/asucampus/?find=BA"
-      }
+      },
+      "photo": "/campus/carey-tutoring.svg"
     },
     {
       "id": "ecg",
@@ -207,7 +214,8 @@
         "hours": "Mon-Thur 9am-10pm, Fri 9am-7pm, Sat-Sun 10am-5pm",
         "phone": null,
         "mapLink": null
-      }
+      },
+      "photo": "/campus/ecg-engineering.svg"
     },
     {
       "id": "computerlab",
@@ -223,7 +231,8 @@
       "interactionType": "minigame",
       "interactionTarget": "dars-explorer",
       "npc": null,
-      "realLocation": null
+      "realLocation": null,
+      "photo": "/campus/computer-lab.svg"
     }
   ],
   "paths": [

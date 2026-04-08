@@ -20,6 +20,7 @@ import {
   getQuestCompletion,
   renderCampusScene,
 } from "@/components/campus/CampusRenderer";
+import { useBuildingImages } from "@/components/campus/useBuildingImages";
 import { useSoundEngine } from "@/components/sketch/SoundEngine";
 import type { CampusDirection, CampusMapData, CampusPlayer, CampusQuest } from "@/lib/types";
 
@@ -49,6 +50,7 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
   const nearBuildingRef = useRef<string | null>(null);
 
   const sound = useSoundEngine();
+  const buildingImagesRef = useBuildingImages(map.buildings);
 
   const [viewport, setViewport] = useState({ width: 980, height: 680 });
   const [quests, setQuests] = useState<CampusQuest[]>(() => createInitialQuests(map));
@@ -272,6 +274,7 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
         nearBuildingId: interactionLocked ? null : nextNearId,
         currentQuestBuildingId: currentQuestBuilding?.id ?? null,
         discoveredBuildingIds: discoveredBuildings,
+        buildingImages: buildingImagesRef.current,
         time,
       });
 
@@ -470,6 +473,9 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
             <div className="campus-summary-grid">
               {summaryBuildings.map((building) => (
                 <article key={building.id} className="campus-summary-item">
+                  {building.photo ? (
+                    <img src={building.photo} alt="" className="campus-summary-thumb" />
+                  ) : null}
                   <h3>
                     {building.icon} {building.label}
                   </h3>
