@@ -4398,13 +4398,16 @@ body:has(.story-shell) main {
 }
 
 .campus-page-shell {
-  padding-top: 2rem;
+  width: 100%;
+  min-height: calc(100dvh - 170px);
 }
 
 .campus-shell {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+  min-height: calc(100dvh - 170px);
+  padding: 1rem;
 }
 
 .campus-hero {
@@ -4470,11 +4473,14 @@ body:has(.story-shell) main {
   gap: 1.25rem;
   grid-template-columns: minmax(0, 1fr) 21rem;
   align-items: start;
+  flex: 1;
+  min-height: 0;
 }
 
 .campus-stage {
   position: relative;
-  min-height: 680px;
+  min-height: clamp(620px, calc(100dvh - 20rem), 920px);
+  height: clamp(620px, calc(100dvh - 20rem), 920px);
   overflow: hidden;
   border: 2px solid rgba(0, 0, 0, 0.12);
   border-radius: 2rem;
@@ -4488,9 +4494,94 @@ body:has(.story-shell) main {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 680px;
+  min-height: inherit;
   touch-action: none;
   cursor: crosshair;
+}
+
+.campus-stage-toolbar {
+  position: absolute;
+  inset: 1rem 1rem auto 1rem;
+  z-index: 8;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.9rem;
+  align-items: start;
+  pointer-events: none;
+}
+
+.campus-stage-status,
+.campus-stage-fullscreen-button {
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(10px);
+}
+
+.campus-stage-status {
+  max-width: min(34rem, 100%);
+  border-radius: 1.35rem;
+  padding: 0.8rem 0.95rem;
+}
+
+.campus-stage-status span,
+.campus-stage-controls-copy {
+  margin: 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(29, 23, 15, 0.58);
+}
+
+.campus-stage-status strong {
+  display: block;
+  margin-top: 0.38rem;
+  font-family: var(--font-sketch-body), "Patrick Hand", cursive;
+  font-size: 1.3rem;
+  line-height: 1.15;
+  color: #1d170f;
+}
+
+.campus-stage-toolbar-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 0.45rem;
+  pointer-events: auto;
+}
+
+.campus-stage-controls-copy {
+  padding-right: 0.2rem;
+}
+
+.campus-stage-fullscreen-button {
+  pointer-events: auto;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  color: #1d170f;
+  cursor: pointer;
+}
+
+.campus-stage-fullscreen-button:hover,
+.campus-stage-fullscreen-button:focus-visible {
+  border-color: rgba(140, 29, 64, 0.24);
+  background: rgba(255, 250, 239, 0.98);
+}
+
+.campus-stage.is-fullscreen,
+.campus-stage:fullscreen {
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100dvh;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.campus-stage.is-fullscreen .campus-canvas,
+.campus-stage:fullscreen .campus-canvas {
+  min-height: 100dvh;
 }
 
 .campus-hud {
@@ -4923,6 +5014,15 @@ body:has(.story-shell) main {
   .campus-stage,
   .campus-canvas {
     min-height: 520px;
+    height: min(68dvh, 640px);
+  }
+
+  .campus-stage-toolbar {
+    inset: 0.85rem 0.85rem auto 0.85rem;
+  }
+
+  .campus-stage-status strong {
+    font-size: 1.15rem;
   }
 
   .campus-summary-grid {
@@ -4936,7 +5036,7 @@ body:has(.story-shell) main {
 
 @media (max-width: 640px) {
   .campus-page-shell {
-    padding-top: 1rem;
+    min-height: auto;
   }
 
   .campus-hero,
@@ -4949,7 +5049,26 @@ body:has(.story-shell) main {
   .campus-stage,
   .campus-canvas {
     min-height: 460px;
+    height: min(64dvh, 560px);
     border-radius: 1.5rem;
+  }
+
+  .campus-shell {
+    padding: 0.75rem;
+  }
+
+  .campus-stage-toolbar {
+    gap: 0.55rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .campus-stage-toolbar-actions {
+    align-items: start;
+  }
+
+  .campus-stage-fullscreen-button {
+    align-self: start;
   }
 
   .campus-prompt {

@@ -60,6 +60,8 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
   const [mobileQuestOpen, setMobileQuestOpen] = useState(false);
   const [mobileDirection, setMobileDirection] = useState<CampusDirection | null>(null);
   const [isCoarsePointer, setIsCoarsePointer] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [fullscreenSupported, setFullscreenSupported] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
 
   const interactionLocked = activeBuildingId !== null || summaryOpen;
@@ -133,6 +135,24 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
     update();
     mediaQuery.addEventListener("change", update);
     return () => mediaQuery.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+
+    if (!stage) {
+      return;
+    }
+
+    const syncFullscreenState = () => {
+      setIsFullscreen(document.fullscreenElement === stage);
+      setFullscreenSupported(Boolean(document.fullscreenEnabled && stage.requestFullscreen));
+    };
+
+    syncFullscreenState();
+    document.addEventListener("fullscreenchange", syncFullscreenState);
+
+    return () => document.removeEventListener("fullscreenchange", syncFullscreenState);
   }, []);
 
   useEffect(() => {
@@ -285,6 +305,7 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
 
     return () => window.cancelAnimationFrame(rafId);
   }, [
+    buildingImagesRef,
     currentQuestBuilding?.id,
     discoveredBuildings,
     interactionLocked,
@@ -350,6 +371,41 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
     sound.correct();
   }
 
+  async function requestStageFullscreen() {
+    const stage = stageRef.current;
+
+    if (!stage || !document.fullscreenEnabled || document.fullscreenElement === stage) {
+      return;
+    }
+
+    try {
+      await stage.requestFullscreen();
+    } catch {
+      // Ignore browsers or contexts that reject the fullscreen request.
+    }
+  }
+
+  async function toggleFullscreen() {
+    sound.prime();
+
+    const stage = stageRef.current;
+
+    if (!stage || !document.fullscreenEnabled) {
+      return;
+    }
+
+    try {
+      if (document.fullscreenElement === stage) {
+        await document.exitFullscreen();
+        return;
+      }
+
+      await stage.requestFullscreen();
+    } catch {
+      // Ignore browsers or contexts that reject the fullscreen request.
+    }
+  }
+
   function handleCanvasPointerDown(event: ReactPointerEvent<HTMLCanvasElement>) {
     if (interactionLocked) {
       return;
@@ -359,6 +415,10 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
 
     if (!canvas) {
       return;
+    }
+
+    if (!isCoarsePointer) {
+      void requestStageFullscreen();
     }
 
     sound.prime();
@@ -409,7 +469,30 @@ export default function CampusNavigator({ map }: { map: CampusMapData }) {
       </section>
 
       <section className="campus-stage-shell">
-        <div className="campus-stage" ref={stageRef}>
+        <div className={`campus-stage${isFullscreen ? " is-fullscreen" : ""}`} ref={stageRef}>
+          <div className="campus-stage-toolbar">
+            <div className="campus-stage-status">
+              <span>Campus mode</span>
+              <strong>
+                {currentQuest
+                  ? `Next stop: ${currentQuest.label}`
+                  : `${questCompletion.completed}/${questCompletion.total} quests cleared`}
+              </strong>
+            </div>
+            <div className="campus-stage-toolbar-actions">
+              <p className="campus-stage-controls-copy">WASD / arrows / click / E</p>
+              {fullscreenSupported ? (
+                <button
+                  type="button"
+                  className="campus-stage-fullscreen-button"
+                  aria-pressed={isFullscreen}
+                  onClick={() => void toggleFullscreen()}
+                >
+                  {isFullscreen ? "Exit full screen" : "Full screen"}
+                </button>
+              ) : null}
+            </div>
+          </div>
           <canvas
             ref={canvasRef}
             className="campus-canvas"

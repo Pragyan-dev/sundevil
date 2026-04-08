@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function CampusPage() {
   return (
-    <div className="page-shell campus-page-shell">
+    <div className="campus-page-shell">
       <CampusNavigator map={campusMap} />
     </div>
   );
