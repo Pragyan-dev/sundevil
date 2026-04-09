@@ -8,7 +8,6 @@ const primaryLinks = [
   { href: "/", label: "Home" },
   { href: "/finder", label: "Find Resources" },
   { href: "/simulate", label: "First-Week Story" },
-  { href: "/chat", label: "Chat" },
   { href: "/scholarships", label: "Scholarships" },
 ];
 

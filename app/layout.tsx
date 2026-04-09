@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { FloatingChatWidget } from "@/components/FloatingChatWidget";
 import { Navbar } from "@/components/Navbar";
 
 import "./globals.css";
@@ -29,6 +30,7 @@ export default function RootLayout({
         <div className="app-shell">
           <Navbar />
           <main>{children}</main>
+          <FloatingChatWidget />
         </div>
       </body>
     </html>
