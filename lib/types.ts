@@ -116,8 +116,44 @@ export interface GeneratedQuestionsResult {
 
 export type CampusInteractionType = "dialog" | "walkthrough" | "minigame";
 export type CampusDialogTarget = "tooker-intro" | "byeng-preview";
-export type CampusNpcAvatar = CharacterId | "tutor" | "desk-aide";
+export type CampusNpcAvatar =
+  | "jordan"
+  | "prof-chen"
+  | "advisor-rivera"
+  | "counselor-park"
+  | "tutor"
+  | "desk-aide";
+export type CampusAvatarPresetId = "player" | CampusNpcAvatar;
 export type CampusDirection = "up" | "down" | "left" | "right";
+
+export interface CampusAvatarAppearance {
+  skinColor: string;
+  hairColor: string;
+  topColor: string;
+  topAccentColor?: string | null;
+  bottomColor: string;
+  shoeColor: string;
+  soleColor: string;
+  backpackColor?: string | null;
+  backpackAccentColor?: string | null;
+  outerwearColor?: string | null;
+  hairStyle:
+    | "short-curl"
+    | "locs"
+    | "curly-bun"
+    | "parted-short"
+    | "ponytail"
+    | "wavy-bob"
+    | "pulled-back";
+}
+
+export interface CampusAvatarRoleStyle {
+  shirtText?: string | null;
+  sleeveLength: "short" | "long";
+  accessory: "none" | "clipboard" | "book" | "lanyard" | "badge";
+  hasBackpack: boolean;
+  posture: "open" | "professional" | "relaxed";
+}
 
 export interface CampusNpc {
   name: string;

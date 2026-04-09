@@ -19,6 +19,7 @@ import type { RapierRigidBody } from "@react-three/rapier";
 import * as THREE from "three";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 
+import CampusAvatar from "@/components/campus/CampusAvatar";
 import CampusGameHUD3D from "@/components/campus/CampusGameHUD3D";
 import { getDialogLines } from "@/components/campus/campusDialogContent";
 import { getBuildingById } from "@/components/campus/CampusRenderer";
@@ -445,142 +446,6 @@ function QuestBeacon({ position }: { position: CampusVector3 }) {
   );
 }
 
-function Figure({
-  accentColor,
-  position,
-  rotationY = 0,
-  isPlayer = false,
-  isMoving = false,
-  tint = "#fff8ef",
-}: {
-  accentColor: string;
-  position?: [number, number, number];
-  rotationY?: number;
-  isPlayer?: boolean;
-  isMoving?: boolean;
-  tint?: string;
-}) {
-  const groupRef = useRef<THREE.Group | null>(null);
-  const leftArmRef = useRef<THREE.Group | null>(null);
-  const rightArmRef = useRef<THREE.Group | null>(null);
-  const leftLegRef = useRef<THREE.Group | null>(null);
-  const rightLegRef = useRef<THREE.Group | null>(null);
-  const skinColor = tint;
-  const hairColor = isPlayer ? "#2d211d" : "#4a3428";
-  const shirtColor = isPlayer ? MAROON : accentColor;
-  const shirtMarkColor = isPlayer ? GOLD : "#fff2c7";
-  const pantsColor = isPlayer ? "#3c322c" : "#53443b";
-  const backpackColor = isPlayer ? GOLD : accentColor;
-  const shoeColor = "#201711";
-
-  useFrame(({ clock }) => {
-    if (!groupRef.current) {
-      return;
-    }
-
-    const swing = isMoving ? Math.sin(clock.elapsedTime * 10) * 0.28 : Math.sin(clock.elapsedTime * 2) * 0.04;
-    if (leftArmRef.current) leftArmRef.current.rotation.x = swing;
-    if (rightArmRef.current) rightArmRef.current.rotation.x = -swing;
-    if (leftLegRef.current) leftLegRef.current.rotation.x = -swing;
-    if (rightLegRef.current) rightLegRef.current.rotation.x = swing;
-  });
-
-  return (
-    <group ref={groupRef} position={position} rotation={[0, rotationY, 0]}>
-      <mesh position={[0, 1.78, 0.02]}>
-        <sphereGeometry args={[0.38, 18, 18]} />
-        <meshStandardMaterial color={skinColor} flatShading />
-        <Edges color={INK} scale={1.02} />
-      </mesh>
-      <mesh position={[0, 1.93, -0.02]}>
-        <sphereGeometry args={[0.41, 18, 18, 0, Math.PI * 2, 0, Math.PI / 1.75]} />
-        <meshStandardMaterial color={hairColor} flatShading />
-        <Edges color={INK} scale={1.02} />
-      </mesh>
-      <mesh position={[0, 1.37, 0]}>
-        <cylinderGeometry args={[0.11, 0.12, 0.18, 10]} />
-        <meshStandardMaterial color={skinColor} flatShading />
-      </mesh>
-      <mesh position={[0, 1.02, 0]}>
-        <capsuleGeometry args={[0.42, 0.56, 4, 10]} />
-        <meshStandardMaterial color={shirtColor} flatShading />
-        <Edges color={INK} scale={1.02} />
-      </mesh>
-      <mesh position={[0, 0.54, 0.02]}>
-        <boxGeometry args={[0.56, 0.38, 0.28]} />
-        <meshStandardMaterial color={pantsColor} flatShading />
-        <Edges color={INK} scale={1.02} />
-      </mesh>
-      <mesh position={[0, 0.98, -0.28]}>
-        <boxGeometry args={[0.5, 0.6, 0.22]} />
-        <meshStandardMaterial color={backpackColor} flatShading />
-        <Edges color={INK} scale={1.03} />
-      </mesh>
-      <mesh position={[0, 1.18, 0.34]}>
-        <boxGeometry args={[0.28, 0.08, 0.03]} />
-        <meshStandardMaterial color="#f6efe7" flatShading />
-      </mesh>
-      <mesh position={[0, 1, 0.33]}>
-        <boxGeometry args={[0.06, 0.18, 0.03]} />
-        <meshStandardMaterial color={shirtMarkColor} flatShading />
-      </mesh>
-      <mesh position={[-0.08, 1.06, 0.33]} rotation={[0, 0, 0.48]}>
-        <boxGeometry args={[0.05, 0.14, 0.03]} />
-        <meshStandardMaterial color={shirtMarkColor} flatShading />
-      </mesh>
-      <mesh position={[0.08, 1.06, 0.33]} rotation={[0, 0, -0.48]}>
-        <boxGeometry args={[0.05, 0.14, 0.03]} />
-        <meshStandardMaterial color={shirtMarkColor} flatShading />
-      </mesh>
-
-      <group ref={leftArmRef} position={[-0.46, 1.16, 0.02]} rotation={[0, 0, 0.12]}>
-        <mesh position={[0, -0.12, 0]}>
-          <capsuleGeometry args={[0.12, 0.18, 4, 8]} />
-          <meshStandardMaterial color={shirtColor} flatShading />
-          <Edges color={INK} scale={1.02} />
-        </mesh>
-        <mesh position={[0, -0.48, 0]}>
-          <capsuleGeometry args={[0.1, 0.34, 4, 8]} />
-          <meshStandardMaterial color={skinColor} flatShading />
-        </mesh>
-      </group>
-      <group ref={rightArmRef} position={[0.46, 1.16, 0.02]} rotation={[0, 0, -0.12]}>
-        <mesh position={[0, -0.12, 0]}>
-          <capsuleGeometry args={[0.12, 0.18, 4, 8]} />
-          <meshStandardMaterial color={shirtColor} flatShading />
-          <Edges color={INK} scale={1.02} />
-        </mesh>
-        <mesh position={[0, -0.48, 0]}>
-          <capsuleGeometry args={[0.1, 0.34, 4, 8]} />
-          <meshStandardMaterial color={skinColor} flatShading />
-        </mesh>
-      </group>
-      <group ref={leftLegRef} position={[-0.16, 0.08, 0]} rotation={[0, 0, 0]}>
-        <mesh position={[0, 0.36, 0]}>
-          <capsuleGeometry args={[0.11, 0.44, 4, 8]} />
-          <meshStandardMaterial color={pantsColor} flatShading />
-          <Edges color={INK} scale={1.02} />
-        </mesh>
-        <mesh position={[0, -0.02, 0.08]}>
-          <boxGeometry args={[0.2, 0.08, 0.32]} />
-          <meshStandardMaterial color={shoeColor} flatShading />
-        </mesh>
-      </group>
-      <group ref={rightLegRef} position={[0.16, 0.08, 0]} rotation={[0, 0, 0]}>
-        <mesh position={[0, 0.36, 0]}>
-          <capsuleGeometry args={[0.11, 0.44, 4, 8]} />
-          <meshStandardMaterial color={pantsColor} flatShading />
-          <Edges color={INK} scale={1.02} />
-        </mesh>
-        <mesh position={[0, -0.02, 0.08]}>
-          <boxGeometry args={[0.2, 0.08, 0.32]} />
-          <meshStandardMaterial color={shoeColor} flatShading />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
 function PropMesh({ prop }: { prop: CampusPropDefinition }) {
   const scale = propScale(prop.scale);
   const tint = prop.tint ?? "#f6ecde";
@@ -889,12 +754,11 @@ function OutdoorScene({
             {building.props?.map((prop) => (
               <PropMesh key={prop.id} prop={prop} />
             ))}
-            {building.npcPosition ? (
-              <Figure
-                accentColor={building.accentColor ?? GOLD}
+            {building.npcPosition && mapBuilding.npc ? (
+              <CampusAvatar
                 position={building.npcPosition}
+                presetId={mapBuilding.npc.avatar}
                 rotationY={building.npcRotationY ?? Math.PI}
-                tint="#fff5e7"
               />
             ) : null}
           </group>
@@ -1037,12 +901,11 @@ function InteriorScene({
         <PropMesh key={prop.id} prop={prop} />
       ))}
 
-      {interior.npcPosition ? (
-        <Figure
-          accentColor={interior.accentColor}
+      {interior.npcPosition && building.npc ? (
+        <CampusAvatar
           position={interior.npcPosition}
+          presetId={building.npc.avatar}
           rotationY={interior.npcRotationY ?? 0}
-          tint="#fff8ec"
         />
       ) : null}
 
@@ -1271,7 +1134,7 @@ function PlayerController({
       </RigidBody>
 
       <group ref={visualRef}>
-        <Figure accentColor={GOLD} isPlayer isMoving={movingState} tint="#efc29f" />
+        <CampusAvatar isMoving={movingState} presetId="player" />
       </group>
     </>
   );
