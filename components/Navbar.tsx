@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 const primaryLinks = [
   { href: "/", label: "Home" },
   { href: "/finder", label: "Find Resources" },
-  { href: "/campus", label: "Explore Campus" },
   { href: "/simulate", label: "First-Week Story" },
   { href: "/chat", label: "Chat" },
   { href: "/scholarships", label: "Scholarships" },

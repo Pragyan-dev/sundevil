@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
 
 import CampusNavigator2D from "@/components/campus/CampusNavigator2D";
+import type { CampusStoryLaunchContext } from "@/lib/campus-story-session";
 import type { CampusExperienceMode, CampusMapData } from "@/lib/types";
 
 const CampusNavigator3D = dynamic(() => import("@/components/campus/CampusNavigator3D"), {
@@ -77,7 +78,13 @@ function subscribeToCampusMode(callback: () => void) {
   };
 }
 
-export default function CampusExperienceSwitch({ map }: { map: CampusMapData }) {
+export default function CampusExperienceSwitch({
+  map,
+  storyLaunch = null,
+}: {
+  map: CampusMapData;
+  storyLaunch?: CampusStoryLaunchContext | null;
+}) {
   const mode = useSyncExternalStore(
     subscribeToCampusMode,
     getCampusModeSnapshot,
@@ -100,8 +107,8 @@ export default function CampusExperienceSwitch({ map }: { map: CampusMapData }) 
   }
 
   if (mode === "2d-fallback") {
-    return <CampusNavigator2D map={map} />;
+    return <CampusNavigator2D map={map} storyLaunch={storyLaunch} />;
   }
 
-  return <CampusNavigator3D map={map} />;
+  return <CampusNavigator3D map={map} storyLaunch={storyLaunch} />;
 }

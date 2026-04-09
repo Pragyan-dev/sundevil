@@ -1,22 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Edges, Html, OrbitControls } from "@react-three/drei";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+  type PointerEvent as ReactPointerEvent,
+  type WheelEvent as ReactWheelEvent,
+} from "react";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { Edges, Html } from "@react-three/drei";
 import { CapsuleCollider, CuboidCollider, Physics, RigidBody } from "@react-three/rapier";
 import type { RapierRigidBody } from "@react-three/rapier";
 import * as THREE from "three";
-import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 
 import CampusGameHUD3D from "@/components/campus/CampusGameHUD3D";
 import { getDialogLines } from "@/components/campus/campusDialogContent";
 import { getBuildingById } from "@/components/campus/CampusRenderer";
+import { useCampusStoryReturn } from "@/components/campus/useCampusStoryReturn";
 import { useCampusQuestState } from "@/components/campus/useCampusQuestState";
 import { SketchDialogSequence } from "@/components/sketch/SketchDialogSequence";
 import MiniGameRouter from "@/components/sketch/minigames/MiniGameRouter";
 import { useSoundEngine } from "@/components/sketch/SoundEngine";
+import type { CampusStoryLaunchContext } from "@/lib/campus-story-session";
 import { campusWorld } from "@/lib/data";
 import type {
   CampusBuilding,
@@ -52,6 +63,20 @@ type NearbyAction =
   | { kind: "interact-interior"; buildingId: string }
   | { kind: "exit-interior"; buildingId: string };
 
+type CameraRigState = {
+  yaw: number;
+  pitch: number;
+  distance: number;
+  minDistance: number;
+  maxDistance: number;
+  minPitch: number;
+  maxPitch: number;
+  isDragging: boolean;
+  pointerId: number | null;
+  lastX: number;
+  lastY: number;
+};
+
 const GOLD = "#ffc627";
 const MAROON = "#8c1d40";
 const INK = "#201711";
@@ -59,6 +84,10 @@ const WALK_SPEED = 5.6;
 const SPRINT_SPEED = 8.5;
 const OUTDOOR_INTERACT_DISTANCE = 3.4;
 const INTERIOR_INTERACT_DISTANCE = 2.8;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
 
 function vectorFromTuple([x, y, z]: CampusVector3) {
   return new THREE.Vector3(x, y, z);
@@ -78,6 +107,251 @@ function addVector(base: CampusVector3, offset?: CampusVector3): CampusVector3 {
 
 function tuple3(x: number, y: number, z: number): CampusVector3 {
   return [x, y, z];
+}
+
+function createOutdoorCameraRig(): CameraRigState {
+  return {
+    yaw: 0.72,
+    pitch: 0.44,
+    distance: 16.8,
+    minDistance: 9.4,
+    maxDistance: 23,
+    minPitch: 0.58,
+    maxPitch: 1.18,
+    isDragging: false,
+    pointerId: null,
+    lastX: 0,
+    lastY: 0,
+  };
+}
+
+function createIndoorCameraRig(): CameraRigState {
+  return {
+    yaw: 0,
+    pitch: 0.42,
+    distance: 8.8,
+    minDistance: 5.8,
+    maxDistance: 11.6,
+    minPitch: 0.7,
+    maxPitch: 1.12,
+    isDragging: false,
+    pointerId: null,
+    lastX: 0,
+    lastY: 0,
+  };
+}
+
+function pointInsideAabb(point: THREE.Vector3, center: CampusVector3, size: CampusVector3, padding = 0) {
+  return (
+    Math.abs(point.x - center[0]) <= size[0] / 2 + padding &&
+    Math.abs(point.y - center[1]) <= size[1] / 2 + padding &&
+    Math.abs(point.z - center[2]) <= size[2] / 2 + padding
+  );
+}
+
+function ImportedInteriorModel({
+  model,
+  roomSize,
+}: {
+  model: NonNullable<CampusInteriorScene["importedModel"]>;
+  roomSize: CampusVector3;
+}) {
+  const loaded = useLoader(FBXLoader, model.src);
+  const scale = propScale(model.scale, 1);
+
+  const prepared = useMemo(() => {
+    const clone = loaded.clone(true);
+    const offset = new THREE.Vector3();
+    const resolvedScale = new THREE.Vector3(...scale);
+    const meshBounds: { mesh: THREE.Mesh; size: THREE.Vector3; center: THREE.Vector3 }[] = [];
+
+    clone.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) {
+        return;
+      }
+
+      child.castShadow = true;
+      child.receiveShadow = true;
+      child.frustumCulled = false;
+
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      materials.forEach((material) => {
+        material.side = THREE.DoubleSide;
+        material.needsUpdate = true;
+
+        if ("metalness" in material) {
+          material.metalness = 0;
+        }
+
+        if ("roughness" in material) {
+          material.roughness = 1;
+        }
+      });
+
+      const box = new THREE.Box3().setFromObject(child);
+      if (!box.isEmpty()) {
+        meshBounds.push({
+          mesh: child,
+          size: box.getSize(new THREE.Vector3()),
+          center: box.getCenter(new THREE.Vector3()),
+        });
+      }
+    });
+
+    const bounds = new THREE.Box3().setFromObject(clone);
+    if (!bounds.isEmpty()) {
+      const size = bounds.getSize(new THREE.Vector3());
+      const center = bounds.getCenter(new THREE.Vector3());
+      if (model.autoCenter) {
+        offset.x = -center.x;
+        offset.z = -center.z;
+      }
+
+      if (model.floorToZero) {
+        offset.y = -bounds.min.y;
+      }
+
+      if (model.fitToRoom) {
+        const fitX = roomSize[0] * 0.84;
+        const fitY = roomSize[1] * 0.82;
+        const fitZ = roomSize[2] * 0.78;
+        const fitScale =
+          model.fitMode === "height"
+            ? fitY / Math.max(size.y, 0.001)
+            : Math.min(
+                fitX / Math.max(size.x, 0.001),
+                fitY / Math.max(size.y, 0.001),
+                fitZ / Math.max(size.z, 0.001),
+              );
+        resolvedScale.multiplyScalar(fitScale);
+      }
+
+      const overallVolume = Math.max(size.x * size.y * size.z, 0.001);
+      const overallDiagonal = Math.max(size.length(), 0.001);
+      for (const entry of meshBounds) {
+        const volume = entry.size.x * entry.size.y * entry.size.z;
+        const centerDistance = entry.center.distanceTo(center);
+        const tinyOutlier =
+          volume < overallVolume * 0.004 &&
+          centerDistance > overallDiagonal * 0.22;
+        const floorShrapnel =
+          entry.size.y < size.y * 0.08 &&
+          entry.center.y < bounds.min.y + size.y * 0.12 &&
+          entry.size.length() < overallDiagonal * 0.12;
+
+        if (tinyOutlier || floorShrapnel) {
+          entry.mesh.visible = false;
+        }
+      }
+    }
+
+    return { clone, offset, resolvedScale: resolvedScale.toArray() as [number, number, number] };
+  }, [loaded, model.autoCenter, model.fitMode, model.fitToRoom, model.floorToZero, roomSize, scale]);
+
+  return (
+    <group
+      position={model.position ?? [0, 0, 0]}
+      rotation={model.rotation ?? [0, 0, 0]}
+      scale={prepared.resolvedScale}
+    >
+      <group position={prepared.offset.toArray() as [number, number, number]}>
+        <primitive object={prepared.clone} />
+      </group>
+    </group>
+  );
+}
+
+function segmentIntersectsAabb(
+  start: THREE.Vector3,
+  end: THREE.Vector3,
+  center: CampusVector3,
+  size: CampusVector3,
+  padding = 0,
+) {
+  const min = new THREE.Vector3(
+    center[0] - size[0] / 2 - padding,
+    center[1] - size[1] / 2 - padding,
+    center[2] - size[2] / 2 - padding,
+  );
+  const max = new THREE.Vector3(
+    center[0] + size[0] / 2 + padding,
+    center[1] + size[1] / 2 + padding,
+    center[2] + size[2] / 2 + padding,
+  );
+  const delta = end.clone().sub(start);
+  let tMin = 0;
+  let tMax = 1;
+
+  for (const axis of ["x", "y", "z"] as const) {
+    const origin = start[axis];
+    const direction = delta[axis];
+
+    if (Math.abs(direction) < 1e-5) {
+      if (origin < min[axis] || origin > max[axis]) {
+        return false;
+      }
+
+      continue;
+    }
+
+    const invDirection = 1 / direction;
+    let t1 = (min[axis] - origin) * invDirection;
+    let t2 = (max[axis] - origin) * invDirection;
+
+    if (t1 > t2) {
+      [t1, t2] = [t2, t1];
+    }
+
+    tMin = Math.max(tMin, t1);
+    tMax = Math.min(tMax, t2);
+
+    if (tMin > tMax) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function resolveOutdoorCameraPosition(target: THREE.Vector3, direction: THREE.Vector3, distance: number) {
+  const buildings = Object.values(campusWorld.buildings);
+  let safeDistance = distance;
+
+  for (let attempt = 0; attempt < 14; attempt += 1) {
+    const candidate = target.clone().addScaledVector(direction, safeDistance);
+    const blocked = buildings.some((building) =>
+      segmentIntersectsAabb(target, candidate, building.collider.position, building.collider.size, 0.45),
+    );
+
+    if (!blocked) {
+      return candidate;
+    }
+
+    safeDistance = Math.max(6.8, safeDistance - 1);
+  }
+
+  return target.clone().addScaledVector(direction, 6.8);
+}
+
+function resolveIndoorCameraPosition(
+  target: THREE.Vector3,
+  direction: THREE.Vector3,
+  distance: number,
+  interior: CampusInteriorScene,
+) {
+  const candidate = target.clone().addScaledVector(direction, distance);
+  const [roomWidth, roomHeight, roomDepth] = interior.roomSize;
+  const clamped = candidate.clone();
+
+  clamped.x = clamp(clamped.x, -roomWidth / 2 + 0.95, roomWidth / 2 - 0.95);
+  clamped.y = clamp(clamped.y, 1.9, roomHeight - 1.2);
+  clamped.z = clamp(clamped.z, -roomDepth / 2 + 0.95, roomDepth / 2 - 1.15);
+
+  if (pointInsideAabb(clamped, [0, roomHeight / 2, -roomDepth / 2], [roomWidth, roomHeight, 0.35], 0.15)) {
+    clamped.z = -roomDepth / 2 + 0.95;
+  }
+
+  return clamped;
 }
 
 function getSpawnY() {
@@ -132,8 +406,8 @@ function BuildingLabel({
 
 function PromptBubble({ position, text }: { position: CampusVector3; text: string }) {
   return (
-    <Html position={position} center distanceFactor={14}>
-      <div className="rounded-full border border-white/10 bg-[rgba(20,14,10,0.82)] px-4 py-2 font-[var(--font-sketch-body)] text-[0.95rem] text-white shadow-[0_16px_40px_rgba(0,0,0,0.28)] backdrop-blur-md">
+    <Html position={position} center>
+      <div className="max-w-[14rem] whitespace-nowrap rounded-full border border-white/10 bg-[rgba(20,14,10,0.82)] px-3 py-1.5 text-center font-[var(--font-sketch-body)] text-[0.8rem] text-white shadow-[0_16px_40px_rgba(0,0,0,0.28)] backdrop-blur-md">
         {text}
       </div>
     </Html>
@@ -187,6 +461,17 @@ function Figure({
   tint?: string;
 }) {
   const groupRef = useRef<THREE.Group | null>(null);
+  const leftArmRef = useRef<THREE.Group | null>(null);
+  const rightArmRef = useRef<THREE.Group | null>(null);
+  const leftLegRef = useRef<THREE.Group | null>(null);
+  const rightLegRef = useRef<THREE.Group | null>(null);
+  const skinColor = tint;
+  const hairColor = isPlayer ? "#2d211d" : "#4a3428";
+  const shirtColor = isPlayer ? MAROON : accentColor;
+  const shirtMarkColor = isPlayer ? GOLD : "#fff2c7";
+  const pantsColor = isPlayer ? "#3c322c" : "#53443b";
+  const backpackColor = isPlayer ? GOLD : accentColor;
+  const shoeColor = "#201711";
 
   useFrame(({ clock }) => {
     if (!groupRef.current) {
@@ -194,56 +479,102 @@ function Figure({
     }
 
     const swing = isMoving ? Math.sin(clock.elapsedTime * 10) * 0.28 : Math.sin(clock.elapsedTime * 2) * 0.04;
-    const [leftArm, rightArm, leftLeg, rightLeg] = groupRef.current.children.slice(3, 7) as THREE.Group[];
-
-    if (leftArm && rightArm && leftLeg && rightLeg) {
-      leftArm.rotation.x = swing;
-      rightArm.rotation.x = -swing;
-      leftLeg.rotation.x = -swing;
-      rightLeg.rotation.x = swing;
-    }
+    if (leftArmRef.current) leftArmRef.current.rotation.x = swing;
+    if (rightArmRef.current) rightArmRef.current.rotation.x = -swing;
+    if (leftLegRef.current) leftLegRef.current.rotation.x = -swing;
+    if (rightLegRef.current) rightLegRef.current.rotation.x = swing;
   });
 
   return (
     <group ref={groupRef} position={position} rotation={[0, rotationY, 0]}>
-      <mesh position={[0, 1.65, 0]}>
+      <mesh position={[0, 1.78, 0.02]}>
         <sphereGeometry args={[0.38, 18, 18]} />
-        <meshStandardMaterial color={tint} flatShading />
+        <meshStandardMaterial color={skinColor} flatShading />
         <Edges color={INK} scale={1.02} />
+      </mesh>
+      <mesh position={[0, 1.93, -0.02]}>
+        <sphereGeometry args={[0.41, 18, 18, 0, Math.PI * 2, 0, Math.PI / 1.75]} />
+        <meshStandardMaterial color={hairColor} flatShading />
+        <Edges color={INK} scale={1.02} />
+      </mesh>
+      <mesh position={[0, 1.37, 0]}>
+        <cylinderGeometry args={[0.11, 0.12, 0.18, 10]} />
+        <meshStandardMaterial color={skinColor} flatShading />
       </mesh>
       <mesh position={[0, 1.02, 0]}>
-        <capsuleGeometry args={[0.42, 0.7, 4, 10]} />
-        <meshStandardMaterial color={tint} flatShading />
+        <capsuleGeometry args={[0.42, 0.56, 4, 10]} />
+        <meshStandardMaterial color={shirtColor} flatShading />
         <Edges color={INK} scale={1.02} />
       </mesh>
-      <mesh position={[0, 0.95, -0.26]}>
+      <mesh position={[0, 0.54, 0.02]}>
+        <boxGeometry args={[0.56, 0.38, 0.28]} />
+        <meshStandardMaterial color={pantsColor} flatShading />
+        <Edges color={INK} scale={1.02} />
+      </mesh>
+      <mesh position={[0, 0.98, -0.28]}>
         <boxGeometry args={[0.5, 0.6, 0.22]} />
-        <meshStandardMaterial color={accentColor} flatShading />
+        <meshStandardMaterial color={backpackColor} flatShading />
         <Edges color={INK} scale={1.03} />
       </mesh>
+      <mesh position={[0, 1.18, 0.34]}>
+        <boxGeometry args={[0.28, 0.08, 0.03]} />
+        <meshStandardMaterial color="#f6efe7" flatShading />
+      </mesh>
+      <mesh position={[0, 1, 0.33]}>
+        <boxGeometry args={[0.06, 0.18, 0.03]} />
+        <meshStandardMaterial color={shirtMarkColor} flatShading />
+      </mesh>
+      <mesh position={[-0.08, 1.06, 0.33]} rotation={[0, 0, 0.48]}>
+        <boxGeometry args={[0.05, 0.14, 0.03]} />
+        <meshStandardMaterial color={shirtMarkColor} flatShading />
+      </mesh>
+      <mesh position={[0.08, 1.06, 0.33]} rotation={[0, 0, -0.48]}>
+        <boxGeometry args={[0.05, 0.14, 0.03]} />
+        <meshStandardMaterial color={shirtMarkColor} flatShading />
+      </mesh>
 
-      <group position={[-0.43, 1.12, 0]} rotation={[0, 0, 0.1]}>
-        <mesh position={[0, -0.26, 0]}>
-          <capsuleGeometry args={[0.11, 0.46, 4, 8]} />
-          <meshStandardMaterial color={tint} flatShading />
+      <group ref={leftArmRef} position={[-0.46, 1.16, 0.02]} rotation={[0, 0, 0.12]}>
+        <mesh position={[0, -0.12, 0]}>
+          <capsuleGeometry args={[0.12, 0.18, 4, 8]} />
+          <meshStandardMaterial color={shirtColor} flatShading />
+          <Edges color={INK} scale={1.02} />
+        </mesh>
+        <mesh position={[0, -0.48, 0]}>
+          <capsuleGeometry args={[0.1, 0.34, 4, 8]} />
+          <meshStandardMaterial color={skinColor} flatShading />
         </mesh>
       </group>
-      <group position={[0.43, 1.12, 0]} rotation={[0, 0, -0.1]}>
-        <mesh position={[0, -0.26, 0]}>
-          <capsuleGeometry args={[0.11, 0.46, 4, 8]} />
-          <meshStandardMaterial color={tint} flatShading />
+      <group ref={rightArmRef} position={[0.46, 1.16, 0.02]} rotation={[0, 0, -0.12]}>
+        <mesh position={[0, -0.12, 0]}>
+          <capsuleGeometry args={[0.12, 0.18, 4, 8]} />
+          <meshStandardMaterial color={shirtColor} flatShading />
+          <Edges color={INK} scale={1.02} />
+        </mesh>
+        <mesh position={[0, -0.48, 0]}>
+          <capsuleGeometry args={[0.1, 0.34, 4, 8]} />
+          <meshStandardMaterial color={skinColor} flatShading />
         </mesh>
       </group>
-      <group position={[-0.18, 0.28, 0]} rotation={[0, 0, 0]}>
-        <mesh position={[0, 0.32, 0]}>
-          <capsuleGeometry args={[0.11, 0.56, 4, 8]} />
-          <meshStandardMaterial color={isPlayer ? "#302722" : "#3b2f26"} flatShading />
+      <group ref={leftLegRef} position={[-0.16, 0.08, 0]} rotation={[0, 0, 0]}>
+        <mesh position={[0, 0.36, 0]}>
+          <capsuleGeometry args={[0.11, 0.44, 4, 8]} />
+          <meshStandardMaterial color={pantsColor} flatShading />
+          <Edges color={INK} scale={1.02} />
+        </mesh>
+        <mesh position={[0, -0.02, 0.08]}>
+          <boxGeometry args={[0.2, 0.08, 0.32]} />
+          <meshStandardMaterial color={shoeColor} flatShading />
         </mesh>
       </group>
-      <group position={[0.18, 0.28, 0]} rotation={[0, 0, 0]}>
-        <mesh position={[0, 0.32, 0]}>
-          <capsuleGeometry args={[0.11, 0.56, 4, 8]} />
-          <meshStandardMaterial color={isPlayer ? "#302722" : "#3b2f26"} flatShading />
+      <group ref={rightLegRef} position={[0.16, 0.08, 0]} rotation={[0, 0, 0]}>
+        <mesh position={[0, 0.36, 0]}>
+          <capsuleGeometry args={[0.11, 0.44, 4, 8]} />
+          <meshStandardMaterial color={pantsColor} flatShading />
+          <Edges color={INK} scale={1.02} />
+        </mesh>
+        <mesh position={[0, -0.02, 0.08]}>
+          <boxGeometry args={[0.2, 0.08, 0.32]} />
+          <meshStandardMaterial color={shoeColor} flatShading />
         </mesh>
       </group>
     </group>
@@ -469,25 +800,21 @@ function PathStrip({ start, end }: { start: CampusVector3; end: CampusVector3 })
 }
 
 function OutdoorScene({
-  controlsRef,
   currentQuestBuildingId,
   enabled,
   map,
   nearbyAction,
   onPositionChange,
   pressedKeysRef,
-  playerPosition,
   spawn,
   world,
 }: {
-  controlsRef: React.MutableRefObject<OrbitControlsImpl | null>;
   currentQuestBuildingId: string | null;
   enabled: boolean;
   map: CampusMapData;
   nearbyAction: NearbyAction | null;
   onPositionChange: (position: CampusVector3, isMoving: boolean) => void;
   pressedKeysRef: React.MutableRefObject<Set<string>>;
-  playerPosition: CampusVector3;
   spawn: CampusSpawnPoint;
   world: CampusWorldDefinition;
 }) {
@@ -500,16 +827,16 @@ function OutdoorScene({
       <directionalLight
         castShadow
         position={[18, 28, 10]}
-        intensity={2.2}
+        intensity={1.05}
         color="#fff3dd"
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
-      <hemisphereLight intensity={0.75} color="#fffdf8" groundColor="#d6b496" />
+      <hemisphereLight intensity={0.28} color="#fff8ef" groundColor="#d5b18f" />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={world.groundSize} />
-        <meshStandardMaterial color="#efe5d6" flatShading />
+        <meshStandardMaterial color="#ddd0bc" flatShading />
       </mesh>
 
       <Physics gravity={[0, -20, 0]}>
@@ -529,7 +856,6 @@ function OutdoorScene({
         </RigidBody>
 
         <PlayerController
-          controlsRef={controlsRef}
           enabled={enabled}
           isOutdoor
           onPositionChange={onPositionChange}
@@ -594,19 +920,12 @@ function OutdoorScene({
         );
       })() : null}
 
-      <group position={[playerPosition[0], 0, playerPosition[2]]}>
-        <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[1.15, 1.35, 28]} />
-          <meshBasicMaterial color="#8c1d40" transparent opacity={0.3} />
-        </mesh>
-      </group>
     </>
   );
 }
 
 function InteriorScene({
   building,
-  controlsRef,
   enabled,
   interior,
   nearbyAction,
@@ -614,7 +933,6 @@ function InteriorScene({
   pressedKeysRef,
 }: {
   building: CampusBuilding;
-  controlsRef: React.MutableRefObject<OrbitControlsImpl | null>;
   enabled: boolean;
   interior: CampusInteriorScene;
   nearbyAction: NearbyAction | null;
@@ -624,12 +942,13 @@ function InteriorScene({
   const [roomWidth, roomHeight, roomDepth] = interior.roomSize;
   const wallDepth = 0.35;
   const openingWidth = 4.2;
+  const renderShell = !interior.importedModel?.replaceShell;
 
   return (
     <>
-      <ambientLight intensity={1.2} color="#fff8ec" />
-      <directionalLight castShadow position={[10, 14, 8]} intensity={1.6} color="#fff4df" />
-      <hemisphereLight intensity={0.58} color="#fffdf7" groundColor="#dac2ab" />
+      <ambientLight intensity={0.54} color="#f3e4d1" />
+      <directionalLight castShadow position={[8, 11, 6]} intensity={0.68} color="#f7e8d4" />
+      <hemisphereLight intensity={0.18} color="#f3ebdc" groundColor="#c1aa8f" />
 
       <Physics gravity={[0, -20, 0]}>
         <RigidBody type="fixed" colliders={false}>
@@ -648,7 +967,6 @@ function InteriorScene({
         </RigidBody>
 
         <PlayerController
-          controlsRef={controlsRef}
           enabled={enabled}
           isOutdoor={false}
           onPositionChange={onPositionChange}
@@ -658,52 +976,62 @@ function InteriorScene({
         />
       </Physics>
 
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[roomWidth, roomDepth]} />
-        <meshStandardMaterial color={interior.floorColor} flatShading />
-      </mesh>
-
-      <group position={[0, roomHeight / 2, -roomDepth / 2]}>
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[roomWidth, roomHeight, wallDepth]} />
-          <meshStandardMaterial color={interior.wallColor} flatShading />
-          <Edges color={INK} scale={1.03} />
-        </mesh>
-      </group>
-      <group position={[-roomWidth / 2, roomHeight / 2, 0]}>
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[wallDepth, roomHeight, roomDepth]} />
-          <meshStandardMaterial color={interior.wallColor} flatShading />
-          <Edges color={INK} scale={1.03} />
-        </mesh>
-      </group>
-      <group position={[roomWidth / 2, roomHeight / 2, 0]}>
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[wallDepth, roomHeight, roomDepth]} />
-          <meshStandardMaterial color={interior.wallColor} flatShading />
-          <Edges color={INK} scale={1.03} />
-        </mesh>
-      </group>
-      {[-(roomWidth + openingWidth) / 4, (roomWidth + openingWidth) / 4].map((x) => (
-        <group key={x} position={[x, roomHeight / 2, roomDepth / 2]}>
-          <mesh castShadow receiveShadow>
-            <boxGeometry args={[(roomWidth - openingWidth) / 2, roomHeight, wallDepth]} />
-            <meshStandardMaterial color={interior.wallColor} flatShading />
-            <Edges color={INK} scale={1.03} />
+      {renderShell ? (
+        <>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+            <planeGeometry args={[roomWidth, roomDepth]} />
+            <meshStandardMaterial color={interior.floorColor} flatShading />
           </mesh>
-        </group>
-      ))}
 
-      <mesh position={[0, 0.08, roomDepth / 2 - 0.28]}>
-        <boxGeometry args={[openingWidth * 0.84, 0.16, 0.46]} />
-        <meshStandardMaterial color={interior.accentColor} emissive={interior.accentColor} emissiveIntensity={0.18} flatShading />
-      </mesh>
+          <group position={[0, roomHeight / 2, -roomDepth / 2]}>
+            <mesh castShadow receiveShadow>
+              <boxGeometry args={[roomWidth, roomHeight, wallDepth]} />
+              <meshStandardMaterial color={interior.wallColor} flatShading />
+              <Edges color={INK} scale={1.03} />
+            </mesh>
+          </group>
+          <group position={[-roomWidth / 2, roomHeight / 2, 0]}>
+            <mesh castShadow receiveShadow>
+              <boxGeometry args={[wallDepth, roomHeight, roomDepth]} />
+              <meshStandardMaterial color={interior.wallColor} flatShading />
+              <Edges color={INK} scale={1.03} />
+            </mesh>
+          </group>
+          <group position={[roomWidth / 2, roomHeight / 2, 0]}>
+            <mesh castShadow receiveShadow>
+              <boxGeometry args={[wallDepth, roomHeight, roomDepth]} />
+              <meshStandardMaterial color={interior.wallColor} flatShading />
+              <Edges color={INK} scale={1.03} />
+            </mesh>
+          </group>
+          {[-(roomWidth + openingWidth) / 4, (roomWidth + openingWidth) / 4].map((x) => (
+            <group key={x} position={[x, roomHeight / 2, roomDepth / 2]}>
+              <mesh castShadow receiveShadow>
+                <boxGeometry args={[(roomWidth - openingWidth) / 2, roomHeight, wallDepth]} />
+                <meshStandardMaterial color={interior.wallColor} flatShading />
+                <Edges color={INK} scale={1.03} />
+              </mesh>
+            </group>
+          ))}
+
+          <mesh position={[0, 0.08, roomDepth / 2 - 0.28]}>
+            <boxGeometry args={[openingWidth * 0.84, 0.16, 0.46]} />
+            <meshStandardMaterial color={interior.accentColor} emissive={interior.accentColor} emissiveIntensity={0.18} flatShading />
+          </mesh>
+        </>
+      ) : null}
 
       <BuildingLabel
         title={interior.title}
         subtitle={building.name}
         position={[0, roomHeight + 0.75, -roomDepth / 2 + 0.2]}
       />
+
+      {interior.importedModel ? (
+        <Suspense fallback={null}>
+          <ImportedInteriorModel model={interior.importedModel} roomSize={interior.roomSize} />
+        </Suspense>
+      ) : null}
 
       {interior.props?.map((prop) => (
         <PropMesh key={prop.id} prop={prop} />
@@ -739,8 +1067,91 @@ function InteriorScene({
   );
 }
 
+function CameraController({
+  cameraRigRef,
+  interior,
+  isOutdoor,
+  playerPosition,
+  sceneKey,
+  spawnPosition,
+}: {
+  cameraRigRef: React.MutableRefObject<CameraRigState>;
+  interior: CampusInteriorScene | null;
+  isOutdoor: boolean;
+  playerPosition: CampusVector3;
+  sceneKey: string;
+  spawnPosition: CampusVector3;
+}) {
+  const { camera } = useThree();
+  const initialDepthBias = isOutdoor ? 0 : -4.2;
+  const targetRef = useRef(
+    new THREE.Vector3(playerPosition[0], isOutdoor ? 1.45 : 1.35, playerPosition[2] + initialDepthBias),
+  );
+  const positionRef = useRef(new THREE.Vector3());
+  const directionRef = useRef(new THREE.Vector3());
+
+  useEffect(() => {
+    const rig = cameraRigRef.current;
+    const targetHeight = isOutdoor ? 1.45 : 1.35;
+    const targetDepthBias = isOutdoor ? 0 : -4.2;
+    targetRef.current.set(spawnPosition[0], targetHeight, spawnPosition[2] + targetDepthBias);
+
+    const horizontal = Math.cos(rig.pitch);
+    directionRef.current.set(
+      Math.sin(rig.yaw) * horizontal,
+      Math.sin(rig.pitch),
+      Math.cos(rig.yaw) * horizontal,
+    );
+
+    const snappedPosition = isOutdoor
+      ? resolveOutdoorCameraPosition(targetRef.current, directionRef.current, rig.distance)
+      : resolveIndoorCameraPosition(targetRef.current, directionRef.current, rig.distance, interior!);
+
+    positionRef.current.copy(snappedPosition);
+    camera.position.copy(snappedPosition);
+    camera.lookAt(targetRef.current);
+    // The reset should only run when the scene swaps, not while the player moves.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [camera, interior, isOutdoor, sceneKey, spawnPosition]);
+
+  useFrame((_, delta) => {
+    const rig = cameraRigRef.current;
+    const targetHeight = isOutdoor ? 1.45 : 1.35;
+    const targetDepthBias = isOutdoor ? 0 : -4.2;
+    const desiredTarget = new THREE.Vector3(
+      playerPosition[0],
+      targetHeight,
+      playerPosition[2] + targetDepthBias,
+    );
+
+    targetRef.current.lerp(desiredTarget, 1 - Math.exp(-delta * 10));
+
+    const horizontal = Math.cos(rig.pitch);
+    directionRef.current.set(
+      Math.sin(rig.yaw) * horizontal,
+      Math.sin(rig.pitch),
+      Math.cos(rig.yaw) * horizontal,
+    );
+
+    const desiredDistance = clamp(rig.distance, rig.minDistance, rig.maxDistance);
+    const desiredPosition = isOutdoor
+      ? resolveOutdoorCameraPosition(targetRef.current, directionRef.current, desiredDistance)
+      : resolveIndoorCameraPosition(targetRef.current, directionRef.current, desiredDistance, interior!);
+
+    if (!positionRef.current.lengthSq() || positionRef.current.distanceToSquared(desiredPosition) > 280) {
+      positionRef.current.copy(desiredPosition);
+    } else {
+      positionRef.current.lerp(desiredPosition, 1 - Math.exp(-delta * 8));
+    }
+
+    camera.position.copy(positionRef.current);
+    camera.lookAt(targetRef.current);
+  });
+
+  return null;
+}
+
 function PlayerController({
-  controlsRef,
   enabled = true,
   isOutdoor = false,
   onPositionChange,
@@ -748,11 +1159,10 @@ function PlayerController({
   sceneKey,
   spawn,
 }: {
-  controlsRef?: React.MutableRefObject<OrbitControlsImpl | null>;
   enabled?: boolean;
   isOutdoor?: boolean;
   onPositionChange?: (position: CampusVector3, isMoving: boolean) => void;
-  pressedKeysRef?: React.MutableRefObject<Set<string>>;
+  pressedKeysRef?: MutableRefObject<Set<string>>;
   sceneKey: string;
   spawn: CampusSpawnPoint;
 }) {
@@ -768,18 +1178,9 @@ function PlayerController({
   const movement = useRef(new THREE.Vector3());
 
   useEffect(() => {
-    const focusTarget = new THREE.Vector3(spawn.position[0], 1.45, spawn.position[2] - 0.8);
-
-    if (isOutdoor) {
-      camera.position.set(spawn.position[0] + 6.5, 6.5, spawn.position[2] + 9.5);
-    } else {
-      camera.position.set(spawn.position[0], 4.2, spawn.position[2] + 1.4);
-    }
-
+    const focusTarget = new THREE.Vector3(spawn.position[0], isOutdoor ? 1.45 : 1.35, spawn.position[2]);
     camera.lookAt(focusTarget);
-    controlsRef?.current?.target.copy(focusTarget);
-    controlsRef?.current?.update();
-  }, [camera, controlsRef, isOutdoor, sceneKey, spawn.position]);
+  }, [camera, isOutdoor, sceneKey, spawn.position]);
 
   useFrame((state, delta) => {
     const body = bodyRef.current;
@@ -828,12 +1229,6 @@ function PlayerController({
     body.setLinvel(nextVelocity, true);
 
     const translation = body.translation();
-    const focusTarget = new THREE.Vector3(translation.x, 1.45, translation.z);
-
-    if (controlsRef?.current) {
-      controlsRef.current.target.lerp(focusTarget, 0.15);
-      controlsRef.current.update();
-    }
 
     if (visualRef.current) {
       visualRef.current.position.set(translation.x, 0, translation.z);
@@ -876,17 +1271,23 @@ function PlayerController({
       </RigidBody>
 
       <group ref={visualRef}>
-        <Figure accentColor={GOLD} isPlayer isMoving={movingState} tint="#fff8ee" />
+        <Figure accentColor={GOLD} isPlayer isMoving={movingState} tint="#efc29f" />
       </group>
     </>
   );
 }
 
-export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
+export default function CampusNavigator3D({
+  map,
+  storyLaunch = null,
+}: {
+  map: CampusMapData;
+  storyLaunch?: CampusStoryLaunchContext | null;
+}) {
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const pressedKeysRef = useRef(new Set<string>());
   const transitionTimerRef = useRef<number | null>(null);
+  const cameraRigRef = useRef<CameraRigState>(createOutdoorCameraRig());
 
   const [sceneState, setSceneState] = useState<SceneState>({
     kind: "outdoor",
@@ -910,11 +1311,19 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
     resetQuestState,
     summaryOpen,
   } = useCampusQuestState(map);
+  const { canReturnToStory, returnToStory, storyReturnLabel } = useCampusStoryReturn(
+    storyLaunch,
+    quests,
+  );
 
   const isIndoor = sceneState.kind === "interior";
   const currentInterior = isIndoor ? campusWorld.interiors[sceneState.sceneId] : null;
   const currentInteriorBuilding = currentInterior ? getBuildingById(map, currentInterior.buildingId) : null;
   const currentSceneTitle = currentInterior?.title ?? "Tempe Campus";
+  const cameraSpawnPosition =
+    sceneState.kind === "outdoor"
+      ? sceneState.spawn.position
+      : (currentInterior?.spawn.position ?? campusWorld.outdoorSpawn.position);
 
   const nearbyAction = useMemo<NearbyAction | null>(() => {
     if (transitionLabel || activeInteraction || summaryOpen) {
@@ -1031,6 +1440,10 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
     };
   }, []);
 
+  useEffect(() => {
+    cameraRigRef.current = sceneState.kind === "outdoor" ? createOutdoorCameraRig() : createIndoorCameraRig();
+  }, [sceneState]);
+
   const requestStageFullscreen = useCallback(async () => {
     const stage = stageRef.current;
 
@@ -1065,6 +1478,64 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
       // Ignore unsupported or rejected fullscreen attempts.
     }
   }, [sound]);
+
+  const handleStagePointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (interactionLocked) {
+        return;
+      }
+
+      if (event.target instanceof Element && event.target.closest("[data-campus-ui='true']")) {
+        return;
+      }
+
+      sound.prime();
+      void requestStageFullscreen();
+
+      cameraRigRef.current.isDragging = true;
+      cameraRigRef.current.pointerId = event.pointerId;
+      cameraRigRef.current.lastX = event.clientX;
+      cameraRigRef.current.lastY = event.clientY;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [interactionLocked, requestStageFullscreen, sound],
+  );
+
+  const handleStagePointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    const rig = cameraRigRef.current;
+
+    if (!rig.isDragging || rig.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - rig.lastX;
+    const deltaY = event.clientY - rig.lastY;
+    rig.lastX = event.clientX;
+    rig.lastY = event.clientY;
+    rig.yaw -= deltaX * 0.0085;
+    rig.pitch = clamp(rig.pitch - deltaY * 0.0058, rig.minPitch, rig.maxPitch);
+  }, []);
+
+  const stopDragging = useCallback((pointerId?: number) => {
+    const rig = cameraRigRef.current;
+
+    if (pointerId !== undefined && rig.pointerId !== pointerId) {
+      return;
+    }
+
+    rig.isDragging = false;
+    rig.pointerId = null;
+  }, []);
+
+  const handleStageWheel = useCallback((event: ReactWheelEvent<HTMLDivElement>) => {
+    if (event.target instanceof Element && event.target.closest("[data-campus-ui='true']")) {
+      return;
+    }
+
+    event.preventDefault();
+    const rig = cameraRigRef.current;
+    rig.distance = clamp(rig.distance + event.deltaY * 0.012, rig.minDistance, rig.maxDistance);
+  }, []);
 
   const beginTransition = useCallback((label: string, next: () => void) => {
     if (transitionTimerRef.current) {
@@ -1243,36 +1714,49 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
       <div
         ref={stageRef}
         className={`relative h-[100dvh] overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,198,39,0.18),transparent_32%),linear-gradient(180deg,#28180f_0%,#120c08_100%)] ${isFullscreen ? "fixed inset-0 z-[90]" : ""}`}
-        onPointerDown={() => void requestStageFullscreen()}
+        onContextMenu={(event) => event.preventDefault()}
+        onPointerCancel={(event) => stopDragging(event.pointerId)}
+        onPointerDown={handleStagePointerDown}
+        onPointerMove={handleStagePointerMove}
+        onPointerUp={(event) => stopDragging(event.pointerId)}
+        onWheel={handleStageWheel}
       >
         <Canvas
           shadows
           camera={{ position: [6, 6.5, 11], fov: 48 }}
           gl={{ antialias: true }}
+          onCreated={({ gl }) => {
+            gl.shadowMap.type = THREE.PCFShadowMap;
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = 0.78;
+          }}
         >
-          <color attach="background" args={[sceneState.kind === "outdoor" ? "#efe5d6" : "#f6eee1"]} />
-          <fog
-            attach="fog"
-            args={[sceneState.kind === "outdoor" ? "#efe5d6" : "#f6eee1", 18, sceneState.kind === "outdoor" ? 96 : 42]}
+          <color attach="background" args={[sceneState.kind === "outdoor" ? "#efe5d6" : "#ead9c3"]} />
+          {sceneState.kind === "outdoor" ? <fog attach="fog" args={["#efe5d6", 18, 96]} /> : null}
+
+          <CameraController
+            cameraRigRef={cameraRigRef}
+            interior={currentInterior}
+            isOutdoor={sceneState.kind === "outdoor"}
+            playerPosition={playerPosition}
+            sceneKey={sceneState.kind === "outdoor" ? `outdoor-${sceneState.spawn.position.join(",")}` : currentInterior?.id ?? "interior"}
+            spawnPosition={cameraSpawnPosition}
           />
 
           {sceneState.kind === "outdoor" ? (
             <OutdoorScene
-              controlsRef={controlsRef}
               currentQuestBuildingId={currentQuestBuilding?.id ?? null}
-              enabled={!interactionLocked}
-              map={map}
-              nearbyAction={nearbyAction}
-              onPositionChange={syncPlayer}
-              pressedKeysRef={pressedKeysRef}
-              playerPosition={playerPosition}
-              spawn={sceneState.spawn}
-              world={campusWorld}
-            />
+            enabled={!interactionLocked}
+            map={map}
+            nearbyAction={nearbyAction}
+            onPositionChange={syncPlayer}
+            pressedKeysRef={pressedKeysRef}
+            spawn={sceneState.spawn}
+            world={campusWorld}
+          />
           ) : currentInterior && currentInteriorBuilding ? (
             <InteriorScene
               building={currentInteriorBuilding}
-              controlsRef={controlsRef}
               enabled={!interactionLocked}
               interior={currentInterior}
               nearbyAction={nearbyAction}
@@ -1280,28 +1764,6 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
               pressedKeysRef={pressedKeysRef}
             />
           ) : null}
-
-          <OrbitControls
-            ref={controlsRef}
-            enableDamping
-            enablePan={false}
-            enabled={!interactionLocked}
-            maxDistance={sceneState.kind === "outdoor" ? 19 : 10}
-            maxPolarAngle={Math.PI / 2.18}
-            minDistance={sceneState.kind === "outdoor" ? 8.5 : 6}
-            minPolarAngle={Math.PI / 3.9}
-            mouseButtons={{
-              LEFT: THREE.MOUSE.ROTATE,
-              MIDDLE: THREE.MOUSE.DOLLY,
-              RIGHT: THREE.MOUSE.ROTATE,
-            }}
-          />
-
-          <EffectComposer>
-            <Bloom intensity={0.3} luminanceThreshold={0.72} mipmapBlur />
-            <Noise opacity={0.035} />
-            <Vignette eskil={false} offset={0.25} darkness={0.72} />
-          </EffectComposer>
         </Canvas>
 
         <CampusGameHUD3D
@@ -1312,14 +1774,19 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
           discoveredBuildings={discoveredBuildings}
           isFullscreen={isFullscreen}
           isIndoor={isIndoor}
+          onReturnToStory={canReturnToStory ? () => returnToStory() : undefined}
           onToggleFullscreen={() => void toggleFullscreen()}
           playerPosition={playerPosition}
           prompt={prompt}
           quests={quests}
+          storyReturnLabel={storyReturnLabel}
           world={campusWorld}
         />
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 bg-[linear-gradient(180deg,rgba(9,6,4,0.8),transparent)] px-4 pb-20 pt-4 text-white">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-10 bg-[linear-gradient(180deg,rgba(9,6,4,0.8),transparent)] px-4 pb-20 pt-4 text-white"
+          data-campus-ui="true"
+        >
           <div className="flex items-center justify-between gap-4">
             <div className="rounded-full border border-white/10 bg-[rgba(16,10,8,0.56)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.24em] text-[#ffc627] backdrop-blur-md">
               3D Campus Explorer
@@ -1333,7 +1800,10 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
         </div>
 
         {transitionLabel ? (
-          <div className="absolute inset-0 z-30 flex items-center justify-center bg-[rgba(18,12,8,0.62)] backdrop-blur-md">
+          <div
+            className="absolute inset-0 z-30 flex items-center justify-center bg-[rgba(18,12,8,0.62)] backdrop-blur-md"
+            data-campus-ui="true"
+          >
             <div className="rounded-[2rem] border border-white/10 bg-[rgba(12,8,6,0.72)] px-8 py-7 text-center shadow-[0_30px_80px_rgba(0,0,0,0.36)]">
               <p className="text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-[#ffc627]">
                 Portal Transition
@@ -1346,7 +1816,10 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
         ) : null}
 
         {activeInteraction && currentInteractionBuilding ? (
-          <div className="absolute inset-0 z-40 overflow-y-auto bg-[rgba(18,12,8,0.56)] px-4 py-8 backdrop-blur-sm">
+          <div
+            className="absolute inset-0 z-40 overflow-y-auto bg-[rgba(18,12,8,0.56)] px-4 py-8 backdrop-blur-sm"
+            data-campus-ui="true"
+          >
             <div className="mx-auto flex min-h-full max-w-5xl items-center justify-center">
               <div className="w-full rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,249,241,0.98),rgba(255,245,235,0.98))] p-6 text-[#261811] shadow-[0_35px_90px_rgba(0,0,0,0.34)] md:p-8">
                 <div className="flex items-start justify-between gap-4">
@@ -1495,7 +1968,10 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
         ) : null}
 
         {summaryOpen ? (
-          <div className="absolute inset-0 z-50 overflow-y-auto bg-[rgba(11,8,6,0.74)] px-4 py-8 backdrop-blur-md">
+          <div
+            className="absolute inset-0 z-50 overflow-y-auto bg-[rgba(11,8,6,0.74)] px-4 py-8 backdrop-blur-md"
+            data-campus-ui="true"
+          >
             <div className="mx-auto flex min-h-full max-w-4xl items-center justify-center">
               <div className="w-full rounded-[2.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,249,241,0.98),rgba(255,244,233,0.98))] p-7 text-[#24170f] shadow-[0_35px_90px_rgba(0,0,0,0.34)] md:p-9">
                 <p className="text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-[#8c1d40]">
@@ -1551,6 +2027,15 @@ export default function CampusNavigator3D({ map }: { map: CampusMapData }) {
                   <button type="button" className="button-gold" onClick={resetExperience}>
                     Explore again
                   </button>
+                  {canReturnToStory && storyReturnLabel ? (
+                    <button
+                      type="button"
+                      className="button-secondary"
+                      onClick={() => returnToStory(true)}
+                    >
+                      {storyReturnLabel}
+                    </button>
+                  ) : null}
                   <Link href="/finder" className="button-primary">
                     Go to finder
                   </Link>

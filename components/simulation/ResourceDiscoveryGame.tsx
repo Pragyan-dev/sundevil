@@ -1,7 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
+import {
+  clearCampusStorySession,
+  readCampusStorySession,
+  writeCampusStorySession,
+  type CampusStoryResumeMode,
+  type CampusStorySession,
+} from "@/lib/campus-story-session";
 import {
   previewWorldBySlug,
   resourceDiscoveryBadges,
@@ -186,6 +194,7 @@ function getNewBadgeIds(
 }
 
 export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProps) {
+  const router = useRouter();
   const previewWorldId = previewSlug ? previewWorldBySlug[previewSlug] : null;
   const [featureMode, setFeatureMode] = useState<"resource-map" | "week-sim">("resource-map");
   const [isHydrated, setIsHydrated] = useState(false);
@@ -202,16 +211,19 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
   const [rewardPopups, setRewardPopups] = useState<RewardPopupItem[]>([]);
   const [badgesOpen, setBadgesOpen] = useState(false);
   const [progress, setProgress] = useState<ResourceDiscoveryProgress>(createDefaultProgress);
+  const [pendingCampusReturn, setPendingCampusReturn] = useState<CampusStorySession | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const previewOpenedRef = useRef(false);
   const savedSessionRef = useRef<ResourceDiscoverySession | null>(null);
   const stepTimerRef = useRef<number | null>(null);
   const flowTimerRef = useRef<number | null>(null);
+  const launchSourceRef = useRef<CampusStoryResumeMode>("resource-map");
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    const campusReturnSession = !previewWorldId ? readCampusStorySession() : null;
     let frameId = 0;
     let parsedProgress: ResourceDiscoveryProgress | null = null;
     let parsedSession: ResourceDiscoverySession | null = null;
@@ -249,6 +261,9 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         setActiveScenarioIndex(parsedSession.activeScenarioIndex);
         setMessages(parsedSession.messages);
         setActiveStepId(parsedSession.activeStepId);
+      }
+      if (campusReturnSession?.returnRequested) {
+        setPendingCampusReturn(campusReturnSession);
       }
       setIsHydrated(true);
     });
@@ -351,6 +366,116 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     });
   }, [pushRewardPopups]);
 
+  useEffect(() => {
+    if (!isHydrated || previewWorldId || !pendingCampusReturn?.returnRequested) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      clearCampusStorySession();
+      savedSessionRef.current = null;
+      window.localStorage.removeItem(SESSION_STORAGE_KEY);
+
+      applyProgressUpdate((current) => {
+        const world = getWorld(pendingCampusReturn.activeWorldId);
+        if (!world) {
+          return { nextProgress: current, rewards: [] };
+        }
+
+        let nextProgress = current;
+        const rewards: RewardPopupItem[] = [];
+
+        if (!nextProgress.openedWorldIds.includes(world.id)) {
+          nextProgress = {
+            ...nextProgress,
+            openedWorldIds: [...nextProgress.openedWorldIds, world.id],
+            points: nextProgress.points + 5,
+          };
+          rewards.push(
+            createRewardPopup(
+              "points",
+              "+5 campus launch",
+              `${world.title} opened from the first-week story.`,
+              { points: 5 },
+            ),
+          );
+        }
+
+        const missingScenarioIds = world.scenarios
+          .map((scenario) => scenario.id)
+          .filter((scenarioId) => !nextProgress.completedScenarioIds.includes(scenarioId));
+
+        if (missingScenarioIds.length) {
+          nextProgress = {
+            ...nextProgress,
+            completedScenarioIds: [...nextProgress.completedScenarioIds, ...missingScenarioIds],
+            points: nextProgress.points + missingScenarioIds.length * 10,
+          };
+          rewards.push(
+            createRewardPopup(
+              "points",
+              `+${missingScenarioIds.length * 10} campus return`,
+              pendingCampusReturn.campusFinished
+                ? `You came back with ${pendingCampusReturn.questCompletionCount}/5 campus quest stops cleared.`
+                : "You explored the campus route and brought that context back into the story.",
+              { points: missingScenarioIds.length * 10 },
+            ),
+          );
+        }
+
+        if (!nextProgress.completedWorldIds.includes(world.id)) {
+          nextProgress = {
+            ...nextProgress,
+            completedWorldIds: [...nextProgress.completedWorldIds, world.id],
+          };
+        }
+
+        const newBadgeIds = getNewBadgeIds(nextProgress, world.id);
+        if (newBadgeIds.length) {
+          nextProgress = {
+            ...nextProgress,
+            earnedBadgeIds: [...nextProgress.earnedBadgeIds, ...newBadgeIds],
+          };
+
+          newBadgeIds.forEach((badgeId) => {
+            const badge = resourceDiscoveryBadges.find((entry) => entry.id === badgeId);
+            if (!badge) {
+              return;
+            }
+
+            rewards.push(createRewardPopup("badge", badge.title, badge.description, { badgeId }));
+          });
+        }
+
+        return { nextProgress, rewards };
+      });
+
+      launchSourceRef.current = pendingCampusReturn.sourceScreen;
+
+      startTransition(() => {
+        setFeatureMode(pendingCampusReturn.sourceScreen);
+        setScreen("map");
+        setZoomingWorldId(null);
+        setHoveredWorldId(
+          pendingCampusReturn.sourceScreen === "resource-map"
+            ? pendingCampusReturn.activeWorldId
+            : null,
+        );
+        setActiveWorldId(null);
+        setActiveScenarioIndex(0);
+        setMessages([]);
+        setActiveStepId(null);
+        setIsTyping(false);
+      });
+
+      setPendingCampusReturn(null);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [applyProgressUpdate, isHydrated, pendingCampusReturn, previewWorldId, startTransition]);
+
   const appendCharacterStep = useCallback(function appendCharacterStep(stepId: string) {
     const step = stepMap[stepId];
 
@@ -448,7 +573,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     });
   }, [startTransition]);
 
-  const openWorldFromMap = useCallback((worldId: ResourceWorldId) => {
+  const openWorldFromMap = useCallback((worldId: ResourceWorldId, sourceMode: CampusStoryResumeMode = "resource-map") => {
     const world = getWorld(worldId);
 
     if (!world) {
@@ -459,6 +584,8 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     if (!isUnlocked) {
       return;
     }
+
+    launchSourceRef.current = sourceMode;
 
     applyProgressUpdate((current) => {
       const nextOpenedWorldIds = current.openedWorldIds.includes(worldId)
@@ -716,7 +843,37 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
 
   function handleLaunchResourceWorldFromWeek(worldId: ResourceWorldId) {
     setFeatureMode("resource-map");
-    openWorldFromMap(worldId);
+    openWorldFromMap(worldId, "week-sim");
+  }
+
+  function handleOpenExperience() {
+    if (!activeStep?.experience || !activeWorld) {
+      return;
+    }
+
+    if (activeStep.experience.kind === "success-coach") {
+      setScreen("success-coach");
+      return;
+    }
+
+    writeCampusStorySession({
+      sourceScreen: launchSourceRef.current,
+      activeWorldId: activeWorld.id,
+      returnTo: "/simulate",
+      returnRequested: false,
+      campusFinished: false,
+      completedQuestIds: [],
+      questCompletionCount: 0,
+    });
+
+    const params = new URLSearchParams({
+      entry: activeWorld.id,
+      returnTo: "/simulate",
+      resume: launchSourceRef.current,
+      world: activeWorld.id,
+    });
+
+    router.push(`/campus?${params.toString()}`);
   }
 
   const earnedBadges = resourceDiscoveryBadges.map((badge) => ({
@@ -832,7 +989,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
             onBack={handleBackToMap}
             onChoice={handleChoice}
             onContinue={handleContinue}
-            onOpenExperience={() => setScreen("success-coach")}
+            onOpenExperience={handleOpenExperience}
             onOpenResource={handleResourceClick}
           />
         )}

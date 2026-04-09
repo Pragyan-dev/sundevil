@@ -15,9 +15,11 @@ export default function CampusGameHUD3D({
   isFullscreen,
   isIndoor,
   onToggleFullscreen,
+  onReturnToStory,
   playerPosition,
   prompt,
   quests,
+  storyReturnLabel,
   world,
 }: {
   currentQuestBuildingId: string | null;
@@ -28,16 +30,21 @@ export default function CampusGameHUD3D({
   isFullscreen: boolean;
   isIndoor: boolean;
   onToggleFullscreen: () => void;
+  onReturnToStory?: (() => void) | undefined;
   playerPosition: CampusVector3;
   prompt: string | null;
   quests: CampusQuest[];
+  storyReturnLabel?: string | null;
   world: CampusWorldDefinition;
 }) {
   const completedCount = quests.filter((quest) => quest.completed).length;
   const buildingEntries = Object.values(world.buildings);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-20 text-[#fff6eb]">
+    <div
+      className="pointer-events-none absolute inset-0 z-20 text-[#fff6eb]"
+      data-campus-ui="true"
+    >
       <div className="flex h-full flex-col justify-between p-4 lg:p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex max-w-[22rem] flex-col gap-3">
@@ -115,13 +122,24 @@ export default function CampusGameHUD3D({
           </div>
 
           <div className="flex max-w-[20rem] flex-col gap-3">
-            <button
-              type="button"
-              className="pointer-events-auto inline-flex items-center justify-center self-end rounded-full border border-white/15 bg-[rgba(14,10,7,0.62)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_rgba(0,0,0,0.25)] backdrop-blur-md transition hover:border-[#ffc627] hover:text-[#ffc627]"
-              onClick={onToggleFullscreen}
-            >
-              {isFullscreen ? "Exit full screen" : "Full screen"}
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {onReturnToStory && storyReturnLabel ? (
+                <button
+                  type="button"
+                  className="pointer-events-auto inline-flex items-center justify-center rounded-full border border-white/15 bg-[rgba(14,10,7,0.62)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_rgba(0,0,0,0.25)] backdrop-blur-md transition hover:border-[#ffc627] hover:text-[#ffc627]"
+                  onClick={onReturnToStory}
+                >
+                  {storyReturnLabel}
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className="pointer-events-auto inline-flex items-center justify-center rounded-full border border-white/15 bg-[rgba(14,10,7,0.62)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_rgba(0,0,0,0.25)] backdrop-blur-md transition hover:border-[#ffc627] hover:text-[#ffc627]"
+                onClick={onToggleFullscreen}
+              >
+                {isFullscreen ? "Exit full screen" : "Full screen"}
+              </button>
+            </div>
 
             <aside className="rounded-[1.8rem] border border-white/10 bg-[rgba(14,10,7,0.58)] px-4 py-4 shadow-[0_24px_60px_rgba(0,0,0,0.26)] backdrop-blur-md">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[#ffc627]">
@@ -156,7 +174,9 @@ export default function CampusGameHUD3D({
               Controls
             </p>
             <p className="mt-2 font-[var(--font-sketch-body)] text-[1.02rem] leading-6 text-[#f1e3d2]">
-              `WASD` move, drag to orbit, `Shift` sprint, `E` interact, `F` full screen.
+              {isIndoor
+                ? "`WASD` move, drag to look, `E` interact, `F` full screen."
+                : "`WASD` move, drag to orbit, `Shift` sprint, `E` interact, `F` full screen."}
             </p>
           </div>
 

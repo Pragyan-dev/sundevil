@@ -275,6 +275,18 @@ export interface CampusInteriorScene {
   npcPosition?: CampusVector3;
   npcRotationY?: number;
   props?: CampusPropDefinition[];
+  importedModel?: {
+    kind: "fbx";
+    src: string;
+    position?: CampusVector3;
+    rotation?: CampusVector3;
+    scale?: number | CampusVector3;
+    fitToRoom?: boolean;
+    fitMode?: "contain" | "height";
+    autoCenter?: boolean;
+    floorToZero?: boolean;
+    replaceShell?: boolean;
+  };
 }
 
 export interface CampusWorldDefinition {

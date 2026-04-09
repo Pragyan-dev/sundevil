@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import CampusHUD from "@/components/campus/CampusHUD";
 import CampusInteractionModal from "@/components/campus/CampusInteractionModal";
+import { useCampusStoryReturn } from "@/components/campus/useCampusStoryReturn";
 import { CAMPUS_KEYMAP, useCampusKeyboardControls } from "@/components/campus/CampusControls";
 import MobileControls from "@/components/campus/MobileControls";
 import {
@@ -21,6 +22,7 @@ import {
 import { useBuildingImages } from "@/components/campus/useBuildingImages";
 import { useCampusQuestState } from "@/components/campus/useCampusQuestState";
 import { useSoundEngine } from "@/components/sketch/SoundEngine";
+import type { CampusStoryLaunchContext } from "@/lib/campus-story-session";
 import type { CampusDirection, CampusMapData, CampusPlayer } from "@/lib/types";
 
 const PLAYER_SPEED = 3.2;
@@ -35,7 +37,13 @@ function createInitialPlayer(map: CampusMapData): CampusPlayer {
   };
 }
 
-export default function CampusNavigator2D({ map }: { map: CampusMapData }) {
+export default function CampusNavigator2D({
+  map,
+  storyLaunch = null,
+}: {
+  map: CampusMapData;
+  storyLaunch?: CampusStoryLaunchContext | null;
+}) {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const playerRef = useRef<CampusPlayer>(createInitialPlayer(map));
@@ -68,6 +76,10 @@ export default function CampusNavigator2D({ map }: { map: CampusMapData }) {
     resetQuestState,
     summaryOpen,
   } = useCampusQuestState(map);
+  const { canReturnToStory, returnToStory, storyReturnLabel } = useCampusStoryReturn(
+    storyLaunch,
+    quests,
+  );
 
   const interactionLocked = activeBuildingId !== null || summaryOpen;
   const activeBuilding = getBuildingById(map, activeBuildingId);
@@ -482,6 +494,8 @@ export default function CampusNavigator2D({ map }: { map: CampusMapData }) {
           currentQuestBuildingLabel={currentQuestBuilding?.label ?? null}
           mobileQuestOpen={mobileQuestOpen}
           onToggleMobileQuests={() => setMobileQuestOpen((previous) => !previous)}
+          onReturnToStory={canReturnToStory ? () => returnToStory() : undefined}
+          storyReturnLabel={storyReturnLabel}
         />
       </section>
 
@@ -494,9 +508,19 @@ export default function CampusNavigator2D({ map }: { map: CampusMapData }) {
           <Link href="/finder" className="button-primary">
             Go to finder
           </Link>
-          <Link href="/simulate" className="button-secondary">
-            Back to first-week story
-          </Link>
+          {canReturnToStory && storyReturnLabel ? (
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={() => returnToStory()}
+            >
+              {storyReturnLabel}
+            </button>
+          ) : (
+            <Link href="/simulate" className="button-secondary">
+              Back to first-week story
+            </Link>
+          )}
         </div>
       </section>
 
@@ -559,6 +583,15 @@ export default function CampusNavigator2D({ map }: { map: CampusMapData }) {
               <button type="button" className="button-secondary" onClick={resetNavigator}>
                 Explore again
               </button>
+              {canReturnToStory && storyReturnLabel ? (
+                <button
+                  type="button"
+                  className="button-secondary"
+                  onClick={() => returnToStory(true)}
+                >
+                  {storyReturnLabel}
+                </button>
+              ) : null}
               <Link href="/finder" className="button-primary">
                 Go to finder
               </Link>

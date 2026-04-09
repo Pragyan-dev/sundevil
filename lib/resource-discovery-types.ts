@@ -47,7 +47,7 @@ export interface ResourceLinkCard {
 }
 
 export interface ExperienceCard {
-  kind: "success-coach";
+  kind: "success-coach" | "campus-handoff";
   title: string;
   body: string;
   ctaLabel: string;

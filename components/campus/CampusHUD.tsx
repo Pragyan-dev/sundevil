@@ -11,6 +11,8 @@ export default function CampusHUD({
   currentQuestBuildingLabel,
   mobileQuestOpen,
   onToggleMobileQuests,
+  onReturnToStory,
+  storyReturnLabel,
 }: {
   quests: CampusQuest[];
   discoveredCount: number;
@@ -20,6 +22,8 @@ export default function CampusHUD({
   currentQuestBuildingLabel: string | null;
   mobileQuestOpen: boolean;
   onToggleMobileQuests: () => void;
+  onReturnToStory?: (() => void) | undefined;
+  storyReturnLabel?: string | null;
 }) {
   const completedCount = quests.filter((quest) => quest.completed).length;
 
@@ -68,6 +72,15 @@ export default function CampusHUD({
             The goal is not to memorize campus. It is to make the buildings feel real before you
             need them.
           </p>
+          {onReturnToStory && storyReturnLabel ? (
+            <button
+              type="button"
+              className="button-secondary mt-4 w-full justify-center"
+              onClick={onReturnToStory}
+            >
+              {storyReturnLabel}
+            </button>
+          ) : null}
         </div>
       </aside>
 
@@ -96,6 +109,15 @@ export default function CampusHUD({
               </li>
             ))}
           </ul>
+          {onReturnToStory && storyReturnLabel ? (
+            <button
+              type="button"
+              className="button-secondary mt-4 w-full justify-center"
+              onClick={onReturnToStory}
+            >
+              {storyReturnLabel}
+            </button>
+          ) : null}
         </div>
       </div>
 
