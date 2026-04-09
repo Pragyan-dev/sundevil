@@ -110,14 +110,24 @@ function tuple3(x: number, y: number, z: number): CampusVector3 {
   return [x, y, z];
 }
 
+function rotateOffsetXZ(x: number, z: number, rotationY = 0): CampusVector3 {
+  const cos = Math.cos(rotationY);
+  const sin = Math.sin(rotationY);
+  return [x * cos - z * sin, 0, x * sin + z * cos];
+}
+
+function offsetFromOrigin(origin: CampusVector3, offset: CampusVector3): CampusVector3 {
+  return [origin[0] + offset[0], origin[1] + offset[1], origin[2] + offset[2]];
+}
+
 function createOutdoorCameraRig(): CameraRigState {
   return {
     yaw: 0.72,
-    pitch: 0.44,
+    pitch: 0.36,
     distance: 16.8,
     minDistance: 9.4,
     maxDistance: 23,
-    minPitch: 0.58,
+    minPitch: 0.22,
     maxPitch: 1.18,
     isDragging: false,
     pointerId: null,
@@ -638,6 +648,98 @@ function BuildingShell({ building, mapBuilding }: { building: CampusWorldBuildin
   );
 }
 
+function GrassPatch({
+  position,
+  rotationY = 0,
+  scale = 1,
+  tint = "#88a46a",
+}: {
+  position: CampusVector3;
+  rotationY?: number;
+  scale?: number;
+  tint?: string;
+}) {
+  return (
+    <group position={position} rotation={[0, rotationY, 0]} scale={scale}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
+        <circleGeometry args={[1.8, 24]} />
+        <meshStandardMaterial color={tint} transparent opacity={0.92} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.28, 0.015, 0.1]} receiveShadow>
+        <circleGeometry args={[1.1, 20]} />
+        <meshStandardMaterial color="#9fbb7b" transparent opacity={0.8} />
+      </mesh>
+      {[
+        [-0.72, 0.22, 0.12],
+        [-0.28, -0.58, -0.08],
+        [0.44, -0.16, 0.1],
+        [0.82, 0.46, -0.12],
+        [0.08, 0.74, 0.06],
+      ].map(([x, z, y], index) => (
+        <mesh key={index} position={[x, 0.22 + y, z]} rotation={[0, index * 0.8, 0.14]}>
+          <coneGeometry args={[0.1, 0.46, 5]} />
+          <meshStandardMaterial color="#6b8d4c" flatShading />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function ShrubCluster({
+  position,
+  rotationY = 0,
+  scale = 1,
+}: {
+  position: CampusVector3;
+  rotationY?: number;
+  scale?: number;
+}) {
+  return (
+    <group position={position} rotation={[0, rotationY, 0]} scale={scale}>
+      <GrassPatch position={[0, 0, 0]} scale={0.95} tint="#7f9d63" />
+      {[
+        [-0.42, 0.46, 0.46],
+        [0.3, 0.1, 0.42],
+        [0.08, -0.44, 0.4],
+        [0.56, -0.18, 0.34],
+      ].map(([x, z, radius], index) => (
+        <mesh key={index} position={[x, 0.4, z]} castShadow receiveShadow>
+          <sphereGeometry args={[radius, 12, 12]} />
+          <meshStandardMaterial color={index % 2 === 0 ? "#6f8c52" : "#88a764"} flatShading />
+          <Edges color="#3b402f" scale={1.02} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function OutdoorGround({ world }: { world: CampusWorldDefinition }) {
+  return (
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.06, 0]} receiveShadow>
+        <planeGeometry args={[world.groundSize[0] * 1.04, world.groundSize[1] * 1.04]} />
+        <meshStandardMaterial color="#8da774" flatShading />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.03, 0]} receiveShadow>
+        <planeGeometry args={[world.groundSize[0] * 0.9, world.groundSize[1] * 0.88]} />
+        <meshStandardMaterial color="#b9b390" transparent opacity={0.28} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.015, 0]} receiveShadow>
+        <planeGeometry args={[world.groundSize[0] * 0.8, world.groundSize[1] * 0.74]} />
+        <meshStandardMaterial color="#d7ccb7" flatShading />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-world.groundSize[0] * 0.18, -0.012, world.groundSize[1] * 0.22]} receiveShadow>
+        <planeGeometry args={[world.groundSize[0] * 0.28, world.groundSize[1] * 0.22]} />
+        <meshStandardMaterial color="#cfc2aa" flatShading />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[world.groundSize[0] * 0.22, -0.012, -world.groundSize[1] * 0.18]} receiveShadow>
+        <planeGeometry args={[world.groundSize[0] * 0.24, world.groundSize[1] * 0.2]} />
+        <meshStandardMaterial color="#cec1a9" flatShading />
+      </mesh>
+    </group>
+  );
+}
+
 function PathStrip({ start, end }: { start: CampusVector3; end: CampusVector3 }) {
   const startVector = vectorFromTuple(start);
   const endVector = vectorFromTuple(end);
@@ -648,15 +750,44 @@ function PathStrip({ start, end }: { start: CampusVector3; end: CampusVector3 })
   return (
     <group position={[midpoint.x, 0.02, midpoint.z]} rotation={[0, rotationY, 0]}>
       <mesh receiveShadow>
-        <boxGeometry args={[distance, 0.03, 1.6]} />
-        <meshStandardMaterial color="#efe0c6" flatShading />
+        <boxGeometry args={[distance + 0.4, 0.05, 3.1]} />
+        <meshStandardMaterial color="#55514b" flatShading />
+      </mesh>
+      <mesh position={[0, 0.03, 0]} receiveShadow>
+        <boxGeometry args={[distance + 0.2, 0.04, 2.48]} />
+        <meshStandardMaterial color="#cbbda8" flatShading />
+      </mesh>
+      <mesh position={[0, 0.055, 0]} receiveShadow>
+        <boxGeometry args={[distance, 0.03, 1.9]} />
+        <meshStandardMaterial color="#efe2cf" flatShading />
       </mesh>
       {Array.from({ length: Math.max(2, Math.floor(distance / 1.6)) }).map((_, index, list) => {
         const offset = -distance / 2 + (distance / Math.max(1, list.length - 1)) * index;
         return (
-          <mesh key={index} position={[offset, 0.04, 0]}>
-            <boxGeometry args={[0.7, 0.02, 0.12]} />
-            <meshStandardMaterial color={MAROON} flatShading transparent opacity={0.42} />
+          <mesh key={index} position={[offset, 0.075, 0]}>
+            <boxGeometry args={[0.68, 0.022, 0.12]} />
+            <meshStandardMaterial color={MAROON} flatShading transparent opacity={0.52} />
+          </mesh>
+        );
+      })}
+      {[-1.22, 1.22].map((edge) => (
+        <mesh key={edge} position={[0, 0.058, edge]} receiveShadow>
+          <boxGeometry args={[distance, 0.024, 0.08]} />
+          <meshStandardMaterial color="#f8f0dd" flatShading />
+        </mesh>
+      ))}
+      {[-1.9, 1.9].map((edge) => (
+        <mesh key={`shoulder-${edge}`} position={[0, -0.005, edge]} receiveShadow>
+          <boxGeometry args={[distance + 0.8, 0.03, 0.84]} />
+          <meshStandardMaterial color="#7d9863" flatShading />
+        </mesh>
+      ))}
+      {Array.from({ length: Math.max(3, Math.floor(distance / 4.5)) }).map((_, index, list) => {
+        const offset = -distance / 2 + (distance / Math.max(1, list.length - 1)) * index;
+        return (
+          <mesh key={`grass-${index}`} position={[offset, 0.03, 2.16]} rotation={[0, index * 0.7, 0]}>
+            <coneGeometry args={[0.11, 0.42, 5]} />
+            <meshStandardMaterial color="#759454" flatShading />
           </mesh>
         );
       })}
@@ -685,6 +816,42 @@ function OutdoorScene({
 }) {
   const currentQuestWorldBuilding =
     currentQuestBuildingId ? world.buildings[currentQuestBuildingId] ?? null : null;
+  const landscaping = useMemo(() => {
+    return Object.values(world.buildings).flatMap((building, buildingIndex) => {
+      const halfX = building.scale[0] / 2 + 2.1;
+      const halfZ = building.scale[2] / 2 + 2.1;
+      const sideZ = building.scale[2] / 2 + 3.1;
+      const rotation = building.rotationY ?? 0;
+      const clusterOffsets: CampusVector3[] = [
+        rotateOffsetXZ(-halfX, -halfZ, rotation),
+        rotateOffsetXZ(halfX, -halfZ, rotation),
+        rotateOffsetXZ(-halfX, halfZ, rotation),
+        rotateOffsetXZ(halfX, halfZ, rotation),
+      ];
+      const grassOffsets: CampusVector3[] = [
+        rotateOffsetXZ(0, -sideZ, rotation),
+        rotateOffsetXZ(-halfX * 0.72, 0, rotation),
+        rotateOffsetXZ(halfX * 0.72, 0, rotation),
+      ];
+
+      return [
+        ...clusterOffsets.map((offset, index) => ({
+          id: `${building.id}-cluster-${index}`,
+          kind: "cluster" as const,
+          position: offsetFromOrigin(building.position, [offset[0], 0, offset[2]]),
+          rotationY: rotation + index * 0.4,
+          scale: 0.82 + ((buildingIndex + index) % 3) * 0.16,
+        })),
+        ...grassOffsets.map((offset, index) => ({
+          id: `${building.id}-grass-${index}`,
+          kind: "grass" as const,
+          position: offsetFromOrigin(building.position, [offset[0], 0, offset[2]]),
+          rotationY: rotation + index * 0.55,
+          scale: 0.9 + ((buildingIndex + index) % 2) * 0.22,
+        })),
+      ];
+    });
+  }, [world]);
 
   return (
     <>
@@ -699,10 +866,7 @@ function OutdoorScene({
       />
       <hemisphereLight intensity={0.28} color="#fff8ef" groundColor="#d5b18f" />
 
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={world.groundSize} />
-        <meshStandardMaterial color="#ddd0bc" flatShading />
-      </mesh>
+      <OutdoorGround world={world} />
 
       <Physics gravity={[0, -20, 0]}>
         <RigidBody type="fixed" colliders={false}>
@@ -740,6 +904,24 @@ function OutdoorScene({
 
         return <PathStrip key={`${path.from}-${path.to}`} start={from.portal.position} end={to.portal.position} />;
       })}
+
+      {landscaping.map((item) =>
+        item.kind === "cluster" ? (
+          <ShrubCluster
+            key={item.id}
+            position={item.position}
+            rotationY={item.rotationY}
+            scale={item.scale}
+          />
+        ) : (
+          <GrassPatch
+            key={item.id}
+            position={item.position}
+            rotationY={item.rotationY}
+            scale={item.scale}
+          />
+        ),
+      )}
 
       {Object.values(world.buildings).map((building) => {
         const mapBuilding = getBuildingById(map, building.id);
