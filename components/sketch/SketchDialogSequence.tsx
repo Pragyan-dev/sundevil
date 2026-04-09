@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 
 import { CharacterAvatar } from "@/components/SketchCharacters";
 import { SketchDialogBubble } from "@/components/sketch/SketchDialogBubble";
@@ -40,7 +40,12 @@ export function SketchDialogSequence({
   archetypeClassName,
 }: SketchDialogSequenceProps) {
   const previousSpeakerRef = useRef<CharacterId | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
   const lineIndex = initialLineIndex;
+  const [audioUnlocked, setAudioUnlocked] = useState(
+    () => typeof navigator !== "undefined" && Boolean(navigator.userActivation?.hasBeenActive),
+  );
 
   useEffect(() => {
     const current = lines[lineIndex];
@@ -66,6 +71,84 @@ export function SketchDialogSequence({
 
     return `sketch-sequence-avatar ${archetypeClassName}`;
   }, [archetypeClassName, speakerType]);
+  const stopAudio = useEffectEvent(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+    }
+
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+  });
+  const playCurrentLine = useEffectEvent(async (line: DialogLine) => {
+    stopAudio();
+
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: line.text,
+          speakerId: line.speakerType,
+        }),
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const audioBlob = await response.blob();
+      if (!audioBlob.size) {
+        return;
+      }
+
+      const objectUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(objectUrl);
+      audio.preload = "auto";
+      audioUrlRef.current = objectUrl;
+      audioRef.current = audio;
+      await audio.play().catch(() => undefined);
+    } catch {
+      stopAudio();
+    }
+  });
+
+  useEffect(() => {
+    function unlockAudio() {
+      setAudioUnlocked(true);
+    }
+
+    window.addEventListener("pointerdown", unlockAudio, { once: true });
+    window.addEventListener("keydown", unlockAudio, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", unlockAudio);
+      window.removeEventListener("keydown", unlockAudio);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!currentLine || !audioUnlocked) {
+      return;
+    }
+
+    void playCurrentLine(currentLine);
+
+    return () => {
+      stopAudio();
+    };
+  }, [audioUnlocked, currentLine]);
+
+  useEffect(() => {
+    return () => {
+      stopAudio();
+    };
+  }, []);
 
   if (!currentLine) {
     return null;

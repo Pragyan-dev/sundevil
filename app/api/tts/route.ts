@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getLineById, getLineText, storyArchetypeById, storyCharacterById } from "@/lib/alex-story";
-import type { ArchetypeId } from "@/lib/types";
+import type { ArchetypeId, CharacterId } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -9,10 +9,16 @@ type TtsPayload = {
   sceneId?: unknown;
   lineId?: unknown;
   archetypeId?: unknown;
+  text?: unknown;
+  speakerId?: unknown;
 };
 
 function isArchetypeId(value: unknown): value is ArchetypeId {
   return typeof value === "string" && value in storyArchetypeById;
+}
+
+function isCharacterId(value: unknown): value is CharacterId {
+  return typeof value === "string" && value in storyCharacterById;
 }
 
 export async function POST(request: NextRequest) {
@@ -20,26 +26,43 @@ export async function POST(request: NextRequest) {
   const sceneId = typeof payload?.sceneId === "string" ? payload.sceneId : null;
   const lineId = typeof payload?.lineId === "string" ? payload.lineId : null;
   const archetypeId = isArchetypeId(payload?.archetypeId) ? payload.archetypeId : null;
+  const directText = typeof payload?.text === "string" ? payload.text.trim() : null;
+  const directSpeakerId = isCharacterId(payload?.speakerId) ? payload.speakerId : null;
 
-  if (!sceneId || !lineId) {
+  if ((!sceneId || !lineId) && (!directText || !directSpeakerId)) {
     return NextResponse.json(
-      { error: "Scene and line identifiers are required for TTS playback." },
+      { error: "Provide either sceneId + lineId or text + speakerId for TTS playback." },
       { status: 400 },
     );
   }
 
-  const lineResult = getLineById(sceneId, lineId);
+  let resolvedText = directText;
+  let resolvedSpeakerId = directSpeakerId;
 
-  if (!lineResult) {
+  if (sceneId && lineId) {
+    const lineResult = getLineById(sceneId, lineId);
+
+    if (!lineResult) {
+      return NextResponse.json(
+        { error: "That story line could not be found for audio playback." },
+        { status: 404 },
+      );
+    }
+
+    resolvedText = getLineText(lineResult.line, archetypeId);
+    resolvedSpeakerId = lineResult.line.speakerId;
+  }
+
+  if (!resolvedText || !resolvedSpeakerId) {
     return NextResponse.json(
-      { error: "That story line could not be found for audio playback." },
-      { status: 404 },
+      { error: "TTS could not resolve the line text or speaker." },
+      { status: 400 },
     );
   }
 
   const apiKey = process.env.ELEVENLABS_API_KEY;
   const modelId = process.env.ELEVENLABS_MODEL_ID || "eleven_flash_v2_5";
-  const speaker = storyCharacterById[lineResult.line.speakerId];
+  const speaker = storyCharacterById[resolvedSpeakerId];
   const voiceId =
     (speaker?.voiceEnvKey ? process.env[speaker.voiceEnvKey] : undefined) ||
     process.env.ELEVENLABS_DEFAULT_VOICE_ID;
@@ -61,7 +84,7 @@ export async function POST(request: NextRequest) {
         Accept: "audio/mpeg",
       },
       body: JSON.stringify({
-        text: getLineText(lineResult.line, archetypeId),
+        text: resolvedText,
         model_id: modelId,
         voice_settings: {
           stability: 0.42,

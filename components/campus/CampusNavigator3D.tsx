@@ -642,7 +642,7 @@ function BuildingShell({ building, mapBuilding }: { building: CampusWorldBuildin
       <BuildingLabel
         title={mapBuilding.label}
         subtitle={mapBuilding.name}
-        position={addVector(building.position, building.labelOffset)}
+        position={building.labelOffset ?? [0, roofLift + 0.9, 0]}
       />
     </group>
   );

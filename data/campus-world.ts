@@ -346,18 +346,6 @@ const interiors: Record<string, CampusInteriorScene> = {
       { kind: "bench", position: [-5, 0, 2.4], rotationY: 1.57, scale: 1.16 },
       { kind: "bench", position: [5, 0, 2.4], rotationY: 1.57, scale: 1.16 },
     ],
-    importedModel: {
-      kind: "fbx",
-      src: "/campus3d/DFB7376C73AB4375BE059017618ACCA1_mesh.fbx",
-      position: [0, 0, -8.55],
-      rotation: [0, Math.PI, 0],
-      scale: 1,
-      fitToRoom: true,
-      fitMode: "height",
-      autoCenter: true,
-      floorToZero: true,
-      replaceShell: false,
-    },
   }),
   "hayden-hub": room({
     id: "hayden-hub",
