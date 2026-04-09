@@ -302,6 +302,24 @@ body:has(.story-shell) main {
   min-height: 100vh;
 }
 
+body:has(.campus-3d-shell) {
+  background:
+    radial-gradient(circle at top, rgba(255, 198, 39, 0.18), transparent 30%),
+    linear-gradient(180deg, #1d120d 0%, #0f0906 100%);
+}
+
+body:has(.campus-3d-shell)::before {
+  opacity: 0.18;
+}
+
+body:has(.campus-3d-shell) header {
+  display: none;
+}
+
+body:has(.campus-3d-shell) main {
+  min-height: 100vh;
+}
+
 .story-shell {
   position: relative;
   min-height: 100vh;
@@ -4773,6 +4791,10 @@ body:has(.story-shell) main {
 .campus-page-shell {
   width: 100%;
   min-height: calc(100dvh - 170px);
+}
+
+.campus-page-shell:has(.campus-3d-shell) {
+  min-height: 100dvh;
 }
 
 .campus-shell {

@@ -1,6 +1,7 @@
 import finderLogicJson from "@/data/finder_logic.json";
 import resourcesJson from "@/data/asu_resources.json";
 import campusMapJson from "@/data/campus-map.json";
+import { campusWorld as campusWorldDefinition } from "@/data/campus-world";
 import dashboardDataJson from "@/data/dashboard-data.json";
 import scholarshipsJson from "@/data/asu_scholarships.json";
 import simulationScriptsJson from "@/data/simulation_scripts.json";
@@ -538,6 +539,7 @@ export const campusMap = validateCampusMapData(
   campusMapJson,
   new Set(resources.map((resource) => resource.slug)),
 );
+export const campusWorld = campusWorldDefinition;
 export const dashboardData = validateDashboardData(
   dashboardDataJson,
   new Set(resources.map((resource) => resource.slug)),

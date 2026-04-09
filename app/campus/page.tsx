@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import CampusNavigator from "@/components/campus/CampusNavigator";
+import CampusExperienceSwitch from "@/components/campus/CampusExperienceSwitch";
 import { campusMap } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function CampusPage() {
   return (
     <div className="campus-page-shell">
-      <CampusNavigator map={campusMap} />
+      <CampusExperienceSwitch map={campusMap} />
     </div>
   );
 }

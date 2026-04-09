@@ -200,6 +200,91 @@ export interface CampusGameState {
   discoveredBuildings: string[];
 }
 
+export type CampusExperienceMode = "3d" | "2d-fallback";
+export type CampusVector3 = [number, number, number];
+export type CampusPropKind =
+  | "desk"
+  | "terminal"
+  | "bench"
+  | "palm"
+  | "whiteboard"
+  | "sofa"
+  | "table"
+  | "plant"
+  | "sign";
+export type CampusInteriorSceneType = "dialog" | "walkthrough" | "minigame";
+
+export interface CampusSpawnPoint {
+  position: CampusVector3;
+  rotationY?: number;
+}
+
+export interface CampusPortal {
+  position: CampusVector3;
+  size: CampusVector3;
+  promptOffset?: CampusVector3;
+}
+
+export interface CampusCollider {
+  position: CampusVector3;
+  size: CampusVector3;
+  rotation?: CampusVector3;
+}
+
+export interface CampusPropDefinition {
+  id: string;
+  kind: CampusPropKind;
+  position: CampusVector3;
+  rotationY?: number;
+  scale?: number | CampusVector3;
+  tint?: string;
+}
+
+export interface CampusWorldBuilding {
+  id: string;
+  position: CampusVector3;
+  rotationY?: number;
+  scale: CampusVector3;
+  height: number;
+  roofColor: string;
+  wallColor: string;
+  accentColor?: string;
+  labelOffset?: CampusVector3;
+  beaconOffset?: CampusVector3;
+  collider: CampusCollider;
+  portal: CampusPortal;
+  interiorSceneId: string;
+  npcPosition?: CampusVector3;
+  npcRotationY?: number;
+  props?: CampusPropDefinition[];
+}
+
+export interface CampusInteriorScene {
+  id: string;
+  buildingId: string;
+  type: CampusInteriorSceneType;
+  title: string;
+  summary: string;
+  roomSize: CampusVector3;
+  accentColor: string;
+  floorColor: string;
+  wallColor: string;
+  spawn: CampusSpawnPoint;
+  exitPortal: CampusPortal;
+  interactionPoint: CampusPortal;
+  npcPosition?: CampusVector3;
+  npcRotationY?: number;
+  props?: CampusPropDefinition[];
+}
+
+export interface CampusWorldDefinition {
+  mapScale: number;
+  outdoorSpawn: CampusSpawnPoint;
+  groundSize: [number, number];
+  buildings: Record<string, CampusWorldBuilding>;
+  interiors: Record<string, CampusInteriorScene>;
+}
+
 export type DashboardRole = "faculty" | "advisor";
 export type DashboardCampus = "tempe" | "downtown" | "polytechnic" | "west" | "online";
 export type DashboardConcernLevel = "high" | "watch" | "steady";
