@@ -6,7 +6,7 @@
     primaryNav: "#asu-header-nav .navlist",
     utilityNav: ".universal-nav .nav-grid",
     loginStatus: ".universal-nav .nav-grid .login-status",
-    userName: ".user-name",
+    userName: ".universal-nav .nav-grid .login-status .name, .user-name",
     userInfoButton: "#user-info-popup",
   };
 
@@ -47,6 +47,8 @@
     mascot: new URL("/mascot/happy.png", appBaseUrl).toString(),
   };
   const canEmbedChat = appBaseUrl.protocol === "https:";
+  const defaultRewardsUserName = "Chirag";
+  const defaultRewardsSignOutUrl = "https://webapp4.asu.edu/myasu/Signout";
 
   function assignLocation(url) {
     window.location.assign(url);
@@ -54,6 +56,25 @@
 
   function openNewTab(url) {
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function takeTextContent(node) {
+    return node?.textContent?.trim() || "";
+  }
+
+  function getRewardsDestinationUrl() {
+    const destination = new URL(urls.rewards);
+    const loginStatus = document.querySelector(selectors.loginStatus);
+    const nameElement = loginStatus?.querySelector(".name");
+    const signOutLink = loginStatus?.querySelector(".signout");
+
+    const userName = takeTextContent(nameElement) || defaultRewardsUserName;
+    const signOutUrl = signOutLink?.getAttribute("href")?.trim() || defaultRewardsSignOutUrl;
+
+    destination.searchParams.set("myasuName", userName);
+    destination.searchParams.set("signoutUrl", signOutUrl);
+
+    return destination.toString();
   }
 
   function ensureStyles() {
@@ -387,7 +408,7 @@
   function injectRewardsButton() {
     const userName = document.querySelector(selectors.userName);
 
-    if (!userName || userName.querySelector(`[${markers.rewardsButton}="true"]`)) {
+    if (!userName || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
       return;
     }
 
@@ -398,10 +419,10 @@
     button.setAttribute("aria-label", "Open rewards page");
     button.innerHTML = buildRewardsIcon();
     button.addEventListener("click", () => {
-      assignLocation(urls.rewards);
+      assignLocation(getRewardsDestinationUrl());
     });
 
-    userName.append(button);
+    userName.insertAdjacentElement("afterend", button);
   }
 
   function setSparkyOpen(nextOpen) {

@@ -12,7 +12,6 @@ import {
 } from "@/lib/campus-story-session";
 import {
   previewWorldBySlug,
-  resourceDiscoveryBadges,
   resourceDiscoveryVisibleMapWorldIds,
   resourceWorlds,
 } from "@/data/resource-discovery-worlds";
@@ -21,18 +20,26 @@ import { ChatScreen } from "@/components/simulation/ChatScreen";
 import { MapScreen } from "@/components/simulation/MapScreen";
 import { RewardPopup } from "@/components/simulation/RewardPopup";
 import { SuccessCoachScreen } from "@/components/simulation/SuccessCoachScreen";
-import { WeekSimulator } from "@/components/simulation/week/WeekSimulator";
+import {
+  WeekSimulator,
+  WEEK_SIMULATOR_STORAGE_KEY,
+} from "@/components/simulation/week/WeekSimulator";
+import {
+  WORLD_COMPLETION_PITCHFORK_REWARD,
+  resourceCompletionRewards,
+} from "@/lib/rewards-data";
+import { claimWorldCompletionBundle } from "@/lib/rewards";
 import type {
-  BadgeDefinition,
   ChatChoice,
+  RewardPopupItem,
   RenderedChatMessage,
   ResourceDiscoveryProgress,
   ResourcePreviewSlug,
   ResourceWorld,
   ResourceWorldId,
-  RewardPopupItem,
   ScenarioStep,
 } from "@/lib/resource-discovery-types";
+import type { ResourceCompletionRewardDefinition } from "@/lib/rewards-types";
 
 interface ResourceDiscoveryGameProps {
   previewSlug?: ResourcePreviewSlug;
@@ -40,6 +47,7 @@ interface ResourceDiscoveryGameProps {
 
 const STORAGE_KEY = "resource-discovery-map-sim-v2";
 const SESSION_STORAGE_KEY = "resource-discovery-map-sim-session-v1";
+const FEATURE_MODE_STORAGE_KEY = "resource-discovery-feature-mode-v1";
 
 interface ResourceDiscoverySession {
   screen: "chat" | "success-coach";
@@ -77,21 +85,6 @@ function isProgress(value: unknown): value is ResourceDiscoveryProgress {
     Array.isArray(candidate.clickedResourceLinkIds) &&
     Array.isArray(candidate.earnedBadgeIds)
   );
-}
-
-function createRewardPopup(
-  kind: RewardPopupItem["kind"],
-  title: string,
-  detail: string,
-  options: Pick<RewardPopupItem, "points" | "badgeId"> = {},
-): RewardPopupItem {
-  return {
-    id: `${kind}-${Math.random().toString(36).slice(2, 9)}`,
-    kind,
-    title,
-    detail,
-    ...options,
-  };
 }
 
 function getUnlockedWorldIds(progress?: ResourceDiscoveryProgress) {
@@ -163,35 +156,19 @@ function getResumeScenarioIndex(progress: ResourceDiscoveryProgress, worldId: Re
   return firstIncompleteIndex === -1 ? 0 : firstIncompleteIndex;
 }
 
-function getNewBadgeIds(
-  progress: ResourceDiscoveryProgress,
-  completedWorldId?: ResourceWorldId,
-) {
-  const nextBadgeIds: BadgeDefinition["id"][] = [];
+function getCompletionReward(worldId: ResourceWorldId) {
+  return resourceCompletionRewards.find((entry) => entry.worldId === worldId) ?? null;
+}
 
-  if (!progress.earnedBadgeIds.includes("first-step") && progress.openedWorldIds.length >= 1) {
-    nextBadgeIds.push("first-step");
-  }
-
-  if (!progress.earnedBadgeIds.includes("help-seeker") && progress.completedWorldIds.length >= 3) {
-    nextBadgeIds.push("help-seeker");
-  }
-
-  if (
-    !progress.earnedBadgeIds.includes("explorer") &&
-    resourceDiscoveryVisibleMapWorldIds.every((worldId) => progress.completedWorldIds.includes(worldId))
-  ) {
-    nextBadgeIds.push("explorer");
-  }
-
-  if (
-    completedWorldId === "office-hours" &&
-    !progress.earnedBadgeIds.includes("office-hours-warrior")
-  ) {
-    nextBadgeIds.push("office-hours-warrior");
-  }
-
-  return nextBadgeIds;
+function buildCompletionPopup(reward: ResourceCompletionRewardDefinition): RewardPopupItem {
+  return {
+    id: `${reward.worldId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    kind: "bundle",
+    title: reward.popupTitle,
+    detail: reward.popupDetail,
+    badgeId: reward.badgeId,
+    points: WORLD_COMPLETION_PITCHFORK_REWARD,
+  };
 }
 
 export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProps) {
@@ -209,9 +186,8 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
   const [messages, setMessages] = useState<RenderedChatMessage[]>([]);
   const [activeStepId, setActiveStepId] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
-  const [rewardPopups, setRewardPopups] = useState<RewardPopupItem[]>([]);
-  const [badgesOpen, setBadgesOpen] = useState(false);
   const [progress, setProgress] = useState<ResourceDiscoveryProgress>(createDefaultProgress);
+  const [rewardPopups, setRewardPopups] = useState<RewardPopupItem[]>([]);
   const [pendingCampusReturn, setPendingCampusReturn] = useState<CampusStorySession | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -225,6 +201,9 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
     const campusReturnSession = !previewWorldId ? readCampusStorySession() : null;
+    const savedFeatureMode = !previewWorldId
+      ? window.sessionStorage.getItem(FEATURE_MODE_STORAGE_KEY)
+      : null;
     let frameId = 0;
     let parsedProgress: ResourceDiscoveryProgress | null = null;
     let parsedSession: ResourceDiscoverySession | null = null;
@@ -255,6 +234,9 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       if (parsedProgress) {
         setProgress(parsedProgress);
       }
+      if (savedFeatureMode === "resource-map" || savedFeatureMode === "week-sim") {
+        setFeatureMode(savedFeatureMode);
+      }
       if (parsedSession) {
         savedSessionRef.current = parsedSession;
         setScreen(parsedSession.screen);
@@ -273,6 +255,14 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       window.cancelAnimationFrame(frameId);
     };
   }, [previewWorldId]);
+
+  useEffect(() => {
+    if (previewWorldId) {
+      return;
+    }
+
+    window.sessionStorage.setItem(FEATURE_MODE_STORAGE_KEY, featureMode);
+  }, [featureMode, previewWorldId]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -310,6 +300,40 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     previewWorldId,
     screen,
   ]);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    const awardedRewards = resourceCompletionRewards.filter((reward) =>
+      progress.completedWorldIds.includes(reward.worldId),
+    );
+
+    if (!awardedRewards.length) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const nextPopups: RewardPopupItem[] = [];
+
+      for (const reward of awardedRewards) {
+        const rewardResult = claimWorldCompletionBundle(reward.worldId, reward.badgeId);
+
+        if (rewardResult.awarded) {
+          nextPopups.push(buildCompletionPopup(reward));
+        }
+      }
+
+      if (nextPopups.length) {
+        setRewardPopups((existing) => [...nextPopups, ...existing].slice(0, 4));
+      }
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [isHydrated, progress.completedWorldIds]);
 
   useEffect(() => {
     return () => {
@@ -368,30 +392,49 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     enabled: featureMode === "resource-map" && screen === "chat" && Boolean(activeWorld?.ttsEnabled),
   });
 
-  const pushRewardPopups = useCallback((items: RewardPopupItem[]) => {
-    if (!items.length) {
-      return;
-    }
-
-    setRewardPopups((current) => [...items, ...current].slice(0, 4));
-  }, []);
-
   const applyProgressUpdate = useCallback((
-    updater: (current: ResourceDiscoveryProgress) => {
+    updater: (
+      current: ResourceDiscoveryProgress,
+    ) => {
       nextProgress: ResourceDiscoveryProgress;
-      rewards: RewardPopupItem[];
+      completionReward?: ResourceCompletionRewardDefinition | null;
     },
   ) => {
     setProgress((current) => {
-      const { nextProgress, rewards } = updater(current);
-      if (rewards.length) {
+      const { nextProgress, completionReward } = updater(current);
+
+      if (completionReward) {
         queueMicrotask(() => {
-          pushRewardPopups(rewards);
+          const rewardResult = claimWorldCompletionBundle(
+            completionReward.worldId,
+            completionReward.badgeId,
+          );
+
+          if (!rewardResult.awarded) {
+            return;
+          }
+
+          setRewardPopups((existing) => [buildCompletionPopup(completionReward), ...existing].slice(0, 4));
         });
       }
+
       return nextProgress;
     });
-  }, [pushRewardPopups]);
+  }, []);
+
+  const reloadCurrentMode = useCallback(() => {
+    if (!previewWorldId) {
+      window.sessionStorage.setItem(FEATURE_MODE_STORAGE_KEY, featureMode);
+    }
+
+    clearCampusStorySession();
+    savedSessionRef.current = null;
+    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    window.localStorage.removeItem(WEEK_SIMULATOR_STORAGE_KEY);
+
+    window.location.reload();
+  }, [featureMode, previewWorldId]);
 
   useEffect(() => {
     if (!isHydrated || previewWorldId || !pendingCampusReturn?.returnRequested) {
@@ -407,26 +450,17 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       applyProgressUpdate((current) => {
         const world = getWorld(pendingCampusReturn.activeWorldId);
         if (!world) {
-          return { nextProgress: current, rewards: [] };
+          return { nextProgress: current };
         }
 
         let nextProgress = current;
-        const rewards: RewardPopupItem[] = [];
+        let completionReward: ResourceCompletionRewardDefinition | null = null;
 
         if (!nextProgress.openedWorldIds.includes(world.id)) {
           nextProgress = {
             ...nextProgress,
             openedWorldIds: [...nextProgress.openedWorldIds, world.id],
-            points: nextProgress.points + 5,
           };
-          rewards.push(
-            createRewardPopup(
-              "points",
-              "+5 campus launch",
-              `${world.title} opened from the first-week story.`,
-              { points: 5 },
-            ),
-          );
         }
 
         const missingScenarioIds = world.scenarios
@@ -437,45 +471,25 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
           nextProgress = {
             ...nextProgress,
             completedScenarioIds: [...nextProgress.completedScenarioIds, ...missingScenarioIds],
-            points: nextProgress.points + missingScenarioIds.length * 10,
           };
-          rewards.push(
-            createRewardPopup(
-              "points",
-              `+${missingScenarioIds.length * 10} campus return`,
-              pendingCampusReturn.campusFinished
-                ? `You came back with ${pendingCampusReturn.questCompletionCount}/5 campus quest stops cleared.`
-                : "You explored the campus route and brought that context back into the story.",
-              { points: missingScenarioIds.length * 10 },
-            ),
-          );
         }
 
         if (!nextProgress.completedWorldIds.includes(world.id)) {
+          const reward = getCompletionReward(world.id);
           nextProgress = {
             ...nextProgress,
             completedWorldIds: [...nextProgress.completedWorldIds, world.id],
+            earnedBadgeIds: reward
+              ? Array.from(new Set([...nextProgress.earnedBadgeIds, reward.badgeId]))
+              : nextProgress.earnedBadgeIds,
           };
+          completionReward = reward;
         }
 
-        const newBadgeIds = getNewBadgeIds(nextProgress, world.id);
-        if (newBadgeIds.length) {
-          nextProgress = {
-            ...nextProgress,
-            earnedBadgeIds: [...nextProgress.earnedBadgeIds, ...newBadgeIds],
-          };
-
-          newBadgeIds.forEach((badgeId) => {
-            const badge = resourceDiscoveryBadges.find((entry) => entry.id === badgeId);
-            if (!badge) {
-              return;
-            }
-
-            rewards.push(createRewardPopup("badge", badge.title, badge.description, { badgeId }));
-          });
-        }
-
-        return { nextProgress, rewards };
+        return {
+          nextProgress,
+          completionReward,
+        };
       });
 
       launchSourceRef.current = pendingCampusReturn.sourceScreen;
@@ -623,42 +637,12 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         ? current.openedWorldIds
         : [...current.openedWorldIds, worldId];
 
-      let nextProgress = {
-        ...current,
-        openedWorldIds: nextOpenedWorldIds,
+      return {
+        nextProgress: {
+          ...current,
+          openedWorldIds: nextOpenedWorldIds,
+        },
       };
-      const rewards: RewardPopupItem[] = [];
-
-      if (!current.openedWorldIds.includes(worldId)) {
-        nextProgress = { ...nextProgress, points: nextProgress.points + 5 };
-        rewards.push(
-          createRewardPopup(
-            "points",
-            "+5 open-node bonus",
-            `${world.title} entered. Exploration counts.`,
-            { points: 5 },
-          ),
-        );
-      }
-
-      const newBadgeIds = getNewBadgeIds(nextProgress);
-      if (newBadgeIds.length) {
-        nextProgress = {
-          ...nextProgress,
-          earnedBadgeIds: [...nextProgress.earnedBadgeIds, ...newBadgeIds],
-        };
-
-        newBadgeIds.forEach((badgeId) => {
-          const badge = resourceDiscoveryBadges.find((entry) => entry.id === badgeId);
-          if (!badge) {
-            return;
-          }
-
-          rewards.push(createRewardPopup("badge", badge.title, badge.description, { badgeId }));
-        });
-      }
-
-      return { nextProgress, rewards };
     });
 
     setZoomingWorldId(worldId);
@@ -721,16 +705,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         nextProgress: {
           ...current,
           helpfulChoiceIds: [...current.helpfulChoiceIds, choice.id],
-          points: current.points + 15,
         },
-        rewards: [
-          createRewardPopup(
-            "points",
-            "+15 good decision",
-            "Nice. You picked the help-seeking path instead of the panic path.",
-            { points: 15 },
-          ),
-        ],
       }));
     }
 
@@ -748,16 +723,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       nextProgress: {
         ...current,
         clickedResourceLinkIds: [...current.clickedResourceLinkIds, activeScenario.id],
-        points: current.points + 25,
       },
-      rewards: [
-        createRewardPopup(
-          "points",
-          "+25 real-world follow-through",
-          "You clicked the real resource link. That is the behavior we want.",
-          { points: 25 },
-        ),
-      ],
     }));
   }
 
@@ -776,23 +742,13 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
 
     applyProgressUpdate((current) => {
       let nextProgress = current;
-      const rewards: RewardPopupItem[] = [];
-      const previousUnlocked = getUnlockedWorldIds(current);
+      let completionReward: ResourceCompletionRewardDefinition | null = null;
 
       if (!current.completedScenarioIds.includes(activeScenario.id)) {
         nextProgress = {
           ...current,
           completedScenarioIds: [...current.completedScenarioIds, activeScenario.id],
-          points: current.points + 10,
         };
-        rewards.push(
-          createRewardPopup(
-            "points",
-            "+10 simulation complete",
-            `${activeScenario.title} completed.`,
-            { points: 10 },
-          ),
-        );
       }
 
       const allScenarioIds = activeWorld.scenarios.map((scenario) => scenario.id);
@@ -803,43 +759,21 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       );
 
       if (allWorldScenariosCompleted && !current.completedWorldIds.includes(activeWorld.id)) {
+        const reward = getCompletionReward(activeWorld.id);
         nextProgress = {
           ...nextProgress,
           completedWorldIds: [...nextProgress.completedWorldIds, activeWorld.id],
+          earnedBadgeIds: reward
+            ? Array.from(new Set([...nextProgress.earnedBadgeIds, reward.badgeId]))
+            : nextProgress.earnedBadgeIds,
         };
-
-        const newBadgeIds = getNewBadgeIds(nextProgress, activeWorld.id);
-        if (newBadgeIds.length) {
-          nextProgress = {
-            ...nextProgress,
-            earnedBadgeIds: [...nextProgress.earnedBadgeIds, ...newBadgeIds],
-          };
-          newBadgeIds.forEach((badgeId) => {
-            const badge = resourceDiscoveryBadges.find((entry) => entry.id === badgeId);
-            if (!badge) {
-              return;
-            }
-            rewards.push(createRewardPopup("badge", badge.title, badge.description, { badgeId }));
-          });
-        }
-
-        const nextUnlocked = getUnlockedWorldIds(nextProgress);
-        const unlockedNow = nextUnlocked.find((worldId) => !previousUnlocked.includes(worldId));
-        if (unlockedNow) {
-          const world = getWorld(unlockedNow);
-          if (world) {
-            rewards.push(
-              createRewardPopup(
-                "unlock",
-                `${world.title} unlocked`,
-                world.teaser,
-              ),
-            );
-          }
-        }
+        completionReward = reward;
       }
 
-      return { nextProgress, rewards };
+      return {
+        nextProgress,
+        completionReward,
+      };
     });
 
     const nextScenarioIndex = activeScenarioIndex + 1;
@@ -875,10 +809,19 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     });
   }
 
-  function handleLaunchResourceWorldFromWeek(worldId: ResourceWorldId) {
+  function handleOpenResourceMapFromWeek() {
     cancelResourceMapTts();
-    setFeatureMode("resource-map");
-    openWorldFromMap(worldId, "week-sim");
+    launchSourceRef.current = "week-sim";
+
+    startTransition(() => {
+      setFeatureMode("resource-map");
+      setScreen("map");
+      setZoomingWorldId(null);
+      setHoveredWorldId(null);
+      setActiveWorldId(null);
+      setActiveStepId(null);
+      setIsTyping(false);
+    });
   }
 
   function handleOpenExperience() {
@@ -912,11 +855,6 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     router.push(`/campus?${params.toString()}`);
   }
 
-  const earnedBadges = resourceDiscoveryBadges.map((badge) => ({
-    ...badge,
-    earned: progress.earnedBadgeIds.includes(badge.id),
-  }));
-
   if (!isHydrated) {
     return (
       <div className="resource-sim-shell min-h-screen px-4 py-8 sm:px-6 lg:px-8">
@@ -940,7 +878,6 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         items={rewardPopups}
         onDismiss={(id) => setRewardPopups((current) => current.filter((item) => item.id !== id))}
       />
-
       <div className="mx-auto grid max-w-7xl gap-6">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.75rem] border border-white/16 bg-white/10 px-5 py-4 text-white shadow-[0_24px_80px_rgba(44,17,22,0.18)] backdrop-blur-md">
           <div>
@@ -981,9 +918,6 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
             ) : null}
 
             <span className="rounded-full bg-white/12 px-3 py-2 font-bold text-white">
-              🔱 {progress.points}
-            </span>
-            <span className="rounded-full bg-white/12 px-3 py-2 font-bold text-white">
               {visibleCompletedWorldCount}/{visibleWorlds.length} cleared
             </span>
             <span className="rounded-full bg-white/12 px-3 py-2 font-bold text-white">
@@ -993,7 +927,10 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         </div>
 
         {!previewWorldId && featureMode === "week-sim" ? (
-          <WeekSimulator onLaunchResourceWorld={handleLaunchResourceWorldFromWeek} />
+          <WeekSimulator
+            onOpenResourceMap={handleOpenResourceMapFromWeek}
+            onReloadProgress={reloadCurrentMode}
+          />
         ) : screen === "map" || !activeWorld || !activeScenario ? (
           <MapScreen
             worlds={visibleWorlds}
@@ -1003,7 +940,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
             zoomingWorldId={zoomingWorldId}
             onOpenWorld={openWorldFromMap}
             onHoverWorld={setHoveredWorldId}
-            onOpenBadges={() => setBadgesOpen(true)}
+            onReloadProgress={reloadCurrentMode}
           />
         ) : screen === "success-coach" ? (
           <SuccessCoachScreen
@@ -1030,55 +967,6 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
           />
         )}
       </div>
-
-      {badgesOpen ? (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-[rgba(23,8,12,0.62)] p-4 backdrop-blur-md">
-          <div className="w-[min(92vw,34rem)] rounded-[2rem] border border-[#f0dbc6] bg-[#fff8ef] p-5 shadow-[0_26px_90px_rgba(44,17,22,0.26)]">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-                  Badge collection
-                </p>
-                <h2 className="mt-2 font-[var(--font-sim-display)] text-[2rem] leading-none text-[#2c1116]">
-                  Progress cabinet
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setBadgesOpen(false)}
-                className="rounded-full border border-[#ead6c3] bg-white px-3 py-1 text-sm font-bold text-[#6f4a4e] transition hover:border-[#8c1d40] hover:text-[#8c1d40]"
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="mt-5 grid gap-3">
-              {earnedBadges.map((badge) => (
-                <div
-                  key={badge.id}
-                  className={`rounded-[1.4rem] border p-4 ${
-                    badge.earned
-                      ? "border-[#f4cc74] bg-[linear-gradient(135deg,#fff4ce,#fffaf1)]"
-                      : "border-[#f1e4d6] bg-white"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2c1116] text-lg text-white">
-                      {badge.icon}
-                    </div>
-                    <div>
-                      <p className="font-[var(--font-sim-display)] text-[1.2rem] leading-none text-[#2c1116]">
-                        {badge.title}
-                      </p>
-                      <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">{badge.description}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }
