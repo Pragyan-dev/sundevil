@@ -156,6 +156,7 @@ export interface ScheduledHomeworkSlot {
 
 export interface WeekSimulatorProgress {
   selectedDayId: WeekDayId;
+  demoUnlockedThroughDay: number;
   completedDayIds: WeekDayId[];
   openedEventIds: string[];
   completedEventIds: string[];

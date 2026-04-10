@@ -57,7 +57,11 @@ export function RewardToast({ items, onDismiss }: RewardToastProps) {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-                      {item.kind === "badge" ? "Badge earned" : item.kind === "reminder" ? "Reminder" : "Points gained"}
+                      {item.kind === "badge"
+                        ? "Badge earned"
+                        : item.kind === "reminder"
+                          ? "Reminder"
+                          : "Pitchforks earned"}
                     </span>
                     {item.points ? (
                       <span className="rounded-full bg-[#ffc627] px-2.5 py-1 text-[0.72rem] font-black text-[#2c1116]">
@@ -68,7 +72,7 @@ export function RewardToast({ items, onDismiss }: RewardToastProps) {
                   <button
                     type="button"
                     onClick={() => onDismiss(item.id)}
-                    aria-label="Close reminder"
+                    aria-label="Dismiss toast"
                     className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#ecd7c0] bg-[#fff8ef] text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#8c1d40]"
                   >
                     ×

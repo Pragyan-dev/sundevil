@@ -423,6 +423,7 @@ export const weekSimulatorDays: WeekDay[] = [
 export function createWeekSimulatorProgress(): WeekSimulatorProgress {
   return {
     selectedDayId: "day-1",
+    demoUnlockedThroughDay: 1,
     completedDayIds: [],
     openedEventIds: [],
     completedEventIds: [],
@@ -450,6 +451,7 @@ export function isWeekSimulatorProgress(value: unknown): value is WeekSimulatorP
 
   return (
     typeof candidate.selectedDayId === "string" &&
+    typeof candidate.demoUnlockedThroughDay === "number" &&
     Array.isArray(candidate.completedDayIds) &&
     Array.isArray(candidate.openedEventIds) &&
     Array.isArray(candidate.completedEventIds) &&
@@ -472,12 +474,12 @@ export function getWeekDay(dayId: WeekDayId) {
 }
 
 export function getDayUnlockState(progress: WeekSimulatorProgress, dayId: WeekDayId) {
-  const dayIndex = weekSimulatorDays.findIndex((day) => day.id === dayId);
-  if (dayIndex <= 0) {
-    return true;
+  const day = getWeekDay(dayId);
+  if (!day) {
+    return false;
   }
 
-  return progress.completedDayIds.includes(weekSimulatorDays[dayIndex - 1].id);
+  return day.number <= progress.demoUnlockedThroughDay;
 }
 
 export function getWeekReminders(progress: WeekSimulatorProgress): WeekReminder[] {

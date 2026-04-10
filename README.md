@@ -19,6 +19,8 @@ The current repo is a working demo, not a production student-information system.
 
 - `/finder`
   - quick triage flow that recommends ASU resources based on concern, year, and prior experience
+- `/rewards`
+  - a full-screen rewards view with missions, badges, and local pitchfork redemption
 - `/simulate`
   - the main first-week story game
   - includes advising, tutoring, office hours, MyASU, budgeting, DARS, and resource-discovery moments
@@ -81,11 +83,13 @@ Project notes:
 npm install
 ```
 
-### 2. Copy environment variables
+### 2. Optional environment variables
 
 ```bash
-cp .env.example .env
+touch .env
 ```
+
+Only add variables for the optional AI and voice features you want to use locally.
 
 ### 3. Start the app
 
@@ -172,6 +176,8 @@ npm run scrape   # scrape/update ASU resource data
   - landing page
 - `/finder`
   - guided resource finder
+- `/rewards`
+  - full-screen rewards carousel with local redemption tracking
 - `/flow/[resource]`
   - flow-style experience pages per resource
 - `/simulate`
