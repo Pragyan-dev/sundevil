@@ -92,6 +92,7 @@ export interface ResourceWorld {
   position: MapNodePosition;
   guideExpression: MascotExpression;
   guideLine: string;
+  ttsEnabled?: boolean;
   scenarios: ResourceScenario[];
 }
 

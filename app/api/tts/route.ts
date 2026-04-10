@@ -13,6 +13,7 @@ type TtsPayload = {
   archetypeId?: unknown;
   text?: unknown;
   speakerId?: unknown;
+  voiceMode?: unknown;
 };
 
 function isArchetypeId(value: unknown): value is ArchetypeId {
@@ -21,6 +22,10 @@ function isArchetypeId(value: unknown): value is ArchetypeId {
 
 function isCharacterId(value: unknown): value is CharacterId {
   return typeof value === "string" && value in storyCharacterById;
+}
+
+function isDefaultVoiceMode(value: unknown): value is "default" {
+  return value === "default";
 }
 
 type SpeechAttempt =
@@ -125,9 +130,11 @@ export async function POST(request: NextRequest) {
   const archetypeId = isArchetypeId(payload?.archetypeId) ? payload.archetypeId : null;
   const directText = typeof payload?.text === "string" ? payload.text.trim() : null;
   const directSpeakerId = isCharacterId(payload?.speakerId) ? payload.speakerId : null;
+  const directVoiceMode = isDefaultVoiceMode(payload?.voiceMode) ? payload.voiceMode : null;
 
   let text: string | null = null;
   let speakerId: CharacterId | null = null;
+  let voiceMode: "default" | null = null;
 
   if (sceneId && lineId) {
     const lineResult = getLineById(sceneId, lineId);
@@ -144,11 +151,14 @@ export async function POST(request: NextRequest) {
   } else if (directText && directSpeakerId) {
     text = directText;
     speakerId = directSpeakerId;
+  } else if (directText && directVoiceMode === "default") {
+    text = directText;
+    voiceMode = "default";
   } else {
     return NextResponse.json(
       {
         error:
-          "TTS playback requires either scene/line identifiers or direct text and speaker information.",
+          "TTS playback requires either scene/line identifiers, direct text with speaker information, or direct text with a default voice mode.",
       },
       { status: 400 },
     );
@@ -159,7 +169,7 @@ export async function POST(request: NextRequest) {
   const speaker = speakerId ? storyCharacterById[speakerId] : null;
   const preferredVoiceId = speaker?.voiceEnvKey ? process.env[speaker.voiceEnvKey] : undefined;
   const defaultVoiceId = process.env.ELEVENLABS_DEFAULT_VOICE_ID;
-  const voiceId = preferredVoiceId || defaultVoiceId;
+  const voiceId = voiceMode === "default" ? defaultVoiceId : preferredVoiceId || defaultVoiceId;
 
   if (!apiKey || !voiceId) {
     return NextResponse.json(

@@ -1,6 +1,16 @@
 const baseUrl = process.env.TTS_TEST_BASE_URL || "http://127.0.0.1:3000";
 const endpoint = new URL("/api/tts", baseUrl).toString();
 
+const narratorChecks = [
+  {
+    label: "default-narrator",
+    body: {
+      text: "Quick speech test for the resource map narrator.",
+      voiceMode: "default",
+    },
+  },
+];
+
 const speakers = [
   "you",
   "prof-chen",
@@ -15,17 +25,25 @@ async function main() {
 
   console.log(`Checking dialog TTS route at ${endpoint}`);
 
-  for (const speakerId of speakers) {
+  const checks = [
+    ...narratorChecks,
+    ...speakers.map((speakerId) => ({
+      label: speakerId,
+      body: {
+        text: `Quick speech test for ${speakerId}.`,
+        speakerId,
+      },
+    })),
+  ];
+
+  for (const check of checks) {
     try {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          text: `Quick speech test for ${speakerId}.`,
-          speakerId,
-        }),
+        body: JSON.stringify(check.body),
       });
 
       const fallback = response.headers.get("x-tts-voice-fallback") || "n/a";
@@ -35,18 +53,18 @@ async function main() {
         failures += 1;
         const message = await response.text().catch(() => "");
         console.error(
-          `[FAIL] ${speakerId}: ${response.status} fallback=${fallback} voice=${voiceUsed} ${message}`,
+          `[FAIL] ${check.label}: ${response.status} fallback=${fallback} voice=${voiceUsed} ${message}`,
         );
         continue;
       }
 
       const blob = await response.blob();
       console.log(
-        `[OK]   ${speakerId}: ${response.status} ${blob.type || "audio/mpeg"} bytes=${blob.size} fallback=${fallback} voice=${voiceUsed}`,
+        `[OK]   ${check.label}: ${response.status} ${blob.type || "audio/mpeg"} bytes=${blob.size} fallback=${fallback} voice=${voiceUsed}`,
       );
     } catch (error) {
       failures += 1;
-      console.error(`[ERR]  ${speakerId}:`, error);
+      console.error(`[ERR]  ${check.label}:`, error);
     }
   }
 
@@ -55,7 +73,7 @@ async function main() {
     return;
   }
 
-  console.log("All configured speaker routes returned audio.");
+  console.log("All configured narrator and speaker routes returned audio.");
 }
 
 main().catch((error) => {

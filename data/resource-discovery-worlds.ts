@@ -73,6 +73,7 @@ export const resourceWorlds: ResourceWorld[] = [
     position: { x: 16, y: 18, mobileX: 50, mobileY: 11 },
     guideExpression: "happy",
     guideLine: "Start here if everything feels new and weirdly unexplained.",
+    ttsEnabled: true,
     scenarios: [
       {
         id: "first-gen-hidden-rules",
@@ -166,6 +167,7 @@ export const resourceWorlds: ResourceWorld[] = [
     position: { x: 39, y: 27, mobileX: 28, mobileY: 25 },
     guideExpression: "idea",
     guideLine: "Use this before confusion grows a registration deadline.",
+    ttsEnabled: true,
     scenarios: [
       {
         id: "advising-dars",
@@ -440,6 +442,7 @@ export const resourceWorlds: ResourceWorld[] = [
     position: { x: 83, y: 45, mobileX: 76, mobileY: 46 },
     guideExpression: "idea",
     guideLine: "Use this before the first real support visit so the doors, desks, and front rooms stop feeling abstract.",
+    ttsEnabled: true,
     scenarios: [
       {
         id: "explore-asu-campus-run",

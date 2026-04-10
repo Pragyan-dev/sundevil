@@ -16,6 +16,7 @@ import {
   resourceDiscoveryVisibleMapWorldIds,
   resourceWorlds,
 } from "@/data/resource-discovery-worlds";
+import { useDialogTtsPlayback } from "@/components/sketch/useDialogTtsPlayback";
 import { ChatScreen } from "@/components/simulation/ChatScreen";
 import { MapScreen } from "@/components/simulation/MapScreen";
 import { RewardPopup } from "@/components/simulation/RewardPopup";
@@ -340,6 +341,32 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     [activeScenarioIndex, activeWorld],
   );
   const activeStep = activeStepId ? stepMap[activeStepId] ?? null : null;
+  const latestNarratedMessage = useMemo(
+    () => [...messages].reverse().find((message) => message.side === "left") ?? null,
+    [messages],
+  );
+  const resourceMapTtsRequest = useMemo(() => {
+    if (
+      featureMode !== "resource-map" ||
+      screen !== "chat" ||
+      isTyping ||
+      !activeWorld?.ttsEnabled ||
+      !activeScenario ||
+      !latestNarratedMessage?.text
+    ) {
+      return null;
+    }
+
+    return {
+      kind: "default" as const,
+      cacheKey: `resource:${activeWorld.id}:${activeScenario.id}:${latestNarratedMessage.id}:${latestNarratedMessage.text}`,
+      text: latestNarratedMessage.text,
+    };
+  }, [activeScenario, activeWorld, featureMode, isTyping, latestNarratedMessage, screen]);
+  const { cancelPendingPlayback: cancelResourceMapTts } = useDialogTtsPlayback({
+    request: resourceMapTtsRequest,
+    enabled: featureMode === "resource-map" && screen === "chat" && Boolean(activeWorld?.ttsEnabled),
+  });
 
   const pushRewardPopups = useCallback((items: RewardPopupItem[]) => {
     if (!items.length) {
@@ -372,6 +399,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     }
 
     const frameId = window.requestAnimationFrame(() => {
+      cancelResourceMapTts();
       clearCampusStorySession();
       savedSessionRef.current = null;
       window.localStorage.removeItem(SESSION_STORAGE_KEY);
@@ -474,7 +502,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [applyProgressUpdate, isHydrated, pendingCampusReturn, previewWorldId, startTransition]);
+  }, [applyProgressUpdate, cancelResourceMapTts, isHydrated, pendingCampusReturn, previewWorldId, startTransition]);
 
   const appendCharacterStep = useCallback(function appendCharacterStep(stepId: string) {
     const step = stepMap[stepId];
@@ -490,6 +518,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       window.clearTimeout(flowTimerRef.current);
     }
 
+    cancelResourceMapTts();
     setIsTyping(true);
     setActiveStepId(null);
 
@@ -512,7 +541,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         return;
       }
     }, 650);
-  }, [stepMap]);
+  }, [cancelResourceMapTts, stepMap]);
 
   const startScenario = useCallback((worldId: ResourceWorldId, scenarioIndex: number) => {
     const world = getWorld(worldId);
@@ -529,6 +558,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       window.clearTimeout(flowTimerRef.current);
     }
 
+    cancelResourceMapTts();
     startTransition(() => {
       setActiveWorldId(worldId);
       setActiveScenarioIndex(scenarioIndex);
@@ -571,7 +601,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         }
       }, 650);
     });
-  }, [startTransition]);
+  }, [cancelResourceMapTts, startTransition]);
 
   const openWorldFromMap = useCallback((worldId: ResourceWorldId, sourceMode: CampusStoryResumeMode = "resource-map") => {
     const world = getWorld(worldId);
@@ -585,6 +615,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       return;
     }
 
+    cancelResourceMapTts();
     launchSourceRef.current = sourceMode;
 
     applyProgressUpdate((current) => {
@@ -652,7 +683,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
 
       startScenario(worldId, getResumeScenarioIndex(progress, worldId));
     }, 280);
-  }, [applyProgressUpdate, previewWorldId, progress, startScenario, startTransition, unlockedWorldIds]);
+  }, [applyProgressUpdate, cancelResourceMapTts, previewWorldId, progress, startScenario, startTransition, unlockedWorldIds]);
 
   useEffect(() => {
     if (!isHydrated || !previewWorldId || previewOpenedRef.current) {
@@ -674,6 +705,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       return;
     }
 
+    cancelResourceMapTts();
     setMessages((current) => [
       ...current,
       {
@@ -734,6 +766,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       return;
     }
 
+    cancelResourceMapTts();
     if (activeStep?.autoNextStepId && !activeStep.complete && !activeStep.resourceLink && !activeStep.experience) {
       appendCharacterStep(activeStep.autoNextStepId);
       return;
@@ -834,6 +867,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       window.clearTimeout(flowTimerRef.current);
     }
 
+    cancelResourceMapTts();
     startTransition(() => {
       setScreen("map");
       setIsTyping(false);
@@ -842,6 +876,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
   }
 
   function handleLaunchResourceWorldFromWeek(worldId: ResourceWorldId) {
+    cancelResourceMapTts();
     setFeatureMode("resource-map");
     openWorldFromMap(worldId, "week-sim");
   }
@@ -851,6 +886,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       return;
     }
 
+    cancelResourceMapTts();
     if (activeStep.experience.kind === "success-coach") {
       setScreen("success-coach");
       return;
