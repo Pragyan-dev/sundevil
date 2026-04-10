@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import resources from "@/data/asu_resources.json";
+import { getAppOrigin } from "@/lib/app-origin";
 
 type IncomingMessage = {
   role: "user" | "assistant" | "system";
@@ -63,6 +64,7 @@ export async function POST(request: NextRequest) {
   const { messages } = (await request.json()) as { messages?: unknown };
   const normalizedMessages = normalizeMessages(messages);
   const model = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
+  const appOrigin = getAppOrigin();
 
   if (!process.env.OPENROUTER_API_KEY) {
     return NextResponse.json(
@@ -95,7 +97,7 @@ Keep responses short. Two or three paragraphs max.`;
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "HTTP-Referer": "https://sundevilconnect.local",
+        "HTTP-Referer": appOrigin,
         "X-Title": "SunDevilConnect",
       },
       body: JSON.stringify({
