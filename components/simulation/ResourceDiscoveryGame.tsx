@@ -17,10 +17,17 @@ import {
 } from "@/data/resource-discovery-worlds";
 import { ChatScreen } from "@/components/simulation/ChatScreen";
 import { MapScreen } from "@/components/simulation/MapScreen";
+import { RewardPopup } from "@/components/simulation/RewardPopup";
 import { SuccessCoachScreen } from "@/components/simulation/SuccessCoachScreen";
 import { WeekSimulator } from "@/components/simulation/week/WeekSimulator";
+import {
+  WORLD_COMPLETION_PITCHFORK_REWARD,
+  resourceCompletionRewards,
+} from "@/lib/rewards-data";
+import { claimWorldCompletionBundle } from "@/lib/rewards";
 import type {
   ChatChoice,
+  RewardPopupItem,
   RenderedChatMessage,
   ResourceDiscoveryProgress,
   ResourcePreviewSlug,
@@ -28,6 +35,7 @@ import type {
   ResourceWorldId,
   ScenarioStep,
 } from "@/lib/resource-discovery-types";
+import type { ResourceCompletionRewardDefinition } from "@/lib/rewards-types";
 
 interface ResourceDiscoveryGameProps {
   previewSlug?: ResourcePreviewSlug;
@@ -143,6 +151,22 @@ function getResumeScenarioIndex(progress: ResourceDiscoveryProgress, worldId: Re
   return firstIncompleteIndex === -1 ? 0 : firstIncompleteIndex;
 }
 
+function getCompletionReward(worldId: ResourceWorldId) {
+  return resourceCompletionRewards.find((entry) => entry.worldId === worldId) ?? null;
+}
+
+function buildCompletionPopup(reward: ResourceCompletionRewardDefinition): RewardPopupItem {
+  return {
+    id: `${reward.worldId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    kind: "bundle",
+    title: reward.popupTitle,
+    detail: reward.popupDetail,
+    badgeId: reward.badgeId,
+    mysteryBoxes: 1,
+    points: WORLD_COMPLETION_PITCHFORK_REWARD,
+  };
+}
+
 export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProps) {
   const router = useRouter();
   const previewWorldId = previewSlug ? previewWorldBySlug[previewSlug] : null;
@@ -159,6 +183,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
   const [activeStepId, setActiveStepId] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [progress, setProgress] = useState<ResourceDiscoveryProgress>(createDefaultProgress);
+  const [rewardPopups, setRewardPopups] = useState<RewardPopupItem[]>([]);
   const [pendingCampusReturn, setPendingCampusReturn] = useState<CampusStorySession | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -259,6 +284,40 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
   ]);
 
   useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    const awardedRewards = resourceCompletionRewards.filter((reward) =>
+      progress.completedWorldIds.includes(reward.worldId),
+    );
+
+    if (!awardedRewards.length) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const nextPopups: RewardPopupItem[] = [];
+
+      for (const reward of awardedRewards) {
+        const rewardResult = claimWorldCompletionBundle(reward.worldId, reward.badgeId);
+
+        if (rewardResult.awarded) {
+          nextPopups.push(buildCompletionPopup(reward));
+        }
+      }
+
+      if (nextPopups.length) {
+        setRewardPopups((existing) => [...nextPopups, ...existing].slice(0, 4));
+      }
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [isHydrated, progress.completedWorldIds]);
+
+  useEffect(() => {
     return () => {
       if (stepTimerRef.current) {
         window.clearTimeout(stepTimerRef.current);
@@ -290,9 +349,33 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
   const activeStep = activeStepId ? stepMap[activeStepId] ?? null : null;
 
   const applyProgressUpdate = useCallback((
-    updater: (current: ResourceDiscoveryProgress) => ResourceDiscoveryProgress,
+    updater: (
+      current: ResourceDiscoveryProgress,
+    ) => {
+      nextProgress: ResourceDiscoveryProgress;
+      completionReward?: ResourceCompletionRewardDefinition | null;
+    },
   ) => {
-    setProgress((current) => updater(current));
+    setProgress((current) => {
+      const { nextProgress, completionReward } = updater(current);
+
+      if (completionReward) {
+        queueMicrotask(() => {
+          const rewardResult = claimWorldCompletionBundle(
+            completionReward.worldId,
+            completionReward.badgeId,
+          );
+
+          if (!rewardResult.awarded) {
+            return;
+          }
+
+          setRewardPopups((existing) => [buildCompletionPopup(completionReward), ...existing].slice(0, 4));
+        });
+      }
+
+      return nextProgress;
+    });
   }, []);
 
   useEffect(() => {
@@ -308,10 +391,11 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       applyProgressUpdate((current) => {
         const world = getWorld(pendingCampusReturn.activeWorldId);
         if (!world) {
-          return current;
+          return { nextProgress: current };
         }
 
         let nextProgress = current;
+        let completionReward: ResourceCompletionRewardDefinition | null = null;
 
         if (!nextProgress.openedWorldIds.includes(world.id)) {
           nextProgress = {
@@ -332,13 +416,21 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         }
 
         if (!nextProgress.completedWorldIds.includes(world.id)) {
+          const reward = getCompletionReward(world.id);
           nextProgress = {
             ...nextProgress,
             completedWorldIds: [...nextProgress.completedWorldIds, world.id],
+            earnedBadgeIds: reward
+              ? Array.from(new Set([...nextProgress.earnedBadgeIds, reward.badgeId]))
+              : nextProgress.earnedBadgeIds,
           };
+          completionReward = reward;
         }
 
-        return nextProgress;
+        return {
+          nextProgress,
+          completionReward,
+        };
       });
 
       launchSourceRef.current = pendingCampusReturn.sourceScreen;
@@ -484,8 +576,10 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         : [...current.openedWorldIds, worldId];
 
       return {
-        ...current,
-        openedWorldIds: nextOpenedWorldIds,
+        nextProgress: {
+          ...current,
+          openedWorldIds: nextOpenedWorldIds,
+        },
       };
     });
 
@@ -545,8 +639,10 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
 
     if (choice.reward?.helpful && !progress.helpfulChoiceIds.includes(choice.id)) {
       applyProgressUpdate((current) => ({
-        ...current,
-        helpfulChoiceIds: [...current.helpfulChoiceIds, choice.id],
+        nextProgress: {
+          ...current,
+          helpfulChoiceIds: [...current.helpfulChoiceIds, choice.id],
+        },
       }));
     }
 
@@ -561,8 +657,10 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     }
 
     applyProgressUpdate((current) => ({
-      ...current,
-      clickedResourceLinkIds: [...current.clickedResourceLinkIds, activeScenario.id],
+      nextProgress: {
+        ...current,
+        clickedResourceLinkIds: [...current.clickedResourceLinkIds, activeScenario.id],
+      },
     }));
   }
 
@@ -580,6 +678,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
 
     applyProgressUpdate((current) => {
       let nextProgress = current;
+      let completionReward: ResourceCompletionRewardDefinition | null = null;
 
       if (!current.completedScenarioIds.includes(activeScenario.id)) {
         nextProgress = {
@@ -596,13 +695,21 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       );
 
       if (allWorldScenariosCompleted && !current.completedWorldIds.includes(activeWorld.id)) {
+        const reward = getCompletionReward(activeWorld.id);
         nextProgress = {
           ...nextProgress,
           completedWorldIds: [...nextProgress.completedWorldIds, activeWorld.id],
+          earnedBadgeIds: reward
+            ? Array.from(new Set([...nextProgress.earnedBadgeIds, reward.badgeId]))
+            : nextProgress.earnedBadgeIds,
         };
+        completionReward = reward;
       }
 
-      return nextProgress;
+      return {
+        nextProgress,
+        completionReward,
+      };
     });
 
     const nextScenarioIndex = activeScenarioIndex + 1;
@@ -700,6 +807,10 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
 
   return (
     <div className="resource-sim-shell min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+      <RewardPopup
+        items={rewardPopups}
+        onDismiss={(id) => setRewardPopups((current) => current.filter((item) => item.id !== id))}
+      />
       <div className="mx-auto grid max-w-7xl gap-6">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.75rem] border border-white/16 bg-white/10 px-5 py-4 text-white shadow-[0_24px_80px_rgba(44,17,22,0.18)] backdrop-blur-md">
           <div>

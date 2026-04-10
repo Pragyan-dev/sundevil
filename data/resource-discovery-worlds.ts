@@ -7,28 +7,22 @@ import type {
 
 export const resourceDiscoveryBadges: BadgeDefinition[] = [
   {
-    id: "first-step",
-    title: "First Step",
-    description: "Opened your first node and actually entered the map.",
-    icon: "🌟",
+    id: "student-success-spark",
+    title: "Student Success Spark",
+    description: "Completed Student Success and turned hidden campus rules into a clear next step.",
+    icon: "🌱",
   },
   {
-    id: "help-seeker",
-    title: "Help Seeker",
-    description: "Completed three resource worlds and made support part of the plan.",
+    id: "advising-pathfinder",
+    title: "Advising Pathfinder",
+    description: "Completed advising and used the office to make DARS and planning less mysterious.",
     icon: "🧭",
   },
   {
-    id: "explorer",
-    title: "Explorer",
-    description: "Explored every visible resource world on the campus map.",
-    icon: "🚀",
-  },
-  {
-    id: "office-hours-warrior",
-    title: "Office Hours Warrior",
-    description: "Completed the professor office simulation and survived the doorway boss fight.",
-    icon: "⚔️",
+    id: "explore-asu-trailblazer",
+    title: "Explore ASU Trailblazer",
+    description: "Completed Explore ASU and made the real campus support map feel much more familiar.",
+    icon: "🗺️",
   },
 ];
 

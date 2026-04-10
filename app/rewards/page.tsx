@@ -1,3 +1,4 @@
+import { RewardsDashboard } from "@/components/rewards/RewardsDashboard";
 import { RewardsUniversalNav } from "@/components/RewardsUniversalNav";
 
 function takeFirst(
@@ -19,6 +20,7 @@ export default async function RewardsPage({
         userName={takeFirst(params.myasuName)}
         signOutUrl={takeFirst(params.signoutUrl)}
       />
+      <RewardsDashboard />
     </div>
   );
 }

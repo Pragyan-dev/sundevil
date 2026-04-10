@@ -21,6 +21,11 @@ import {
   isWeekSimulatorProgress,
   weekSimulatorDays,
 } from "@/data/week-simulator";
+import { DAY_ENTRY_PITCHFORK_REWARD } from "@/lib/rewards-data";
+import {
+  claimDayEntryPitchforks,
+  getDayEntryRewardId,
+} from "@/lib/rewards";
 import type {
   WeekAdvisingEvent,
   ScheduledHomeworkSlot,
@@ -301,6 +306,36 @@ export function WeekSimulator({ onOpenResourceMap }: WeekSimulatorProps) {
     };
   }, [dayReminders, progress.acknowledgedReminderIds]);
 
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    const dayEntryResult = claimDayEntryPitchforks(getDayEntryRewardId(selectedDay.number));
+
+    if (!dayEntryResult.awarded) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      setToasts((current) => [
+        {
+          ...createToast(
+            "points",
+            `${DAY_ENTRY_PITCHFORK_REWARD} pitchforks earned`,
+            "You earned 20 pitchforks for logging into a new day.",
+          ),
+          points: DAY_ENTRY_PITCHFORK_REWARD,
+        },
+        ...current,
+      ].slice(0, 4));
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [isHydrated, selectedDay.number]);
+
   function applyProgressUpdate(
     updater: (
       current: WeekSimulatorProgress,
@@ -322,7 +357,7 @@ export function WeekSimulator({ onOpenResourceMap }: WeekSimulatorProps) {
     });
   }
 
-function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
+  function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
     if (current.completedDayIds.includes(dayId) || !getDayComplete(current, dayId)) {
       return { nextProgress: current };
     }
@@ -567,6 +602,15 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
     });
   }
 
+  function resetDemoUnlocks() {
+    setProgress((current) => ({
+      ...current,
+      demoUnlockedThroughDay: 1,
+      selectedDayId: "day-1",
+    }));
+    setActiveEventId(null);
+  }
+
   if (!isHydrated) {
     return (
       <div className="rounded-[2rem] border border-white/16 bg-white/10 px-6 py-10 text-center text-white shadow-[0_24px_80px_rgba(44,17,22,0.18)] backdrop-blur-md">
@@ -593,16 +637,27 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
       />
 
       <section className="rounded-[1.7rem] border border-[#f0dbc6] bg-[#fff8ef] p-3 shadow-[0_16px_36px_rgba(44,17,22,0.08)] sm:p-4">
-        <div className="flex items-center gap-2.5">
-          <CharacterAvatar expression="happy" size="md" framed={false} />
-          <div>
-            <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-              Sparky note
-            </p>
-            <p className="mt-1 text-sm leading-5 text-[#6f4a4e]">
-              Day 1 starts unlocked. Click the next locked day when you want to simulate unlocking the week for demo use.
-            </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <CharacterAvatar expression="happy" size="md" framed={false} />
+            <div>
+              <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                Sparky note
+              </p>
+              <p className="mt-1 text-sm leading-5 text-[#6f4a4e]">
+                Day 1 starts unlocked. Click the next locked day when you want to simulate
+                unlocking the week for demo use.
+              </p>
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={resetDemoUnlocks}
+            className="inline-flex items-center justify-center rounded-full border border-[#e4c79f] bg-white px-4 py-2 text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#d6ab63] hover:bg-[#fff4df]"
+          >
+            Reset demo
+          </button>
         </div>
 
         <div className="mt-3 overflow-x-auto pb-1">

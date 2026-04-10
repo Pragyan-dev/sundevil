@@ -48,25 +48,50 @@ export function RewardPopup({ items, onDismiss }: RewardPopupProps) {
             <div className="resource-reward-glow absolute inset-0 opacity-70" aria-hidden="true" />
             <div className="relative flex items-start gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#2c1116] text-lg text-white">
-                {item.kind === "badge" ? badge?.icon ?? "🏅" : item.kind === "unlock" ? "🗺️" : "🔱"}
+                {item.kind === "badge"
+                  ? badge?.icon ?? "🏅"
+                  : item.kind === "unlock"
+                    ? "🗺️"
+                    : item.kind === "bundle"
+                      ? "🎁"
+                      : "🔱"}
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-[0.7rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-                    {item.kind === "badge" ? "Badge earned" : item.kind === "unlock" ? "Node unlocked" : "Points gained"}
+                    {item.kind === "badge"
+                      ? "Badge earned"
+                      : item.kind === "unlock"
+                        ? "Node unlocked"
+                        : item.kind === "bundle"
+                          ? "Reward bundle"
+                          : "Pitchforks gained"}
                   </span>
-                  {item.points ? (
-                    <span className="rounded-full bg-[#ffc627] px-2.5 py-1 text-[0.72rem] font-black text-[#2c1116]">
-                      +{item.points}
-                    </span>
-                  ) : null}
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {item.points ? (
+                      <span className="rounded-full bg-[#ffc627] px-2.5 py-1 text-[0.72rem] font-black text-[#2c1116]">
+                        +{item.points} pitchforks
+                      </span>
+                    ) : null}
+                    {item.mysteryBoxes ? (
+                      <span className="rounded-full bg-[#2c1116] px-2.5 py-1 text-[0.72rem] font-black text-white">
+                        +{item.mysteryBoxes} mystery box
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
 
                 <p className="mt-1 font-[var(--font-sim-display)] text-[1.25rem] leading-none text-[#2c1116]">
                   {item.title}
                 </p>
                 <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">{item.detail}</p>
+                {item.kind === "bundle" && badge ? (
+                  <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#ead6c3] bg-[#fff8ef] px-3 py-1.5 text-[0.74rem] font-bold text-[#6f4a4e]">
+                    <span aria-hidden="true">{badge.icon}</span>
+                    <span>{badge.title} badge added</span>
+                  </div>
+                ) : null}
               </div>
 
               <button

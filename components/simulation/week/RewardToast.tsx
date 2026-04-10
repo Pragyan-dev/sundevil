@@ -52,7 +52,7 @@ export function RewardToast({ items, onDismiss }: RewardToastProps) {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-                    {item.kind === "badge" ? "Badge earned" : item.kind === "reminder" ? "Reminder" : "Points gained"}
+                    {item.kind === "badge" ? "Badge earned" : item.kind === "reminder" ? "Reminder" : "Pitchforks earned"}
                   </span>
                   {item.points ? (
                     <span className="rounded-full bg-[#ffc627] px-2.5 py-1 text-[0.72rem] font-black text-[#2c1116]">

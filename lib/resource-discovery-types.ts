@@ -1,3 +1,5 @@
+import type { RewardsBadgeId } from "@/lib/rewards-types";
+
 export type MascotExpression =
   | "happy"
   | "sad"
@@ -21,7 +23,7 @@ export type ResourceWorldId =
 export type ResourcePreviewSlug = "first-day" | "advising" | "tutoring" | "office-hours";
 
 export interface BadgeDefinition {
-  id: "first-step" | "help-seeker" | "explorer" | "office-hours-warrior";
+  id: RewardsBadgeId;
   title: string;
   description: string;
   icon: string;
@@ -111,14 +113,15 @@ export interface ResourceDiscoveryProgress {
   completedScenarioIds: string[];
   helpfulChoiceIds: string[];
   clickedResourceLinkIds: string[];
-  earnedBadgeIds: BadgeDefinition["id"][];
+  earnedBadgeIds: RewardsBadgeId[];
 }
 
 export interface RewardPopupItem {
   id: string;
-  kind: "points" | "badge" | "unlock";
+  kind: "points" | "badge" | "unlock" | "bundle";
   title: string;
   detail: string;
   points?: number;
-  badgeId?: BadgeDefinition["id"];
+  badgeId?: RewardsBadgeId;
+  mysteryBoxes?: number;
 }
