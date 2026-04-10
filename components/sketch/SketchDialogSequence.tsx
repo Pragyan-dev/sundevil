@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { CharacterAvatar } from "@/components/SketchCharacters";
 import { SketchDialogBubble } from "@/components/sketch/SketchDialogBubble";
 import { SketchProgressDots } from "@/components/sketch/SketchProgressDots";
-import type { CharacterId, DialogLine } from "@/lib/types";
+import type { ArchetypeId, CharacterId, DialogLine } from "@/lib/types";
 
 interface SketchDialogSequenceProps {
   lines: DialogLine[];
@@ -23,6 +23,8 @@ interface SketchDialogSequenceProps {
     line: DialogLine,
   ) => { label: string; onClick: () => void } | null;
   archetypeClassName?: string;
+  sceneId?: string;
+  archetypeId?: ArchetypeId | null;
 }
 
 export function SketchDialogSequence({
@@ -38,14 +40,45 @@ export function SketchDialogSequence({
   onInteract,
   getSecondaryAction,
   archetypeClassName,
+  sceneId,
+  archetypeId,
 }: SketchDialogSequenceProps) {
   const previousSpeakerRef = useRef<CharacterId | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioUrlRef = useRef<string | null>(null);
+  const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const requestTokenRef = useRef(0);
+  const audioCacheRef = useRef<Map<string, string>>(new Map());
   const lineIndex = initialLineIndex;
-  const [audioUnlocked, setAudioUnlocked] = useState(
-    () => typeof navigator !== "undefined" && Boolean(navigator.userActivation?.hasBeenActive),
-  );
+  const [ttsAvailable, setTtsAvailable] = useState(true);
+  const [audioUnlocked, setAudioUnlocked] = useState(() => {
+    if (typeof navigator === "undefined") {
+      return false;
+    }
+
+    return Boolean(navigator.userActivation?.hasBeenActive);
+  });
+
+  const stopActiveAudio = useCallback(() => {
+    if (!activeAudioRef.current) {
+      return;
+    }
+
+    try {
+      activeAudioRef.current.pause();
+      activeAudioRef.current.currentTime = 0;
+      activeAudioRef.current.src = "";
+    } catch (error) {
+      console.warn("TTS cleanup failed.", error);
+    }
+    activeAudioRef.current = null;
+  }, []);
+
+  const cancelPendingPlayback = useCallback(() => {
+    requestTokenRef.current += 1;
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    stopActiveAudio();
+  }, [stopActiveAudio]);
 
   useEffect(() => {
     const current = lines[lineIndex];
@@ -61,9 +94,54 @@ export function SketchDialogSequence({
     previousSpeakerRef.current = current.speakerType;
   }, [lineIndex, lines, onSpeakerChange]);
 
+  useEffect(() => {
+    if (audioUnlocked) {
+      return;
+    }
+
+    function unlockAudio() {
+      setAudioUnlocked(true);
+    }
+
+    window.addEventListener("pointerdown", unlockAudio, {
+      once: true,
+      capture: true,
+    });
+    window.addEventListener("keydown", unlockAudio, {
+      once: true,
+      capture: true,
+    });
+
+    return () => {
+      window.removeEventListener("pointerdown", unlockAudio, true);
+      window.removeEventListener("keydown", unlockAudio, true);
+    };
+  }, [audioUnlocked]);
+
+  useEffect(() => {
+    const cachedAudio = audioCacheRef.current;
+
+    return () => {
+      cancelPendingPlayback();
+      cachedAudio.forEach((url) => URL.revokeObjectURL(url));
+      cachedAudio.clear();
+    };
+  }, [cancelPendingPlayback]);
+
   const currentLine = lines[lineIndex];
   const speakerType = currentLine?.speakerType ?? ("you" satisfies CharacterId);
   const secondaryAction = currentLine ? getSecondaryAction?.(currentLine) ?? null : null;
+  const currentLineKey = useMemo(() => {
+    if (!currentLine) {
+      return null;
+    }
+
+    if (sceneId) {
+      return `scene:${sceneId}:${currentLine.id}:${archetypeId ?? "default"}`;
+    }
+
+    return `dialog:${currentLine.speakerType}:${currentLine.id}:${currentLine.text}`;
+  }, [archetypeId, currentLine, sceneId]);
   const avatarClassName = useMemo(() => {
     if (speakerType !== "you" || !archetypeClassName) {
       return "sketch-sequence-avatar";
@@ -71,84 +149,136 @@ export function SketchDialogSequence({
 
     return `sketch-sequence-avatar ${archetypeClassName}`;
   }, [archetypeClassName, speakerType]);
-  const stopAudio = useEffectEvent(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
-      audioRef.current = null;
-    }
-
-    if (audioUrlRef.current) {
-      URL.revokeObjectURL(audioUrlRef.current);
-      audioUrlRef.current = null;
-    }
-  });
-  const playCurrentLine = useEffectEvent(async (line: DialogLine) => {
-    stopAudio();
-
-    try {
-      const response = await fetch("/api/tts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: line.text,
-          speakerId: line.speakerType,
-        }),
-      });
-
-      if (!response.ok) {
-        return;
-      }
-
-      const audioBlob = await response.blob();
-      if (!audioBlob.size) {
-        return;
-      }
-
-      const objectUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(objectUrl);
-      audio.preload = "auto";
-      audioUrlRef.current = objectUrl;
-      audioRef.current = audio;
-      await audio.play().catch(() => undefined);
-    } catch {
-      stopAudio();
-    }
-  });
 
   useEffect(() => {
-    function unlockAudio() {
-      setAudioUnlocked(true);
-    }
-
-    window.addEventListener("pointerdown", unlockAudio, { once: true });
-    window.addEventListener("keydown", unlockAudio, { once: true });
-
-    return () => {
-      window.removeEventListener("pointerdown", unlockAudio);
-      window.removeEventListener("keydown", unlockAudio);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!currentLine || !audioUnlocked) {
+    if (!currentLineKey || !currentLine || currentLine.isThought || !ttsAvailable) {
+      cancelPendingPlayback();
       return;
     }
 
-    void playCurrentLine(currentLine);
+    const cacheKey = currentLineKey;
+    const requestToken = requestTokenRef.current + 1;
+    requestTokenRef.current = requestToken;
+    abortControllerRef.current?.abort();
+    stopActiveAudio();
+
+    async function playAudioFromUrl(url: string) {
+      if (requestToken !== requestTokenRef.current || !audioUnlocked) {
+        return;
+      }
+
+      try {
+        const audio = new Audio(url);
+        audio.preload = "auto";
+        activeAudioRef.current = audio;
+
+        audio.addEventListener(
+          "ended",
+          () => {
+            if (activeAudioRef.current === audio) {
+              activeAudioRef.current = null;
+            }
+          },
+          { once: true },
+        );
+
+        await audio.play();
+      } catch (error) {
+        if (requestToken === requestTokenRef.current) {
+          activeAudioRef.current = null;
+        }
+        console.warn("TTS playback failed for the current line.", error);
+      }
+    }
+
+    const cachedUrl = audioCacheRef.current.get(cacheKey);
+    if (cachedUrl) {
+      void playAudioFromUrl(cachedUrl);
+      return;
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    async function fetchAndMaybePlay() {
+      try {
+        const payload = sceneId
+          ? {
+              sceneId,
+              lineId: currentLine.id,
+              archetypeId: archetypeId ?? undefined,
+            }
+          : {
+              text: currentLine.text,
+              speakerId: currentLine.speakerType,
+            };
+
+        const response = await fetch("/api/tts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+
+        if (controller.signal.aborted || requestToken !== requestTokenRef.current) {
+          return;
+        }
+
+        if (!response.ok) {
+          const errorText = await response.text().catch(() => "");
+          console.warn("TTS request failed.", {
+            status: response.status,
+            body: errorText,
+          });
+
+          if ([400, 503].includes(response.status)) {
+            setTtsAvailable(false);
+          }
+          return;
+        }
+
+        const blob = await response.blob();
+
+        if (controller.signal.aborted || requestToken !== requestTokenRef.current) {
+          return;
+        }
+
+        const objectUrl = URL.createObjectURL(blob);
+        audioCacheRef.current.set(cacheKey, objectUrl);
+        await playAudioFromUrl(objectUrl);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        console.warn("TTS fetch failed for the current line.", error);
+      }
+    }
+
+    void fetchAndMaybePlay();
 
     return () => {
-      stopAudio();
-    };
-  }, [audioUnlocked, currentLine]);
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
 
-  useEffect(() => {
-    return () => {
-      stopAudio();
+      if (requestToken === requestTokenRef.current) {
+        stopActiveAudio();
+      }
     };
-  }, []);
+  }, [
+    archetypeId,
+    audioUnlocked,
+    cancelPendingPlayback,
+    currentLine,
+    currentLineKey,
+    sceneId,
+    stopActiveAudio,
+    ttsAvailable,
+  ]);
 
   if (!currentLine) {
     return null;
@@ -158,6 +288,7 @@ export function SketchDialogSequence({
     onInteract?.();
 
     if (lineIndex >= lines.length - 1) {
+      cancelPendingPlayback();
       onSequenceComplete();
       return;
     }
