@@ -18,6 +18,7 @@ import {
   setSunBuddyCarryEnabled,
   setSunBuddyVisible,
   SUN_BUDDY_COOKIE_PITCHFORK_COST,
+  resetRewardsProfile,
 } from "@/lib/rewards";
 import { useRewardsProfile } from "@/lib/use-rewards-profile";
 import type { RewardsBadgeId } from "@/lib/rewards-types";
@@ -197,6 +198,23 @@ export function RewardsDashboard() {
     });
   }
 
+  function handleResetDemoProgress() {
+    const confirmed = window.confirm(
+      "Reset the local rewards demo progress? This clears badges, mission completion, pitchfork balance, and redemption history.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    resetRewardsProfile();
+    refreshProfile();
+    setMessage({
+      tone: "success",
+      text: "Demo rewards progress reset. Badges, missions, balance, and redemption history were cleared.",
+    });
+  }
+
   useEffect(() => {
     const carousel = carouselRef.current;
     if (!carousel) {
@@ -233,13 +251,22 @@ export function RewardsDashboard() {
               Pitchfork Balance
             </h1>
           </div>
-          <div className="rounded-[1.25rem] border border-[#eadfce] bg-[#fff8ef] px-4 py-3 text-right shadow-[0_10px_30px_rgba(44,17,22,0.06)]">
-            <p className="text-[0.72rem] font-black uppercase tracking-[0.16em] text-[#8c1d40]">
-              Available now
-            </p>
-            <p className="mt-1 font-[Arial,sans-serif] text-[1.8rem] font-black text-[#2c1116] sm:text-[2.1rem]">
-              {formatPitchforks(profile.pitchforkBalance)}
-            </p>
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={handleResetDemoProgress}
+              className="inline-flex items-center justify-center rounded-full border border-[#d8cab8] bg-white px-4 py-3 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:bg-[#fff4df]"
+            >
+              Reset demo progress
+            </button>
+            <div className="rounded-[1.25rem] border border-[#eadfce] bg-[#fff8ef] px-4 py-3 text-right shadow-[0_10px_30px_rgba(44,17,22,0.06)]">
+              <p className="text-[0.72rem] font-black uppercase tracking-[0.16em] text-[#8c1d40]">
+                Available now
+              </p>
+              <p className="mt-1 font-[Arial,sans-serif] text-[1.8rem] font-black text-[#2c1116] sm:text-[2.1rem]">
+                {formatPitchforks(profile.pitchforkBalance)}
+              </p>
+            </div>
           </div>
         </div>
       </header>
@@ -288,6 +315,18 @@ export function RewardsDashboard() {
             />
           ))}
         </div>
+
+        {message ? (
+          <div
+            className={`mb-4 shrink-0 rounded-[1.1rem] border px-4 py-3 text-sm leading-6 ${
+              message.tone === "success"
+                ? "border-[#8fd8a8] bg-[#e8fff0] text-[#23492f]"
+                : "border-[#f1cf8b] bg-[#fff7e6] text-[#734f10]"
+            }`}
+          >
+            {message.text}
+          </div>
+        ) : null}
 
         <div
           ref={carouselRef}
@@ -459,18 +498,6 @@ export function RewardsDashboard() {
                     This local demo mirrors the kinds of rewards highlighted by Sun Devil Rewards:
                     tickets, merchandise, attractions, and exclusive experiences.
                   </p>
-
-                  {message ? (
-                    <div
-                      className={`mt-4 rounded-[1.1rem] border px-4 py-3 text-sm leading-6 ${
-                        message.tone === "success"
-                          ? "border-[#8fd8a8] bg-[#e8fff0] text-[#23492f]"
-                          : "border-[#f1cf8b] bg-[#fff7e6] text-[#734f10]"
-                      }`}
-                    >
-                      {message.text}
-                    </div>
-                  ) : null}
                 </div>
 
                 <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-1">

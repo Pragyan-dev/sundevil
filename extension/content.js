@@ -113,6 +113,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
         width: 2rem;
         height: 2rem;
         border: 1px solid rgba(140, 29, 64, 0.16);
@@ -139,6 +140,11 @@
 
       .msl-utility-link {
         white-space: nowrap;
+      }
+
+      .msl-rewards-inline-host {
+        display: inline-flex;
+        align-items: center;
       }
 
       .msl-sparky-launcher {
@@ -531,12 +537,15 @@
 
   function injectRewardsButton() {
     const userInfoButton = document.querySelector(selectors.userInfoButton);
-    const userNameHost =
-      userInfoButton?.closest(".user-name") || document.querySelector(selectors.userNameHost);
     const userName = document.querySelector(selectors.userName);
+    const anchor = userInfoButton || userName;
 
-    if ((!userNameHost && !userName) || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
+    if (!anchor || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
       return;
+    }
+
+    if (userInfoButton?.parentElement) {
+      userInfoButton.parentElement.classList.add("msl-rewards-inline-host");
     }
 
     const button = document.createElement("button");
@@ -549,19 +558,7 @@
       assignLocation(getRewardsDestinationUrl());
     });
 
-    if (userNameHost instanceof HTMLElement) {
-      userNameHost.setAttribute(markers.rewardsHost, "true");
-
-      if (userInfoButton && userNameHost.contains(userInfoButton)) {
-        userNameHost.insertBefore(button, userInfoButton);
-        return;
-      }
-
-      userNameHost.prepend(button);
-      return;
-    }
-
-    userName.insertAdjacentElement("afterend", button);
+    anchor.insertAdjacentElement("afterend", button);
   }
 
   function getBuddyStageImage(stage) {

@@ -138,6 +138,10 @@ export function updateRewardsProfile(
   return writeRewardsProfile(updater(readRewardsProfile()));
 }
 
+export function resetRewardsProfile() {
+  return writeRewardsProfile(createDefaultRewardsProfile());
+}
+
 export function claimDayEntryPitchforks(dayEntryId: string) {
   let awarded = false;
   const profile = updateRewardsProfile((current) => {
