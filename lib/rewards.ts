@@ -16,14 +16,19 @@ import type {
 
 export const REWARDS_STORAGE_KEY = "sundevilconnect-rewards-v1";
 export const REWARDS_UPDATED_EVENT = "sundevilconnect:rewards-updated";
+export const SUN_BUDDY_COOKIE_PITCHFORK_COST = 25;
 
 export function createDefaultRewardsProfile(): RewardsProfile {
   return {
     pitchforkBalance: 0,
+    cookieBalance: 0,
     claimedDayEntryIds: [],
     claimedWorldRewardIds: [],
     obtainedBadgeIds: [],
     redemptionHistory: [],
+    buddyFeedCount: 0,
+    buddyCarryEnabled: false,
+    buddyVisible: true,
   };
 }
 
@@ -45,6 +50,10 @@ export function normalizeRewardsProfile(value: unknown): RewardsProfile {
       typeof candidate.pitchforkBalance === "number" && Number.isFinite(candidate.pitchforkBalance)
         ? candidate.pitchforkBalance
         : defaults.pitchforkBalance,
+    cookieBalance:
+      typeof candidate.cookieBalance === "number" && Number.isFinite(candidate.cookieBalance)
+        ? candidate.cookieBalance
+        : defaults.cookieBalance,
     claimedDayEntryIds: Array.isArray(candidate.claimedDayEntryIds)
       ? dedupe(candidate.claimedDayEntryIds.filter((item): item is string => typeof item === "string"))
       : defaults.claimedDayEntryIds,
@@ -71,6 +80,18 @@ export function normalizeRewardsProfile(value: unknown): RewardsProfile {
             redeemedAt: item.redeemedAt,
           }))
       : defaults.redemptionHistory,
+    buddyFeedCount:
+      typeof candidate.buddyFeedCount === "number" && Number.isFinite(candidate.buddyFeedCount)
+        ? candidate.buddyFeedCount
+        : defaults.buddyFeedCount,
+    buddyCarryEnabled:
+      typeof candidate.buddyCarryEnabled === "boolean"
+        ? candidate.buddyCarryEnabled
+        : defaults.buddyCarryEnabled,
+    buddyVisible:
+      typeof candidate.buddyVisible === "boolean"
+        ? candidate.buddyVisible
+        : defaults.buddyVisible,
   };
 }
 
@@ -196,6 +217,92 @@ export function spendPitchforks(amount: number) {
   });
 
   return { success, profile };
+}
+
+export function convertPitchforksToCookies(cookieCount: number) {
+  const safeCookieCount = Math.max(1, Math.floor(cookieCount));
+  const pitchforkCost = safeCookieCount * SUN_BUDDY_COOKIE_PITCHFORK_COST;
+  let success = false;
+
+  const profile = updateRewardsProfile((current) => {
+    if (current.pitchforkBalance < pitchforkCost) {
+      return current;
+    }
+
+    success = true;
+
+    return {
+      ...current,
+      pitchforkBalance: current.pitchforkBalance - pitchforkCost,
+      cookieBalance: current.cookieBalance + safeCookieCount,
+    };
+  });
+
+  return {
+    success,
+    cookieCount: safeCookieCount,
+    pitchforkCost,
+    profile,
+  };
+}
+
+export function feedSunBuddy(cookieCost = 1) {
+  const safeCookieCost = Math.max(1, Math.floor(cookieCost));
+  let success = false;
+
+  const profile = updateRewardsProfile((current) => {
+    if (current.cookieBalance < safeCookieCost) {
+      return current;
+    }
+
+    success = true;
+
+    return {
+      ...current,
+      cookieBalance: current.cookieBalance - safeCookieCost,
+      buddyFeedCount: current.buddyFeedCount + safeCookieCost,
+      buddyCarryEnabled: true,
+      buddyVisible: true,
+    };
+  });
+
+  return {
+    success,
+    cookieCost: safeCookieCost,
+    profile,
+  };
+}
+
+export function setSunBuddyCarryEnabled(enabled: boolean) {
+  return updateRewardsProfile((current) => ({
+    ...current,
+    buddyCarryEnabled: enabled,
+    buddyVisible: enabled ? current.buddyVisible : false,
+  }));
+}
+
+export function setSunBuddyVisible(visible: boolean) {
+  return updateRewardsProfile((current) => ({
+    ...current,
+    buddyVisible: visible,
+  }));
+}
+
+export function toggleSunBuddyVisible() {
+  const current = readRewardsProfile();
+  return setSunBuddyVisible(!current.buddyVisible);
+}
+
+export function getSunBuddyStage(feedCount: number) {
+  if (feedCount >= 8) {
+    return 3;
+  }
+
+  if (feedCount >= 3) {
+    return 2;
+  }
+
+  return 1;
 }
 
 export function redeemPitchforkReward(rewardId: string): RewardsRedemptionResult {

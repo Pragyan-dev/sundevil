@@ -15,17 +15,11 @@ import { RewardToast } from "@/components/simulation/week/RewardToast";
 import { CharacterAvatar } from "@/components/simulation/CharacterAvatar";
 import {
   createWeekSimulatorProgress,
-  getDayUnlockState,
   getWeekDay,
   getWeekReminders,
   isWeekSimulatorProgress,
   weekSimulatorDays,
 } from "@/data/week-simulator";
-import { DAY_ENTRY_PITCHFORK_REWARD } from "@/lib/rewards-data";
-import {
-  claimDayEntryPitchforks,
-  getDayEntryRewardId,
-} from "@/lib/rewards";
 import type {
   ScheduledHomeworkSlot,
   WeekDayId,
@@ -51,14 +45,6 @@ const homeworkConfettiPieces = [
   { left: "76%", delay: "170ms", duration: "2500ms", color: "#8c1d40", rotate: "12deg" },
   { left: "89%", delay: "70ms", duration: "2350ms", color: "#ffe9ba", rotate: "-16deg" },
 ] as const;
-
-function clampDemoUnlockedThroughDay(value: number) {
-  return Math.min(Math.max(Math.floor(value), 1), weekSimulatorDays.length);
-}
-
-function getDayNumber(dayId: WeekDayId) {
-  return getWeekDay(dayId)?.number ?? 1;
-}
 
 function createToast(
   kind: WeekRewardToast["kind"],
@@ -115,7 +101,7 @@ function getDayComplete(progress: WeekSimulatorProgress, dayId: WeekDayId) {
 
 function getResolvedDayEvents(day: (typeof weekSimulatorDays)[number], progress: WeekSimulatorProgress) {
   return day.events.flatMap((event) => {
-    if (event.type !== "homework" || event.id !== "day4-homework-session") {
+    if (event.id !== "day4-homework-session" || event.type !== "homework") {
       return [event];
     }
 
@@ -290,18 +276,7 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
       try {
         const parsed = JSON.parse(raw) as unknown;
         if (isWeekSimulatorProgress(parsed)) {
-          const mergedProgress = { ...createWeekSimulatorProgress(), ...parsed };
-          const demoUnlockedThroughDay = clampDemoUnlockedThroughDay(mergedProgress.demoUnlockedThroughDay);
-          const selectedDayNumber = getDayNumber(mergedProgress.selectedDayId);
-
-          nextProgress = {
-            ...mergedProgress,
-            demoUnlockedThroughDay,
-            selectedDayId:
-              selectedDayNumber <= demoUnlockedThroughDay
-                ? mergedProgress.selectedDayId
-                : "day-1",
-          };
+          nextProgress = { ...createWeekSimulatorProgress(), ...parsed };
         }
       } catch {
         window.localStorage.removeItem(WEEK_SIMULATOR_STORAGE_KEY);
@@ -405,36 +380,6 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
     };
   }, [dayReminders, progress.acknowledgedReminderIds]);
 
-  useEffect(() => {
-    if (!isHydrated) {
-      return;
-    }
-
-    const dayEntryResult = claimDayEntryPitchforks(getDayEntryRewardId(selectedDay.number));
-
-    if (!dayEntryResult.awarded) {
-      return;
-    }
-
-    const frameId = window.requestAnimationFrame(() => {
-      setToasts((current) => [
-        {
-          ...createToast(
-            "points",
-            `${DAY_ENTRY_PITCHFORK_REWARD} pitchforks earned`,
-            "You earned 20 pitchforks for logging into a new day.",
-          ),
-          points: DAY_ENTRY_PITCHFORK_REWARD,
-        },
-        ...current,
-      ].slice(0, 4));
-    });
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-    };
-  }, [isHydrated, selectedDay.number]);
-
   function applyProgressUpdate(
     updater: (
       current: WeekSimulatorProgress,
@@ -471,25 +416,7 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
   }
 
   function openDay(dayId: WeekDayId) {
-    setProgress((current) => {
-      const dayNumber = getDayNumber(dayId);
-      const unlocked = getDayUnlockState(current, dayId);
-      const demoUnlockable = dayNumber === current.demoUnlockedThroughDay + 1;
-
-      if (unlocked) {
-        return { ...current, selectedDayId: dayId };
-      }
-
-      if (demoUnlockable) {
-        return {
-          ...current,
-          selectedDayId: dayId,
-          demoUnlockedThroughDay: dayNumber,
-        };
-      }
-
-      return current;
-    });
+    setProgress((current) => ({ ...current, selectedDayId: dayId }));
   }
 
   function openEvent(eventId: string) {
@@ -713,15 +640,6 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
     });
   }
 
-  function resetDemoUnlocks() {
-    setProgress((current) => ({
-      ...current,
-      demoUnlockedThroughDay: 1,
-      selectedDayId: "day-1",
-    }));
-    setActiveEventId(null);
-  }
-
   if (!isHydrated) {
     return (
       <div className="rounded-[2rem] border border-white/16 bg-white/10 px-6 py-10 text-center text-white shadow-[0_24px_80px_rgba(44,17,22,0.18)] backdrop-blur-md">
@@ -748,28 +666,17 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
       />
 
       <section className="rounded-[1.7rem] border border-[#f0dbc6] bg-[#fff8ef] p-3 shadow-[0_16px_36px_rgba(44,17,22,0.08)] sm:p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <CharacterAvatar expression="happy" size="md" framed={false} />
+        <div className="flex items-center gap-2.5">
+          <CharacterAvatar expression="happy" size="md" framed={false} />
+          <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
                 Sparky note
               </p>
               <p className="mt-1 text-sm leading-5 text-[#6f4a4e]">
-                Day 1 starts unlocked. Click the next locked day when you want to simulate
-                unlocking the week for demo use.
+                Every day is open for demo use, so you can jump around instead of unlocking the week one step at a time.
               </p>
             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={resetDemoUnlocks}
-              className="inline-flex items-center justify-center rounded-full border border-[#e4c79f] bg-white px-4 py-2 text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#d6ab63] hover:bg-[#fff4df]"
-            >
-              Reset demo
-            </button>
             <button
               type="button"
               onClick={onReloadProgress}
@@ -783,19 +690,15 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
         <div className="mt-3 overflow-x-auto pb-1">
           <div className="grid min-w-max grid-flow-col auto-cols-[12.2rem] items-stretch gap-2 lg:min-w-0 lg:grid-flow-row lg:grid-cols-7 lg:auto-cols-auto lg:gap-2">
             {weekSimulatorDays.map((day) => {
-              const unlocked = getDayUnlockState(progress, day.id);
-              const demoUnlockable = day.number === progress.demoUnlockedThroughDay + 1;
-              const reminderCount = unlocked
-                ? reminders.filter((reminder) => reminder.dayId === day.id).length
-                : 0;
+              const reminderCount = reminders.filter((reminder) => reminder.dayId === day.id).length;
 
               return (
                 <div key={day.id} className="h-full lg:min-w-0">
                   <DayCard
                     day={day}
                     selected={progress.selectedDayId === day.id}
-                    unlocked={unlocked}
-                    demoUnlockable={demoUnlockable}
+                    unlocked
+                    demoUnlockable={false}
                     completed={getDayComplete(progress, day.id)}
                     reminderCount={reminderCount}
                     onClick={() => openDay(day.id)}

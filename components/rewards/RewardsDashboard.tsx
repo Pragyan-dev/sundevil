@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -8,9 +9,15 @@ import {
   rewardsRedemptionCatalog,
 } from "@/lib/rewards-data";
 import {
+  convertPitchforksToCookies,
+  feedSunBuddy,
   formatPitchforks,
   getDayEntryRewardId,
+  getSunBuddyStage,
   redeemPitchforkReward,
+  setSunBuddyCarryEnabled,
+  setSunBuddyVisible,
+  SUN_BUDDY_COOKIE_PITCHFORK_COST,
   resetRewardsProfile,
 } from "@/lib/rewards";
 import { useRewardsProfile } from "@/lib/use-rewards-profile";
@@ -26,13 +33,24 @@ type ActionMessage = {
 const CARD_SURFACE =
   "relative h-full overflow-hidden rounded-[2rem] border border-[#eadfce] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(252,247,240,0.94))] shadow-[0_24px_80px_rgba(44,17,22,0.08)]";
 
-const SLIDE_TITLES = ["Missions", "Badges", "Pitchfork Redemption"] as const;
+const SLIDE_TITLES = ["Missions", "Badges", "Pitchfork Redemption", "Sun Buddy"] as const;
+const buddyStageImage = {
+  1: "/buddy-stage-1.png",
+  2: "/buddy-stage-2.png",
+  3: "/buddy-stage-3.png",
+} as const;
+const buddyStageLabel = {
+  1: "Sprout",
+  2: "Glow-up",
+  3: "Full sun",
+} as const;
 
 export function RewardsDashboard() {
   const { profile, refreshProfile } = useRewardsProfile();
   const [activeSlide, setActiveSlide] = useState(0);
   const [message, setMessage] = useState<ActionMessage | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
+  const buddyStage = useMemo(() => getSunBuddyStage(profile.buddyFeedCount), [profile.buddyFeedCount]);
 
   const dayOneClaimed = profile.claimedDayEntryIds.includes(getDayEntryRewardId(1));
 
@@ -121,6 +139,62 @@ export function RewardsDashboard() {
     setMessage({
       tone: "success",
       text: `${reward.title} redeemed for ${formatPitchforks(reward.cost)} pitchforks.`,
+    });
+  }
+
+  function handleConvertCookies(cookieCount: number) {
+    const result = convertPitchforksToCookies(cookieCount);
+
+    if (!result.success) {
+      setMessage({
+        tone: "warning",
+        text: `You need ${formatPitchforks(result.pitchforkCost)} pitchforks to convert ${result.cookieCount} cookie${result.cookieCount === 1 ? "" : "s"}.`,
+      });
+      return;
+    }
+
+    refreshProfile();
+    setMessage({
+      tone: "success",
+      text: `${result.cookieCount} cookie${result.cookieCount === 1 ? "" : "s"} baked for ${formatPitchforks(result.pitchforkCost)} pitchforks.`,
+    });
+  }
+
+  function handleFeedBuddy() {
+    const result = feedSunBuddy(1);
+
+    if (!result.success) {
+      setMessage({
+        tone: "warning",
+        text: "You need at least 1 cookie before Sun Buddy can snack.",
+      });
+      return;
+    }
+
+    refreshProfile();
+    setMessage({
+      tone: "success",
+      text: "Sun Buddy had a cookie and grew a little brighter.",
+    });
+  }
+
+  function handleCarryToggle(enabled: boolean) {
+    setSunBuddyCarryEnabled(enabled);
+    refreshProfile();
+    setMessage({
+      tone: "success",
+      text: enabled
+        ? "Sun Buddy will now follow you around the app. Press Shift + B anytime to hide or show it."
+        : "Sun Buddy is resting for now.",
+    });
+  }
+
+  function handleVisibilityToggle(visible: boolean) {
+    setSunBuddyVisible(visible);
+    refreshProfile();
+    setMessage({
+      tone: "success",
+      text: visible ? "Sun Buddy is visible again." : "Sun Buddy is hidden until you bring it back.",
     });
   }
 
@@ -513,6 +587,189 @@ export function RewardsDashboard() {
                       >
                         Browse the official Sun Devil Rewards site
                       </a>
+                    </aside>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div className="min-h-0 w-full shrink-0 snap-start">
+            <article className={CARD_SURFACE}>
+              <div className="flex h-full min-h-0 flex-col p-5 sm:p-6">
+                <div className="shrink-0">
+                  <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                    Sun Buddy
+                  </p>
+                  <h2 className="mt-2 font-[Arial,sans-serif] text-[1.5rem] font-black uppercase tracking-[0.06em] text-[#2c1116]">
+                    Feed your buddy and take it with you
+                  </h2>
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-[#6f4a4e]">
+                    Convert pitchforks into cookies, feed Sun Buddy, and carry it through the app as a quiet companion.
+                  </p>
+
+                  {message ? (
+                    <div
+                      className={`mt-4 rounded-[1.1rem] border px-4 py-3 text-sm leading-6 ${
+                        message.tone === "success"
+                          ? "border-[#8fd8a8] bg-[#e8fff0] text-[#23492f]"
+                          : "border-[#f1cf8b] bg-[#fff7e6] text-[#734f10]"
+                      }`}
+                    >
+                      {message.text}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-1">
+                  <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
+                    <div className="grid gap-4">
+                      <section className="rounded-[1.6rem] border border-[#eadfce] bg-[linear-gradient(180deg,#fffdf8,#fff6de)] p-5">
+                        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.95),rgba(255,235,170,0.92)_60%,rgba(255,198,39,0.55))] shadow-[0_18px_36px_rgba(255,198,39,0.22)]">
+                              <Image
+                                src={buddyStageImage[buddyStage]}
+                                alt="Sun Buddy growth stage"
+                                fill
+                                className="object-contain p-2"
+                                sizes="112px"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                                Current stage
+                              </p>
+                              <h3 className="mt-2 font-[Arial,sans-serif] text-[1.45rem] font-black text-[#2c1116]">
+                                {buddyStageLabel[buddyStage]}
+                              </h3>
+                              <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
+                                {profile.buddyFeedCount} cookie{profile.buddyFeedCount === 1 ? "" : "s"} fed so far
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-2 sm:text-right">
+                            <div className="rounded-[1rem] border border-[#eadfce] bg-white/85 px-4 py-3">
+                              <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#8c1d40]">
+                                Cookies
+                              </p>
+                              <p className="mt-1 text-[1.55rem] font-black text-[#2c1116]">
+                                {profile.cookieBalance}
+                              </p>
+                            </div>
+                            <div className="rounded-[1rem] border border-[#eadfce] bg-white/85 px-4 py-3">
+                              <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#8c1d40]">
+                                Pitchfork cost
+                              </p>
+                              <p className="mt-1 text-sm font-bold text-[#2c1116]">
+                                {formatPitchforks(SUN_BUDDY_COOKIE_PITCHFORK_COST)} per cookie
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section className="grid gap-4 lg:grid-cols-2">
+                        <div className="rounded-[1.45rem] border border-[#eadfce] bg-white/90 p-4">
+                          <p className="text-[0.72rem] font-black uppercase tracking-[0.16em] text-[#8c1d40]">
+                            Bake cookies
+                          </p>
+                          <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">
+                            Trade pitchforks for buddy snacks.
+                          </p>
+                          <div className="mt-4 flex flex-wrap gap-3">
+                            <button
+                              type="button"
+                              onClick={() => handleConvertCookies(1)}
+                              className="rounded-full bg-[#ffc627] px-4 py-2.5 text-sm font-black text-[#2c1116] transition hover:-translate-y-0.5 hover:bg-[#f4bb14]"
+                            >
+                              1 cookie
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleConvertCookies(5)}
+                              className="rounded-full border border-[#d8cab8] bg-white px-4 py-2.5 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:bg-[#fff4df]"
+                            >
+                              5 cookies
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="rounded-[1.45rem] border border-[#eadfce] bg-white/90 p-4">
+                          <p className="text-[0.72rem] font-black uppercase tracking-[0.16em] text-[#8c1d40]">
+                            Feed buddy
+                          </p>
+                          <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">
+                            Each cookie helps Sun Buddy grow into the next phase.
+                          </p>
+                          <div className="mt-4 flex flex-wrap gap-3">
+                            <button
+                              type="button"
+                              onClick={handleFeedBuddy}
+                              className="rounded-full bg-[#8c1d40] px-4 py-2.5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
+                            >
+                              Feed 1 cookie
+                            </button>
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+
+                    <aside className="flex h-fit flex-col gap-4 rounded-[1.5rem] border border-[#eadfce] bg-[#fff9f1] p-4">
+                      <div className="rounded-[1.2rem] border border-[#eadfce] bg-white px-4 py-4">
+                        <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#8c1d40]">
+                          Carry buddy
+                        </p>
+                        <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">
+                          Keep Sun Buddy around the app as a small companion.
+                        </p>
+                        <div className="mt-4 flex flex-wrap gap-3">
+                          <button
+                            type="button"
+                            onClick={() => handleCarryToggle(true)}
+                            className={`rounded-full px-4 py-2.5 text-sm font-black transition ${
+                              profile.buddyCarryEnabled
+                                ? "bg-[#16a34a] text-white"
+                                : "bg-[#8c1d40] text-white hover:-translate-y-0.5 hover:bg-[#731736]"
+                            }`}
+                          >
+                            {profile.buddyCarryEnabled ? "Carrying now" : "Take buddy with me"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCarryToggle(false)}
+                            className="rounded-full border border-[#d8cab8] bg-white px-4 py-2.5 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:bg-[#fff4df]"
+                          >
+                            Let buddy rest
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="rounded-[1.2rem] border border-[#eadfce] bg-white px-4 py-4">
+                        <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#8c1d40]">
+                          Quick toggle
+                        </p>
+                        <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">
+                          Press <span className="font-black text-[#2c1116]">Shift + B</span> anywhere in the app to make Sun Buddy appear or disappear.
+                        </p>
+                        <div className="mt-4 flex flex-wrap gap-3">
+                          <button
+                            type="button"
+                            onClick={() => handleVisibilityToggle(true)}
+                            className="rounded-full bg-[#ffc627] px-4 py-2.5 text-sm font-black text-[#2c1116] transition hover:-translate-y-0.5 hover:bg-[#f4bb14]"
+                          >
+                            Show buddy
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleVisibilityToggle(false)}
+                            className="rounded-full border border-[#d8cab8] bg-white px-4 py-2.5 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:bg-[#fff4df]"
+                          >
+                            Hide buddy
+                          </button>
+                        </div>
+                      </div>
                     </aside>
                   </div>
                 </div>

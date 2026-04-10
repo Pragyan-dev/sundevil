@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { FloatingChatWidget } from "@/components/FloatingChatWidget";
 import { Navbar } from "@/components/Navbar";
+import { SunBuddyCompanion } from "@/components/rewards/SunBuddyCompanion";
 
 export function AppChrome({
   children,
@@ -20,6 +21,7 @@ export function AppChrome({
     <div className="app-shell">
       {showSharedChrome ? <Navbar /> : null}
       <main className={isRewardsPage ? "h-[100dvh] overflow-hidden" : undefined}>{children}</main>
+      <SunBuddyCompanion />
       {showSharedChrome ? <FloatingChatWidget /> : null}
     </div>
   );

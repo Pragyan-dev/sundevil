@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Buddy Sync</title>
+  </head>
+  <body>
+    <script>
+      (function () {
+        const STORAGE_KEY = "sundevilconnect-rewards-v1";
+
+        function createDefaultProfile() {
+          return {
+            pitchforkBalance: 0,
+            cookieBalance: 0,
+            buddyFeedCount: 0,
+            buddyCarryEnabled: false,
+            buddyVisible: true,
+          };
+        }
+
+        function normalizeProfile(value) {
+          const defaults = createDefaultProfile();
+
+          if (!value || typeof value !== "object") {
+            return defaults;
+          }
+
+          return {
+            pitchforkBalance:
+              typeof value.pitchforkBalance === "number" && Number.isFinite(value.pitchforkBalance)
+                ? value.pitchforkBalance
+                : defaults.pitchforkBalance,
+            cookieBalance:
+              typeof value.cookieBalance === "number" && Number.isFinite(value.cookieBalance)
+                ? value.cookieBalance
+                : defaults.cookieBalance,
+            buddyFeedCount:
+              typeof value.buddyFeedCount === "number" && Number.isFinite(value.buddyFeedCount)
+                ? value.buddyFeedCount
+                : defaults.buddyFeedCount,
+            buddyCarryEnabled:
+              typeof value.buddyCarryEnabled === "boolean"
+                ? value.buddyCarryEnabled
+                : defaults.buddyCarryEnabled,
+            buddyVisible:
+              typeof value.buddyVisible === "boolean"
+                ? value.buddyVisible
+                : defaults.buddyVisible,
+          };
+        }
+
+        function readProfile() {
+          const raw = window.localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            return createDefaultProfile();
+          }
+
+          try {
+            return normalizeProfile(JSON.parse(raw));
+          } catch {
+            return createDefaultProfile();
+          }
+        }
+
+        function writeProfile(profile) {
+          const normalized = normalizeProfile(profile);
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+          return normalized;
+        }
+
+        function updateProfile(updater) {
+          return writeProfile(updater(readProfile()));
+        }
+
+        function getBuddyStage(feedCount) {
+          if (feedCount >= 8) {
+            return 3;
+          }
+
+          if (feedCount >= 3) {
+            return 2;
+          }
+
+          return 1;
+        }
+
+        function buildSnapshot() {
+          const profile = readProfile();
+          return {
+            cookieBalance: profile.cookieBalance,
+            buddyFeedCount: profile.buddyFeedCount,
+            buddyCarryEnabled: profile.buddyCarryEnabled,
+            buddyVisible: profile.buddyVisible,
+            buddyStage: getBuddyStage(profile.buddyFeedCount),
+          };
+        }
+
+        function postSnapshot() {
+          window.parent.postMessage(
+            {
+              type: "msl-buddy-sync",
+              payload: buildSnapshot(),
+            },
+            "*",
+          );
+        }
+
+        window.addEventListener("storage", postSnapshot);
+        window.addEventListener("focus", postSnapshot);
+        window.addEventListener("message", (event) => {
+          const data = event.data;
+
+          if (!data || typeof data !== "object") {
+            return;
+          }
+
+          if (data.type === "msl-buddy-refresh") {
+            postSnapshot();
+            return;
+          }
+
+          if (data.type === "msl-buddy-toggle-visibility") {
+            updateProfile((current) => ({
+              ...current,
+              buddyVisible: !current.buddyVisible,
+            }));
+            postSnapshot();
+            return;
+          }
+
+          if (data.type === "msl-buddy-set-visibility" && typeof data.visible === "boolean") {
+            updateProfile((current) => ({
+              ...current,
+              buddyVisible: data.visible,
+            }));
+            postSnapshot();
+          }
+        });
+
+        postSnapshot();
+      })();
+    </script>
+  </body>
+</html>

@@ -7,6 +7,7 @@
     utilityNav: ".universal-nav .nav-grid",
     loginStatus: ".universal-nav .nav-grid .login-status",
     userName: ".universal-nav .nav-grid .login-status .name, .user-name",
+    userNameHost: ".universal-nav .nav-grid .login-status .user-name, .user-name",
     userInfoButton: "#user-info-popup",
   };
 
@@ -14,12 +15,16 @@
     myStudentLife: "data-my-student-life-link",
     dashboard: "data-my-student-life-dashboard",
     rewardsButton: "data-my-student-life-rewards",
+    rewardsHost: "data-my-student-life-rewards-host",
+    buddyRoot: "data-my-student-life-buddy",
+    buddySyncFrame: "data-my-student-life-buddy-sync",
     sparkyRoot: "data-my-student-life-sparky",
     sparkyStyle: "data-my-student-life-style",
   };
 
   const state = {
     sparkyOpen: false,
+    buddySnapshot: null,
   };
 
   function getAppBaseUrl() {
@@ -44,9 +49,14 @@
     rewards: new URL("/rewards", appBaseUrl).toString(),
     chat: new URL("/chat", appBaseUrl).toString(),
     chatEmbed: new URL("/chat/embed", appBaseUrl).toString(),
+    buddySync: new URL("/buddy-sync.html", appBaseUrl).toString(),
     mascot: new URL("/mascot/happy.png", appBaseUrl).toString(),
+    buddyStage1: new URL("/buddy-stage-1.png", appBaseUrl).toString(),
+    buddyStage2: new URL("/buddy-stage-2.png", appBaseUrl).toString(),
+    buddyStage3: new URL("/buddy-stage-3.png", appBaseUrl).toString(),
   };
   const canEmbedChat = appBaseUrl.protocol === "https:";
+  const canSyncBuddy = appBaseUrl.protocol === "https:";
   const defaultRewardsUserName = "Chirag";
   const defaultRewardsSignOutUrl = "https://webapp4.asu.edu/myasu/Signout";
 
@@ -60,6 +70,20 @@
 
   function takeTextContent(node) {
     return node?.textContent?.trim() || "";
+  }
+
+  function isTypingTarget(target) {
+    if (!(target instanceof HTMLElement)) {
+      return false;
+    }
+
+    const tagName = target.tagName.toLowerCase();
+    return (
+      tagName === "input" ||
+      tagName === "textarea" ||
+      tagName === "select" ||
+      target.isContentEditable
+    );
   }
 
   function getRewardsDestinationUrl() {
@@ -92,13 +116,19 @@
         flex-shrink: 0;
         width: 2rem;
         height: 2rem;
-        margin-left: 0.55rem;
         border: 1px solid rgba(140, 29, 64, 0.16);
         border-radius: 999px;
         background: #fff;
         color: #8c1d40;
+        flex-shrink: 0;
         cursor: pointer;
         transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+      }
+
+      [data-my-student-life-rewards-host="true"] {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
       }
 
       .msl-rewards-link:hover,
@@ -309,6 +339,94 @@
         background: #5e1030;
       }
 
+      .msl-buddy-sync-frame {
+        position: fixed;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+        border: 0;
+      }
+
+      .msl-buddy-chip {
+        position: fixed;
+        left: 1rem;
+        bottom: 1rem;
+        z-index: 2147483644;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        max-width: min(19rem, calc(100vw - 2rem));
+        border: 1px solid rgba(255, 198, 39, 0.28);
+        border-radius: 999px;
+        background: rgba(255, 251, 239, 0.96);
+        box-shadow: 0 16px 42px rgba(20, 13, 11, 0.18);
+        padding: 0.55rem 0.85rem 0.55rem 0.55rem;
+        backdrop-filter: blur(10px);
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      }
+
+      .msl-buddy-chip:hover,
+      .msl-buddy-chip:focus-visible {
+        transform: translateY(-1px);
+        box-shadow: 0 20px 50px rgba(20, 13, 11, 0.22);
+        border-color: rgba(255, 198, 39, 0.5);
+      }
+
+      .msl-buddy-chip[hidden] {
+        display: none;
+      }
+
+      .msl-buddy-orb {
+        position: relative;
+        width: 3.1rem;
+        height: 3.1rem;
+        flex-shrink: 0;
+        border-radius: 999px;
+        background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.96), rgba(255, 239, 187, 0.95) 62%, rgba(255, 198, 39, 0.58));
+      }
+
+      .msl-buddy-orb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 0.1rem;
+      }
+
+      .msl-buddy-copy {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .msl-buddy-kicker {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #8c1d40;
+      }
+
+      .msl-buddy-line {
+        margin-top: 0.08rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        line-height: 1.2;
+        color: #2c1116;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .msl-buddy-meta {
+        margin-top: 0.18rem;
+        font-size: 0.74rem;
+        line-height: 1.2;
+        color: rgba(44, 17, 22, 0.72);
+      }
+
       @media (max-width: 640px) {
         .msl-sparky-launcher {
           right: 0.75rem;
@@ -326,6 +444,12 @@
 
         .msl-sparky-label {
           display: none;
+        }
+
+        .msl-buddy-chip {
+          left: 0.75rem;
+          bottom: 0.75rem;
+          max-width: min(16rem, calc(100vw - 1.5rem));
         }
       }
     `;
@@ -413,10 +537,11 @@
 
   function injectRewardsButton() {
     const userInfoButton = document.querySelector(selectors.userInfoButton);
+    const userNameHost =
+      userInfoButton?.closest(".user-name") || document.querySelector(selectors.userNameHost);
     const userName = document.querySelector(selectors.userName);
-    const anchor = userInfoButton || userName;
 
-    if (!anchor || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
+    if ((!userNameHost && !userName) || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
       return;
     }
 
@@ -434,7 +559,145 @@
       assignLocation(getRewardsDestinationUrl());
     });
 
-    anchor.insertAdjacentElement("afterend", button);
+    if (userNameHost instanceof HTMLElement) {
+      userNameHost.setAttribute(markers.rewardsHost, "true");
+
+      if (userInfoButton && userNameHost.contains(userInfoButton)) {
+        userNameHost.insertBefore(button, userInfoButton);
+        return;
+      }
+
+      userNameHost.prepend(button);
+      return;
+    }
+
+    userName.insertAdjacentElement("afterend", button);
+  }
+
+  function getBuddyStageImage(stage) {
+    if (stage === 3) {
+      return urls.buddyStage3;
+    }
+
+    if (stage === 2) {
+      return urls.buddyStage2;
+    }
+
+    return urls.buddyStage1;
+  }
+
+  function getBuddyStageLabel(stage) {
+    if (stage === 3) {
+      return "Full sun";
+    }
+
+    if (stage === 2) {
+      return "Glow-up";
+    }
+
+    return "Sprout";
+  }
+
+  function normalizeBuddySnapshot(value) {
+    if (!value || typeof value !== "object") {
+      return null;
+    }
+
+    const stage = Number(value.buddyStage);
+    const cookieBalance = Number(value.cookieBalance);
+    const buddyFeedCount = Number(value.buddyFeedCount);
+
+    return {
+      buddyStage: stage === 2 || stage === 3 ? stage : 1,
+      cookieBalance: Number.isFinite(cookieBalance) ? Math.max(0, cookieBalance) : 0,
+      buddyFeedCount: Number.isFinite(buddyFeedCount) ? Math.max(0, buddyFeedCount) : 0,
+      buddyCarryEnabled: Boolean(value.buddyCarryEnabled),
+      buddyVisible: Boolean(value.buddyVisible),
+    };
+  }
+
+  function postBuddySyncMessage(message) {
+    const frame = document.querySelector(`[${markers.buddySyncFrame}="true"]`);
+
+    if (!(frame instanceof HTMLIFrameElement) || !frame.contentWindow) {
+      return;
+    }
+
+    frame.contentWindow.postMessage(message, appBaseUrl.origin);
+  }
+
+  function injectBuddySyncFrame() {
+    if (!canSyncBuddy || document.body.querySelector(`[${markers.buddySyncFrame}="true"]`)) {
+      return;
+    }
+
+    const frame = document.createElement("iframe");
+    frame.className = "msl-buddy-sync-frame";
+    frame.setAttribute(markers.buddySyncFrame, "true");
+    frame.setAttribute("aria-hidden", "true");
+    frame.tabIndex = -1;
+    frame.src = urls.buddySync;
+    frame.addEventListener("load", () => {
+      postBuddySyncMessage({ type: "msl-buddy-refresh" });
+    });
+
+    document.body.append(frame);
+  }
+
+  function updateBuddyWidget(snapshot) {
+    state.buddySnapshot = snapshot;
+
+    if (!canSyncBuddy) {
+      return;
+    }
+
+    let buddy = document.body.querySelector(`[${markers.buddyRoot}="true"]`);
+
+    if (!(buddy instanceof HTMLButtonElement)) {
+      buddy = document.createElement("button");
+      buddy.type = "button";
+      buddy.className = "msl-buddy-chip";
+      buddy.hidden = true;
+      buddy.setAttribute(markers.buddyRoot, "true");
+      buddy.setAttribute("aria-label", "Open Sun Buddy rewards");
+      buddy.innerHTML = `
+        <span class="msl-buddy-orb">
+          <img alt="Sun Buddy" />
+        </span>
+        <span class="msl-buddy-copy">
+          <span class="msl-buddy-kicker">Sun Buddy</span>
+          <span class="msl-buddy-line"></span>
+          <span class="msl-buddy-meta"></span>
+        </span>
+      `;
+      buddy.addEventListener("click", () => {
+        assignLocation(getRewardsDestinationUrl());
+      });
+      document.body.append(buddy);
+    }
+
+    if (!snapshot || !snapshot.buddyCarryEnabled || !snapshot.buddyVisible) {
+      buddy.hidden = true;
+      return;
+    }
+
+    const image = buddy.querySelector(".msl-buddy-orb img");
+    const line = buddy.querySelector(".msl-buddy-line");
+    const meta = buddy.querySelector(".msl-buddy-meta");
+
+    if (image instanceof HTMLImageElement) {
+      image.src = getBuddyStageImage(snapshot.buddyStage);
+    }
+
+    if (line) {
+      line.textContent = `${getBuddyStageLabel(snapshot.buddyStage)} by your side`;
+    }
+
+    if (meta) {
+      meta.textContent = `${snapshot.cookieBalance} cookies left • Shift + B to hide`;
+    }
+
+    buddy.hidden = false;
   }
 
   function setSparkyOpen(nextOpen) {
@@ -556,12 +819,32 @@
     injectPrimaryNavLink();
     injectDashboardLink();
     injectRewardsButton();
+    injectBuddySyncFrame();
     injectSparkyWidget();
   }
+
+  window.addEventListener("message", (event) => {
+    if (event.origin !== appBaseUrl.origin) {
+      return;
+    }
+
+    const data = event.data;
+
+    if (!data || typeof data !== "object" || data.type !== "msl-buddy-sync") {
+      return;
+    }
+
+    updateBuddyWidget(normalizeBuddySnapshot(data.payload));
+  });
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && state.sparkyOpen) {
       setSparkyOpen(false);
+    }
+
+    if (canSyncBuddy && event.shiftKey && event.key.toLowerCase() === "b" && !isTypingTarget(event.target)) {
+      event.preventDefault();
+      postBuddySyncMessage({ type: "msl-buddy-toggle-visibility" });
     }
   });
 
