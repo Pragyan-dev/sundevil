@@ -89,6 +89,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
         width: 2rem;
         height: 2rem;
         margin-left: 0.55rem;
@@ -109,6 +110,11 @@
 
       .msl-utility-link {
         white-space: nowrap;
+      }
+
+      .msl-rewards-inline-host {
+        display: inline-flex;
+        align-items: center;
       }
 
       .msl-sparky-launcher {
@@ -406,10 +412,16 @@
   }
 
   function injectRewardsButton() {
+    const userInfoButton = document.querySelector(selectors.userInfoButton);
     const userName = document.querySelector(selectors.userName);
+    const anchor = userInfoButton || userName;
 
-    if (!userName || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
+    if (!anchor || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
       return;
+    }
+
+    if (userInfoButton?.parentElement) {
+      userInfoButton.parentElement.classList.add("msl-rewards-inline-host");
     }
 
     const button = document.createElement("button");
@@ -422,7 +434,7 @@
       assignLocation(getRewardsDestinationUrl());
     });
 
-    userName.insertAdjacentElement("afterend", button);
+    anchor.insertAdjacentElement("afterend", button);
   }
 
   function setSparkyOpen(nextOpen) {
