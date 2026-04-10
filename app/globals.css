@@ -5785,13 +5785,15 @@ body:has(.resource-sim-shell) main {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 25%),
-    radial-gradient(circle at 18% 18%, rgba(255, 198, 39, 0.12), transparent 16%),
-    radial-gradient(circle at 84% 82%, rgba(255, 255, 255, 0.08), transparent 18%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 22%),
+    radial-gradient(circle at 16% 18%, rgba(255, 198, 39, 0.16), transparent 18%),
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.07), transparent 16%),
+    radial-gradient(circle at 79% 84%, rgba(255, 208, 164, 0.1), transparent 20%);
 }
 
 .resource-map-node {
   z-index: 1;
+  transition: transform 180ms ease;
 }
 
 .resource-map-guide {
@@ -5805,11 +5807,12 @@ body:has(.resource-sim-shell) main {
 
 .resource-map-node > div:first-child {
   animation: resource-node-settle 360ms cubic-bezier(0.18, 0.88, 0.24, 1);
+  backdrop-filter: blur(8px);
 }
 
 .resource-map-node:hover > div:first-child,
 .resource-map-node:focus-visible > div:first-child {
-  transform: translateY(-4px);
+  transform: translateY(-5px) scale(1.02);
 }
 
 .resource-map-node-zooming > div:first-child {
@@ -5818,8 +5821,8 @@ body:has(.resource-sim-shell) main {
 
 .resource-node-complete {
   box-shadow:
-    0 0 0 4px rgba(255, 242, 201, 0.18),
-    0 18px 48px rgba(255, 198, 39, 0.24);
+    0 0 0 3px rgba(255, 247, 231, 0.15),
+    0 18px 44px rgba(255, 198, 39, 0.22);
 }
 
 .resource-avatar-pop {
