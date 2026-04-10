@@ -10,6 +10,7 @@ import {
   readRewardsProfile,
   redeemPitchforkReward,
   REWARDS_STORAGE_KEY,
+  resetRewardsProfile,
   writeRewardsProfile,
 } from "../lib/rewards.ts";
 
@@ -56,13 +57,13 @@ function installWindow() {
   });
 }
 
-function resetRewardsProfile(profile = createDefaultRewardsProfile()) {
+function seedRewardsProfile(profile = createDefaultRewardsProfile()) {
   writeRewardsProfile(profile);
 }
 
 beforeEach(() => {
   installWindow();
-  resetRewardsProfile();
+  seedRewardsProfile();
 });
 
 afterEach(() => {
@@ -93,7 +94,7 @@ test("world completion awards pitchforks and badges without mystery box state", 
 });
 
 test("redeeming a local reward deducts pitchforks and persists redemption history", () => {
-  resetRewardsProfile({
+  seedRewardsProfile({
     ...createDefaultRewardsProfile(),
     pitchforkBalance: 450,
   });
@@ -108,7 +109,7 @@ test("redeeming a local reward deducts pitchforks and persists redemption histor
 });
 
 test("redemption does not spend pitchforks when the balance is too low", () => {
-  resetRewardsProfile({
+  seedRewardsProfile({
     ...createDefaultRewardsProfile(),
     pitchforkBalance: 100,
   });
@@ -166,4 +167,24 @@ test("legacy blockchain-era reward profiles normalize into the simplified shape"
     ...createDefaultRewardsProfile(),
     pitchforkBalance: 75,
   });
+});
+
+test("resetRewardsProfile restores the default local demo progress", () => {
+  seedRewardsProfile({
+    pitchforkBalance: 275,
+    claimedDayEntryIds: [getDayEntryRewardId(1)],
+    claimedWorldRewardIds: ["first-gen-support"],
+    obtainedBadgeIds: ["student-success-spark"],
+    redemptionHistory: [
+      {
+        rewardId: "athletics-ticket",
+        redeemedAt: "2026-04-10T00:00:00.000Z",
+      },
+    ],
+  });
+
+  const profile = resetRewardsProfile();
+
+  assert.deepEqual(profile, createDefaultRewardsProfile());
+  assert.deepEqual(readRewardsProfile(), createDefaultRewardsProfile());
 });
