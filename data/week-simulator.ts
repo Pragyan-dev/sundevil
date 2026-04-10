@@ -55,6 +55,15 @@ export const weekResourceQuestIds = [
   "office-hours",
 ] as const;
 
+const advisingMapsLink =
+  "http://google.com/maps/dir//SCAI+Academic+Advising+Center,+Centerpoint,+660,+S+Mill+Ave+%23+105,+Tempe,+AZ+85281/@33.4197423,-111.9164779,15z/data=!4m8!4m7!1m0!1m5!1m1!1s0x872b08d82de94275:0xe31b4d9750935d51!2m2!1d-111.9405982!2d33.4237895?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+const mat101MapsLink =
+  "https://www.google.com/maps/dir/?api=1&destination=PSH+153+Arizona+State+University+Tempe+AZ";
+const chem101MapsLink =
+  "https://www.google.com/maps/dir/?api=1&destination=ISTB4+110+Arizona+State+University+Tempe+AZ";
+const pythonMapsLink =
+  "https://www.google.com/maps/dir/?api=1&destination=COOR+174+Arizona+State+University+Tempe+AZ";
+
 export const weekSimulatorDays: WeekDay[] = [
   {
     id: "day-1",
@@ -74,9 +83,11 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "9:00 AM",
         description: "Intro math class. You mostly need the room, the professor cadence, and the notice board.",
         location: "PSH 153",
+        linkedResource: mat101MapsLink,
         courseCode: "MAT101",
         facultyName: "Prof. Elena Chavez",
         panoramaLabel: "Math hall panorama",
+        panoramaVideoSrc: "/mat101-preview.mp4",
         noticeText:
           "Welcome to MAT101. Bring a notebook, check Canvas every Sunday night, and do not wait until the day homework is due to start it.",
         canvasLinkLabel: "Read professor notice",
@@ -90,9 +101,11 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "11:15 AM",
         description: "Lecture plus lab expectations. This one feels more manageable once you know the room and pace.",
         location: "ISTB4 110",
+        linkedResource: chem101MapsLink,
         courseCode: "CHEM101",
         facultyName: "Dr. Priya Raman",
         panoramaLabel: "Chem lecture preview",
+        panoramaVideoSrc: "/chem101-preview.mp4",
         noticeText:
           "CHEM101 moves quickly. Review slides after class and bring at least one question to office hours if a concept stays fuzzy.",
         canvasLinkLabel: "Read professor notice",
@@ -106,13 +119,37 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "2:00 PM",
         description: "Your coding class. Expect demos, debugging, and a room full of laptops.",
         location: "COOR 174",
+        linkedResource: pythonMapsLink,
         courseCode: "PYTHON",
         facultyName: "Instructor Malik Gomez",
         panoramaLabel: "Python lab preview",
+        panoramaVideoSrc: "/python-preview.mp4",
         noticeText:
           "For PYTHON, practice beats panic. Small daily check-ins with the material are better than one giant cram session.",
         canvasLinkLabel: "Read professor notice",
         completionCondition: "Open the class and read the professor notice.",
+      },
+      {
+        id: "day1-advising-preview",
+        dayId: "day-1",
+        title: "Academic advising preview",
+        type: "advising-preview",
+        time: "10:00 AM",
+        description: "See tomorrow's advising details now so the appointment already feels familiar.",
+        location: "SCAI Academic Advising Center",
+        linkedResource: advisingMapsLink,
+        appointmentDayLabel: "April 14, 2026",
+        advisorName: "Advisor Rivera",
+        reminderLabel: "Appointment tomorrow at 10:00 AM",
+        whatItsFor:
+          "Advising helps with degree planning, translating DARS, and catching next-step questions before they turn stressful.",
+        resources: [
+          "Degree planning",
+          "DARS help",
+          "Registration questions",
+          "Next-step referrals",
+        ],
+        completionCondition: "Open the advising preview after your Monday classes.",
       },
     ],
   },
@@ -133,11 +170,18 @@ export const weekSimulatorDays: WeekDay[] = [
         type: "advising",
         time: "10:00 AM",
         description: "Check in, sit down, and learn what advising actually helps with.",
-        location: "Centerpoint, Suite 105",
+        location: "SCAI Academic Advising Center",
+        linkedResource: advisingMapsLink,
         advisorName: "Advisor Rivera",
         reminderLabel: "Appointment today at 10:00 AM",
         whatItsFor:
           "Advising helps with understanding degree progress, planning next semester, and catching issues before registration feels chaotic.",
+        resources: [
+          "Degree planning",
+          "DARS help",
+          "Registration questions",
+          "Next-step referrals",
+        ],
         conversation: {
           intro:
             "You made it. What feels most helpful to ask first: class planning, what DARS means, or how to avoid hidden problems later?",
@@ -186,9 +230,11 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "9:00 AM",
         description: "Second meeting of the week. The room already feels less intimidating.",
         location: "PSH 153",
+        linkedResource: mat101MapsLink,
         courseCode: "MAT101",
         facultyName: "Prof. Elena Chavez",
         panoramaLabel: "Math hall panorama",
+        panoramaVideoSrc: "/mat101-preview.mp4",
         noticeText:
           "Homework 1 is now posted on Canvas and is due Sunday at 11:59 PM. Start before the weekend gets crowded.",
         canvasLinkLabel: "View homework",
@@ -202,9 +248,11 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "11:15 AM",
         description: "A quick lecture day. You hear the office-hours reminder at the end.",
         location: "ISTB4 110",
+        linkedResource: chem101MapsLink,
         courseCode: "CHEM101",
         facultyName: "Dr. Priya Raman",
         panoramaLabel: "Chem lecture preview",
+        panoramaVideoSrc: "/chem101-preview.mp4",
         noticeText:
           "Office hours are next Tuesday from 1:00 PM to 3:00 PM. If you want to talk through lecture questions, send a short message first.",
         canvasLinkLabel: "Read office-hours note",
@@ -218,9 +266,11 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "2:00 PM",
         description: "Another coding class, this time with less guesswork about where to sit and what to expect.",
         location: "COOR 174",
+        linkedResource: pythonMapsLink,
         courseCode: "PYTHON",
         facultyName: "Instructor Malik Gomez",
         panoramaLabel: "Python lab preview",
+        panoramaVideoSrc: "/python-preview.mp4",
         noticeText:
           "Tiny practice blocks help most in PYTHON. Keep a note of one thing you understood today and one thing you want to ask later.",
         canvasLinkLabel: "Read professor notice",
@@ -249,6 +299,7 @@ export const weekSimulatorDays: WeekDay[] = [
         description: "Ask politely about next Tuesday's office hours so the visit feels easy instead of awkward.",
         location: "Draft message",
         facultyName: "Dr. Priya Raman",
+        recipientEmail: "priya.raman@asu.edu",
         suggestedTemplates: [
           "Hi Dr. Raman, I am in CHEM101 and would love to stop by office hours next Tuesday to ask about this week's material. Would that be okay?",
           "Hello Dr. Raman, I am reviewing lecture notes and have a couple of questions. May I come to your office hours next Tuesday?",
@@ -444,9 +495,9 @@ export function getWeekReminders(progress: WeekSimulatorProgress): WeekReminder[
   if (progress.scheduledHomeworkSlot) {
     reminders.push({
       id: "day4-homework-today",
-      dayId: "day-4",
-      time: progress.scheduledHomeworkSlot.timeRange,
-      message: `Math homework today at ${progress.scheduledHomeworkSlot.timeRange}.`,
+      dayId: progress.scheduledHomeworkSlot.dayId,
+      time: progress.scheduledHomeworkSlot.timeLabel,
+      message: `Math homework on ${progress.scheduledHomeworkSlot.dateLabel} at ${progress.scheduledHomeworkSlot.timeLabel}.`,
       sourceEventId: "day4-homework-session",
       actionLabel: "Open homework plan",
     });

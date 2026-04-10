@@ -12,6 +12,7 @@ export type WeekDayId =
 export type WeekEventType =
   | "class"
   | "advising"
+  | "advising-preview"
   | "homework"
   | "message"
   | "resource"
@@ -68,6 +69,7 @@ export interface WeekClassEvent extends WeekEventBase {
   noticeText: string;
   canvasLinkLabel: string;
   panoramaLabel: string;
+  panoramaVideoSrc: string;
 }
 
 export interface WeekAdvisingEvent extends WeekEventBase {
@@ -75,11 +77,21 @@ export interface WeekAdvisingEvent extends WeekEventBase {
   advisorName: string;
   reminderLabel: string;
   whatItsFor: string;
+  resources: string[];
   conversation: {
     intro: string;
     followUp: string;
     choices: WeekChoice[];
   };
+}
+
+export interface WeekAdvisingPreviewEvent extends WeekEventBase {
+  type: "advising-preview";
+  appointmentDayLabel: string;
+  advisorName: string;
+  reminderLabel: string;
+  whatItsFor: string;
+  resources: string[];
 }
 
 export interface WeekHomeworkEvent extends WeekEventBase {
@@ -93,6 +105,7 @@ export interface WeekHomeworkEvent extends WeekEventBase {
 export interface WeekMessageEvent extends WeekEventBase {
   type: "message";
   facultyName: string;
+  recipientEmail: string;
   suggestedTemplates: string[];
 }
 
@@ -115,6 +128,7 @@ export interface WeekDeadlineEvent extends WeekEventBase {
 export type WeekEvent =
   | WeekClassEvent
   | WeekAdvisingEvent
+  | WeekAdvisingPreviewEvent
   | WeekHomeworkEvent
   | WeekMessageEvent
   | WeekResourceEvent
@@ -134,8 +148,10 @@ export interface WeekDay {
 
 export interface ScheduledHomeworkSlot {
   dayId: WeekDayId;
-  label: string;
-  timeRange: string;
+  dateLabel: string;
+  dateValue: string;
+  timeLabel: string;
+  timeValue: string;
 }
 
 export interface WeekSimulatorProgress {

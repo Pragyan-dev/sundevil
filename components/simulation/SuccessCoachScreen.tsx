@@ -17,6 +17,7 @@ interface SuccessCoachScreenProps {
 
 const COACH_VIDEO_URL = "https://www.youtube.com/watch?v=Xhn8BYdKvW8";
 const FIND_COACH_URL = "https://success.asu.edu/success-resources/first-generation-students";
+const SCAI_ADVISING_CALENDAR_URL = "https://fultonapps.asu.edu/advising/calendar/";
 
 const coachProfiles = [
   {
@@ -155,7 +156,7 @@ function evaluateEmailDraft(draft: string, coachName: string | null): Evaluation
   const mentionsCoach = coachName ? lowered.includes(coachName.toLowerCase()) : false;
   const mentionsAsu = /\basu\b/i.test(trimmed);
   const mentionsNeed = /(help|guidance|support|advice|coaching|coach)/i.test(trimmed);
-  const hasSpecificDetail = /(computer science|psychology|arts|schedule|organized|overwhelmed|first-gen|first generation|classes|semester|routine)/i.test(trimmed);
+  const hasSpecificDetail = /(computer science|psychology|arts|schedule|organized|overwhelmed|student success|success coach|classes|semester|routine)/i.test(trimmed);
   const hasQuestion = trimmed.includes("?");
   const hasClosing = /(thank you|thanks|sincerely|best)/i.test(trimmed);
   const lengthOkay = trimmed.split(/\s+/).filter(Boolean).length >= 35;
@@ -384,6 +385,37 @@ function PlaceholderCoachScreen({
                 Open advising scheduler
               </a>
             </div>
+
+            <div className="relative mt-4 rounded-[1.6rem] border border-[#d8b486] bg-[#fff1a9] px-5 py-5 text-[#5c3a19] shadow-[0_16px_32px_rgba(92,58,25,0.16)]">
+              <div className="absolute right-5 top-4 h-4 w-4 rounded-full bg-[#8c1d40]/20" />
+              <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                Sticky note
+              </p>
+              <p className="mt-3 text-sm font-bold text-[#2c1116]">Check availability on:</p>
+              <a
+                href={SCAI_ADVISING_CALENDAR_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-flex text-sm font-bold text-[#8c1d40] underline decoration-[#8c1d40]/40 underline-offset-4 transition hover:text-[#731736]"
+              >
+                fultonapps.asu.edu/advising/calendar/
+              </a>
+
+              <div className="mt-4 grid gap-2 text-sm leading-6">
+                <div className="rounded-[1rem] bg-white/55 px-3 py-2">
+                  30-min Appointment (Zoom)
+                </div>
+                <div className="rounded-[1rem] bg-white/55 px-3 py-2">
+                  Express Advising (15 min, Zoom)
+                </div>
+                <div className="rounded-[1rem] bg-white/55 px-3 py-2">
+                  Flash Advising (15 min, Zoom)
+                </div>
+                <div className="rounded-[1rem] bg-white/55 px-3 py-2">
+                  Slack Advising: join <span className="font-bold">#scai-masters-express-advising</span>
+                </div>
+              </div>
+            </div>
           </article>
 
           <article className="rounded-[2rem] border border-[#f0dbc6] bg-[#fff8ef] p-5 shadow-[0_24px_80px_rgba(44,17,22,0.18)]">
@@ -391,27 +423,22 @@ function PlaceholderCoachScreen({
               Section 2
             </p>
             <h2 className="mt-3 font-[var(--font-sim-display)] text-[1.55rem] leading-[0.96] text-[#2c1116]">
-              Advisor person video
+              How advising works
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#6f4a4e]">
-              Placeholder for the advisor/person video you will generate later. This can introduce the advisor and explain what happens in a meeting.
+              This advisor intro clip can help students see who they are meeting and what the tone of advising feels like before they walk in.
             </p>
 
-            <div className="mt-4 rounded-[1.5rem] border border-[#ead7c4] bg-white p-5">
-              <div className="flex items-start gap-4">
-                <CharacterAvatar expression="happy" size="md" pulse />
-                <div>
-                  <p className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#8c1d40]">
-                    Coming soon
-                  </p>
-                  <p className="mt-2 font-[var(--font-sim-display)] text-[1.25rem] leading-none text-[#2c1116]">
-                    Advisor intro video slot
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">
-                    Add the advisor clip here once your new video is ready.
-                  </p>
-                </div>
-              </div>
+            <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-[#ead7c4] bg-[#2c1116] shadow-[0_16px_36px_rgba(44,17,22,0.18)]">
+              <video
+                className="aspect-video w-full bg-[#2c1116]"
+                controls
+                playsInline
+                preload="metadata"
+              >
+                <source src="/advising-advisor-intro.mp4" type="video/mp4" />
+                Your browser does not support the advisor intro video.
+              </video>
             </div>
           </article>
 
@@ -544,7 +571,7 @@ function PlaceholderCoachScreen({
   );
 }
 
-function FirstGenCoachScreen({
+function StudentSuccessCoachScreen({
   world,
   scenario,
   onBack,
@@ -558,6 +585,7 @@ function FirstGenCoachScreen({
   const [evaluationRequested, setEvaluationRequested] = useState(false);
   const [readyPopupOpen, setReadyPopupOpen] = useState(false);
   const [readyPopupShown, setReadyPopupShown] = useState(false);
+  const [sampleCopied, setSampleCopied] = useState(false);
 
   const selectedCoach = coachProfiles.find((coach) => coach.id === selectedCoachId) ?? null;
   const evaluation = useMemo(
@@ -575,9 +603,9 @@ function FirstGenCoachScreen({
 
     return `Hi ${selectedCoach.name},
 
-I am an ASU student and I am looking for success coaching support. I am interested in ${selectedCoach.track.toLowerCase()}, and I want help building a better routine so I can stay on top of classes and feel less overwhelmed.
+I am an ASU student and I am looking for Student Success coaching support. I am interested in ${selectedCoach.track.toLowerCase()}, and I want help building a better routine so I can stay on top of classes and feel less overwhelmed.
 
-Could you let me know the best next step for connecting with a success coach?
+Could you let me know the best next step for connecting with a Student Success coach?
 
 Thank you,
 [Your Name]`;
@@ -590,6 +618,22 @@ Thank you,
     if (selectedCoach && result.ready && !readyPopupShown) {
       setReadyPopupOpen(true);
       setReadyPopupShown(true);
+    }
+  }
+
+  async function handleCopySampleEmail() {
+    if (!sampleEmail) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(sampleEmail);
+      setSampleCopied(true);
+      window.setTimeout(() => {
+        setSampleCopied(false);
+      }, 1800);
+    } catch {
+      setSampleCopied(false);
     }
   }
 
@@ -611,7 +655,7 @@ Thank you,
             Coach Connection Lab
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[#f6dde3]">
-            {scenario.title} now turns into action: watch how success coaching works, then build your own coach outreach plan.
+            {scenario.title} now turns into action: watch how Student Success coaching works, then build your own outreach plan.
           </p>
         </div>
 
@@ -634,10 +678,10 @@ Thank you,
               Box 1
             </p>
             <h2 className="mt-3 font-[var(--font-sim-display)] text-[1.8rem] leading-[0.95] text-[#2c1116]">
-              Watch a quick ASU coach intro
+              Watch a quick ASU Student Success intro
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#6f4a4e]">
-              This uses an official ASU video so students can see that success coaching is normal, friendly, and not some scary academic penalty box.
+              This uses an official ASU video so students can see that Student Success coaching is normal, friendly, and not some scary academic penalty box.
             </p>
 
             <div className="mt-5 rounded-[1.6rem] border border-[#f4d8ab] bg-[linear-gradient(135deg,#fff2cc,#fffaf2)] p-4">
@@ -648,7 +692,7 @@ Thank you,
                 First-Year Success Center at ASU
               </p>
               <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
-                A short Arizona State University YouTube video featuring success coaching and what students actually get out of it.
+                A short Arizona State University YouTube video featuring Student Success coaching and what students actually get out of it.
               </p>
 
               <div className="mt-4 overflow-hidden rounded-[1.35rem] border border-[#ead7bd] bg-[#2c1116] shadow-[0_16px_36px_rgba(44,17,22,0.18)]">
@@ -686,7 +730,7 @@ Thank you,
               Find a coach, write the email, get feedback
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#6f4a4e]">
-              This mission gives you three sample coach backgrounds, a real email drafting box, and an AI-style evaluator before you jump to the real success coach page.
+              This mission gives you three sample coach backgrounds, a real email drafting box, and an AI-style evaluator before you jump to the real Student Success page.
             </p>
 
             {!simulationStarted ? (
@@ -736,9 +780,9 @@ Thank you,
                   <p className="text-[0.7rem] font-black uppercase tracking-[0.16em] text-[#8c1d40]">
                     2. Draft your email
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
-                    {selectedCoach
-                      ? `Write to ${selectedCoach.name}. Mention that you are an ASU student, what you need help with, and one clear question.`
+                    <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
+                      {selectedCoach
+                        ? `Write to ${selectedCoach.name}. Mention that you are an ASU student, what you need help with, and one clear question.`
                       : "Choose one of the three coaches above first, then write your message here."}
                   </p>
                   <textarea
@@ -754,7 +798,7 @@ Thank you,
                   />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                     <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#9b6f76]">
-                      Subject: Asking about success coaching support
+                      Subject: Asking about Student Success coaching support
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {sampleEmail ? (
@@ -891,6 +935,15 @@ Thank you,
             </div>
 
             <div className="mt-5 flex flex-wrap gap-3">
+              {sampleEmail ? (
+                <button
+                  type="button"
+                  onClick={handleCopySampleEmail}
+                  className="inline-flex items-center justify-center rounded-full border border-[#d6b37e] bg-white px-5 py-3 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#8c1d40]"
+                >
+                  {sampleCopied ? "Copied email" : "Copy email"}
+                </button>
+              ) : null}
               <a
                 href={FIND_COACH_URL}
                 target="_blank"
@@ -920,5 +973,5 @@ export function SuccessCoachScreen(props: SuccessCoachScreenProps) {
     return <PlaceholderCoachScreen {...props} />;
   }
 
-  return <FirstGenCoachScreen {...props} />;
+  return <StudentSuccessCoachScreen {...props} />;
 }

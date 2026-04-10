@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { CharacterGuide } from "@/components/simulation/week/CharacterGuide";
 import { ProgressTracker } from "@/components/simulation/week/ProgressTracker";
@@ -12,48 +12,50 @@ import { AdvisorCard } from "@/components/simulation/week/AdvisorCard";
 import { CalendarPicker } from "@/components/simulation/week/CalendarPicker";
 import { MessageComposer } from "@/components/simulation/week/MessageComposer";
 import { RewardToast } from "@/components/simulation/week/RewardToast";
-import { BadgeEarnedModal } from "@/components/simulation/week/BadgeEarnedModal";
 import { CharacterAvatar } from "@/components/simulation/CharacterAvatar";
 import {
   createWeekSimulatorProgress,
   getWeekDay,
   getWeekReminders,
   isWeekSimulatorProgress,
-  weekResourceQuestIds,
-  weekSimulatorBadges,
   weekSimulatorDays,
 } from "@/data/week-simulator";
-import { resourceWorlds } from "@/data/resource-discovery-worlds";
-import type {
-  ResourceWorldId,
-} from "@/lib/resource-discovery-types";
 import type {
   ScheduledHomeworkSlot,
-  WeekBadgeId,
   WeekDayId,
   WeekEvent,
+  WeekHomeworkEvent,
+  WeekMessageEvent,
   WeekRewardToast,
   WeekSimulatorProgress,
 } from "@/lib/week-simulator-types";
 
 interface WeekSimulatorProps {
-  onLaunchResourceWorld: (worldId: ResourceWorldId) => void;
+  onOpenResourceMap: () => void;
+  onReloadProgress: () => void;
 }
 
-const STORAGE_KEY = "asu-week-simulator-v1";
+export const WEEK_SIMULATOR_STORAGE_KEY = "asu-week-simulator-v1";
+const homeworkConfettiPieces = [
+  { left: "8%", delay: "0ms", duration: "2300ms", color: "#ffc627", rotate: "-18deg" },
+  { left: "20%", delay: "110ms", duration: "2500ms", color: "#8c1d40", rotate: "16deg" },
+  { left: "34%", delay: "45ms", duration: "2200ms", color: "#ffdd92", rotate: "-8deg" },
+  { left: "48%", delay: "180ms", duration: "2600ms", color: "#d6657e", rotate: "22deg" },
+  { left: "62%", delay: "80ms", duration: "2400ms", color: "#ffc627", rotate: "-24deg" },
+  { left: "76%", delay: "170ms", duration: "2500ms", color: "#8c1d40", rotate: "12deg" },
+  { left: "89%", delay: "70ms", duration: "2350ms", color: "#ffe9ba", rotate: "-16deg" },
+] as const;
 
 function createToast(
   kind: WeekRewardToast["kind"],
   title: string,
   detail: string,
-  options: Pick<WeekRewardToast, "points" | "badgeId"> = {},
 ): WeekRewardToast {
   return {
     id: `${kind}-${Math.random().toString(36).slice(2, 9)}`,
     kind,
     title,
     detail,
-    ...options,
   };
 }
 
@@ -62,12 +64,19 @@ function getEventComplete(progress: WeekSimulatorProgress, event: WeekEvent) {
     return progress.readNoticeIds.includes(event.id);
   }
 
+  if (event.type === "advising-preview") {
+    return progress.openedEventIds.includes(event.id);
+  }
+
   if (event.type === "message") {
     return progress.professorMessageSent;
   }
 
   if (event.type === "resource") {
-    return progress.exploredResourceWorldIds.length > 0;
+    return (
+      progress.completedEventIds.includes(event.id) ||
+      progress.exploredResourceWorldIds.length > 0
+    );
   }
 
   if (event.type === "homework" && event.id === "day3-homework-plan") {
@@ -87,7 +96,32 @@ function getDayComplete(progress: WeekSimulatorProgress, dayId: WeekDayId) {
     return false;
   }
 
-  return day.events.every((event) => getEventComplete(progress, event));
+  return getResolvedDayEvents(day, progress).every((event) => getEventComplete(progress, event));
+}
+
+function getResolvedDayEvents(day: (typeof weekSimulatorDays)[number], progress: WeekSimulatorProgress) {
+  return day.events.flatMap((event) => {
+    if (event.id !== "day4-homework-session" || event.type !== "homework") {
+      return [event];
+    }
+
+    if (!progress.scheduledHomeworkSlot) {
+      return day.id === "day-4" ? [event] : [];
+    }
+
+    if (progress.scheduledHomeworkSlot.dayId !== day.id) {
+      return [];
+    }
+
+    const movedHomeworkEvent: WeekHomeworkEvent = {
+      ...event,
+      dayId: progress.scheduledHomeworkSlot.dayId,
+      time: progress.scheduledHomeworkSlot.timeLabel,
+      description: `Use the saved ${progress.scheduledHomeworkSlot.dateLabel} slot to make real progress on the assignment.`,
+    };
+
+    return [movedHomeworkEvent];
+  });
 }
 
 function getEventGuideCopy(event: WeekEvent | null) {
@@ -112,6 +146,12 @@ function getEventGuideCopy(event: WeekEvent | null) {
         title: "Advising walkthrough",
         message: "This is just a supportive conversation. Bring the confusing part into the room and let the appointment do its job.",
       };
+    case "advising-preview":
+      return {
+        expression: "idea" as const,
+        title: "Advising preview",
+        message: "This is the calm before the appointment. Get the day, time, location, and support topics in your head before you walk in.",
+      };
     case "homework":
       return {
         expression: "idea" as const,
@@ -132,9 +172,9 @@ function getEventGuideCopy(event: WeekEvent | null) {
       };
     case "free-day":
       return {
-        expression: "smirk" as const,
-        title: "Saturday reset",
-        message: "Rest and light prep both count. Choose the version of calm that feels most real for you.",
+        expression: "happy" as const,
+        title: "Light Saturday",
+        message: "Today is intentionally light. Use it to rest and catch your breath.",
       };
     case "deadline":
       return {
@@ -151,15 +191,82 @@ function getEventGuideCopy(event: WeekEvent | null) {
   }
 }
 
-export function WeekSimulator({ onLaunchResourceWorld }: WeekSimulatorProps) {
+function AdvisingPreviewVideo({
+  mp4Src,
+  quicktimeSrc,
+  fallbackText,
+  showPlaybackButton = false,
+}: {
+  mp4Src: string;
+  quicktimeSrc?: string;
+  fallbackText: string;
+  showPlaybackButton?: boolean;
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  async function togglePlayback() {
+    const video = videoRef.current;
+    if (!video) {
+      return;
+    }
+
+    if (video.paused) {
+      try {
+        await video.play();
+        setIsPlaying(true);
+      } catch {
+        setIsPlaying(false);
+      }
+      return;
+    }
+
+    video.pause();
+    setIsPlaying(false);
+  }
+
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        onClick={togglePlayback}
+        aria-pressed={isPlaying}
+        className="block w-full overflow-hidden rounded-[1rem] border border-[#ead7c4] bg-[#2c1116] text-left shadow-[0_16px_36px_rgba(44,17,22,0.12)] transition hover:-translate-y-0.5"
+      >
+        <video
+          ref={videoRef}
+          className="aspect-video w-full bg-[#2c1116] object-cover"
+          playsInline
+          preload="metadata"
+        >
+          <source src={mp4Src} type="video/mp4" />
+          {quicktimeSrc ? <source src={quicktimeSrc} type="video/quicktime" /> : null}
+          {fallbackText}
+        </video>
+      </button>
+
+      {showPlaybackButton ? (
+        <button
+          type="button"
+          onClick={togglePlayback}
+          className="mt-3 inline-flex items-center justify-center rounded-full bg-[#8c1d40] px-4 py-2 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimulatorProps) {
   const [isHydrated, setIsHydrated] = useState(false);
   const [progress, setProgress] = useState<WeekSimulatorProgress>(createWeekSimulatorProgress);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [toasts, setToasts] = useState<WeekRewardToast[]>([]);
-  const [latestBadgeId, setLatestBadgeId] = useState<WeekBadgeId | null>(null);
+  const [homeworkReadyPopupOpen, setHomeworkReadyPopupOpen] = useState(false);
 
   useEffect(() => {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(WEEK_SIMULATOR_STORAGE_KEY);
     let frameId = 0;
     let nextProgress: WeekSimulatorProgress | null = null;
 
@@ -170,7 +277,7 @@ export function WeekSimulator({ onLaunchResourceWorld }: WeekSimulatorProps) {
           nextProgress = { ...createWeekSimulatorProgress(), ...parsed };
         }
       } catch {
-        window.localStorage.removeItem(STORAGE_KEY);
+        window.localStorage.removeItem(WEEK_SIMULATOR_STORAGE_KEY);
       }
     }
 
@@ -193,20 +300,53 @@ export function WeekSimulator({ onLaunchResourceWorld }: WeekSimulatorProps) {
       return;
     }
 
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    window.localStorage.setItem(WEEK_SIMULATOR_STORAGE_KEY, JSON.stringify(progress));
   }, [isHydrated, progress]);
 
   const reminders = useMemo(() => getWeekReminders(progress), [progress]);
   const selectedDay = getWeekDay(progress.selectedDayId) ?? weekSimulatorDays[0];
+  const selectedDayEvents = useMemo(
+    () => getResolvedDayEvents(selectedDay, progress),
+    [progress, selectedDay],
+  );
   const dayReminders = reminders.filter((reminder) => reminder.dayId === selectedDay.id);
   const completedDays = weekSimulatorDays.filter((day) => getDayComplete(progress, day.id)).length;
   const finishedWeek = completedDays === weekSimulatorDays.length;
   const activeEvent =
-    selectedDay.events.find((event) => event.id === activeEventId) ??
-    selectedDay.events.find((event) => !getEventComplete(progress, event)) ??
-    selectedDay.events[0] ??
+    selectedDayEvents.find((event) => event.id === activeEventId) ??
+    selectedDayEvents.find((event) => !getEventComplete(progress, event)) ??
+    selectedDayEvents[0] ??
     null;
   const eventGuide = getEventGuideCopy(activeEvent);
+  let nextNavigation: { dayId: WeekDayId; eventId: string; label: string } | null = null;
+
+  if (activeEvent) {
+    const activeIndex = selectedDayEvents.findIndex((event) => event.id === activeEvent.id);
+    if (activeIndex !== -1 && activeIndex < selectedDayEvents.length - 1) {
+      const nextEvent = selectedDayEvents[activeIndex + 1];
+      nextNavigation = {
+        dayId: selectedDay.id,
+        eventId: nextEvent.id,
+        label: nextEvent.title,
+      };
+    } else {
+      const selectedDayIndex = weekSimulatorDays.findIndex((day) => day.id === selectedDay.id);
+      for (let nextDayIndex = selectedDayIndex + 1; nextDayIndex < weekSimulatorDays.length; nextDayIndex += 1) {
+        const nextDay = weekSimulatorDays[nextDayIndex];
+        const nextDayEvents = getResolvedDayEvents(nextDay, progress);
+        if (!nextDayEvents.length) {
+          continue;
+        }
+
+        nextNavigation = {
+          dayId: nextDay.id,
+          eventId: nextDayEvents[0].id,
+          label: nextDayEvents[0].title,
+        };
+        break;
+      }
+    }
+  }
 
   useEffect(() => {
     const unseenReminder = dayReminders.find(
@@ -244,11 +384,10 @@ export function WeekSimulator({ onLaunchResourceWorld }: WeekSimulatorProps) {
     ) => {
       nextProgress: WeekSimulatorProgress;
       toasts?: WeekRewardToast[];
-      badgeId?: WeekBadgeId | null;
     },
   ) {
     setProgress((current) => {
-      const { nextProgress, toasts: nextToasts = [], badgeId } = updater(current);
+      const { nextProgress, toasts: nextToasts = [] } = updater(current);
 
       if (nextToasts.length) {
         queueMicrotask(() => {
@@ -256,87 +395,22 @@ export function WeekSimulator({ onLaunchResourceWorld }: WeekSimulatorProps) {
         });
       }
 
-      if (badgeId) {
-        queueMicrotask(() => {
-          setLatestBadgeId(badgeId);
-        });
-      }
-
       return nextProgress;
     });
   }
 
-function maybeAwardBadge(
-  nextProgress: WeekSimulatorProgress,
-  badgeId: WeekBadgeId,
-  toasts: WeekRewardToast[],
-): {
-  nextProgress: WeekSimulatorProgress;
-  badgeId: WeekBadgeId | null;
-  toasts: WeekRewardToast[];
-} {
-    if (nextProgress.earnedBadgeIds.includes(badgeId)) {
-      return { nextProgress, badgeId: null as WeekBadgeId | null, toasts };
-    }
-
-    const badge = weekSimulatorBadges.find((entry) => entry.id === badgeId);
-    if (!badge) {
-      return { nextProgress, badgeId: null as WeekBadgeId | null, toasts };
-    }
-
-    return {
-      nextProgress: {
-        ...nextProgress,
-        earnedBadgeIds: [...nextProgress.earnedBadgeIds, badgeId],
-      },
-      badgeId,
-      toasts: [
-        ...toasts,
-        createToast("badge", badge.title, badge.description, { badgeId }),
-      ],
-    };
-  }
-
 function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
     if (current.completedDayIds.includes(dayId) || !getDayComplete(current, dayId)) {
-      return { nextProgress: current, toasts: [] as WeekRewardToast[], badgeId: null as WeekBadgeId | null };
+      return { nextProgress: current };
     }
 
     const nextCompletedDayIds = [...current.completedDayIds, dayId];
-    let nextProgress: WeekSimulatorProgress = {
-      ...current,
-      completedDayIds: nextCompletedDayIds,
+    return {
+      nextProgress: {
+        ...current,
+        completedDayIds: nextCompletedDayIds,
+      },
     };
-    let toasts = [
-      createToast("points", `Day ${weekSimulatorDays.find((day) => day.id === dayId)?.number} complete`, "Nice. The next day is now ready.", {
-        points: 20,
-      }),
-    ];
-    nextProgress = { ...nextProgress, points: nextProgress.points + 20 };
-    let badgeId: WeekBadgeId | null = null;
-
-    if (dayId === "day-1") {
-      const result = maybeAwardBadge(nextProgress, "first-class-day", toasts);
-      nextProgress = result.nextProgress;
-      toasts = result.toasts;
-      badgeId = result.badgeId;
-    }
-
-    if (dayId === "day-2") {
-      const result = maybeAwardBadge(nextProgress, "first-advising-session", toasts);
-      nextProgress = result.nextProgress;
-      toasts = result.toasts;
-      badgeId = badgeId ?? result.badgeId;
-    }
-
-    if (dayId === "day-7") {
-      const result = maybeAwardBadge(nextProgress, "full-week-complete", toasts);
-      nextProgress = result.nextProgress;
-      toasts = result.toasts;
-      badgeId = badgeId ?? result.badgeId;
-    }
-
-    return { nextProgress, toasts, badgeId };
   }
 
   function openDay(dayId: WeekDayId) {
@@ -355,13 +429,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
         nextProgress: {
           ...current,
           openedEventIds: [...current.openedEventIds, eventId],
-          points: current.points + 5,
         },
-        toasts: [
-          createToast("points", "+5 event opened", "You stepped into the next part of the week.", {
-            points: 5,
-          }),
-        ],
       };
     });
   }
@@ -376,13 +444,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
         nextProgress: {
           ...current,
           acknowledgedReminderIds: [...current.acknowledgedReminderIds, reminderId],
-          points: current.points + 5,
         },
-        toasts: [
-          createToast("points", "+5 reminder checked", "Small check-ins keep the week from sneaking up on you.", {
-            points: 5,
-          }),
-        ],
       };
     });
   }
@@ -411,21 +473,12 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
       let nextProgress: WeekSimulatorProgress = {
         ...current,
         readNoticeIds: [...current.readNoticeIds, eventId],
-        points: current.points + 10,
       };
-      let toasts = [
-        createToast("points", "+10 Canvas check", "You read the professor notice instead of leaving it vague.", {
-          points: 10,
-        }),
-      ];
       const completed = maybeCompleteDay(nextProgress, getWeekDay(selectedDay.id)?.id ?? selectedDay.id);
       nextProgress = completed.nextProgress;
-      toasts = [...toasts, ...completed.toasts];
 
       return {
         nextProgress,
-        toasts,
-        badgeId: completed.badgeId,
       };
     });
   }
@@ -439,42 +492,12 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
       let nextProgress: WeekSimulatorProgress = {
         ...current,
         completedEventIds: [...current.completedEventIds, eventId],
-        points: current.points + 15,
       };
-      let toasts = [
-        createToast("points", "+15 advising complete", "You used the appointment to get actual clarity.", {
-          points: 15,
-        }),
-      ];
       const completed = maybeCompleteDay(nextProgress, "day-2");
       nextProgress = completed.nextProgress;
-      toasts = [...toasts, ...completed.toasts];
 
       return {
         nextProgress,
-        toasts,
-        badgeId: completed.badgeId,
-      };
-    });
-  }
-
-  function openCalendar() {
-    applyProgressUpdate((current) => {
-      if (current.calendarOpened) {
-        return { nextProgress: current };
-      }
-
-      return {
-        nextProgress: {
-          ...current,
-          calendarOpened: true,
-          points: current.points + 5,
-        },
-        toasts: [
-          createToast("points", "+5 calendar checked", "Good call. Scheduling starts by actually looking at the week.", {
-            points: 5,
-          }),
-        ],
       };
     });
   }
@@ -487,27 +510,16 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
         completedEventIds: current.completedEventIds.includes("day3-homework-plan")
           ? current.completedEventIds
           : [...current.completedEventIds, "day3-homework-plan"],
-        points: current.points + 15,
       };
-      let toasts = [
-        createToast("points", "+15 work scheduled", `Math homework is now parked on Thursday at ${slot.timeRange}.`, {
-          points: 15,
-        }),
-      ];
-      const badgeResult = maybeAwardBadge(nextProgress, "first-homework-scheduled", toasts);
-      nextProgress = badgeResult.nextProgress;
-      toasts = badgeResult.toasts;
-
       const completed = maybeCompleteDay(nextProgress, "day-3");
       nextProgress = completed.nextProgress;
-      toasts = [...toasts, ...completed.toasts];
 
       return {
         nextProgress,
-        toasts,
-        badgeId: badgeResult.badgeId ?? completed.badgeId,
       };
     });
+
+    setHomeworkReadyPopupOpen(true);
   }
 
   function confirmHomeworkSession() {
@@ -519,21 +531,12 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
       let nextProgress: WeekSimulatorProgress = {
         ...current,
         completedEventIds: [...current.completedEventIds, "day4-homework-session"],
-        points: current.points + 10,
       };
-      let toasts = [
-        createToast("points", "+10 follow-through", "The reminder worked because you gave it a real slot to protect.", {
-          points: 10,
-        }),
-      ];
       const completed = maybeCompleteDay(nextProgress, "day-4");
       nextProgress = completed.nextProgress;
-      toasts = [...toasts, ...completed.toasts];
 
       return {
         nextProgress,
-        toasts,
-        badgeId: completed.badgeId,
       };
     });
   }
@@ -542,7 +545,15 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
     setProgress((current) => ({ ...current, professorMessageDraft: value }));
   }
 
-  function sendProfessorMessage() {
+  function sendProfessorMessage(event: WeekMessageEvent) {
+    const trimmedDraft = progress.professorMessageDraft.trim();
+
+    if (trimmedDraft.length < 35) {
+      return;
+    }
+
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(event.recipientEmail)}&su=${encodeURIComponent(`CHEM101 office hours request for ${event.facultyName}`)}&body=${encodeURIComponent(trimmedDraft)}`;
+
     applyProgressUpdate((current) => {
       if (current.professorMessageSent || current.professorMessageDraft.trim().length < 35) {
         return { nextProgress: current };
@@ -555,94 +566,54 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
         completedEventIds: current.completedEventIds.includes("day3-office-hours-message")
           ? current.completedEventIds
           : [...current.completedEventIds, "day3-office-hours-message"],
-        points: current.points + 15,
       };
-      let toasts = [
-        createToast("points", "+15 message sent", "Nice. You reached out before the question turned into stress.", {
-          points: 15,
-        }),
-      ];
-      const badgeResult = maybeAwardBadge(nextProgress, "first-professor-message", toasts);
-      nextProgress = badgeResult.nextProgress;
-      toasts = badgeResult.toasts;
-
       const completed = maybeCompleteDay(nextProgress, "day-3");
       nextProgress = completed.nextProgress;
-      toasts = [...toasts, ...completed.toasts];
 
       return {
         nextProgress,
-        toasts,
-        badgeId: badgeResult.badgeId ?? completed.badgeId,
       };
     });
+
+    window.setTimeout(() => {
+      window.location.assign(gmailComposeUrl);
+    }, 120);
   }
 
-  function launchResource(worldId: ResourceWorldId) {
+  function openResourceMap() {
     applyProgressUpdate((current) => {
-      if (current.exploredResourceWorldIds.includes(worldId)) {
-        return { nextProgress: current };
-      }
-
       let nextProgress: WeekSimulatorProgress = {
         ...current,
-        exploredResourceWorldIds: [...current.exploredResourceWorldIds, worldId],
         completedEventIds: current.completedEventIds.includes("day5-resource-run")
           ? current.completedEventIds
           : [...current.completedEventIds, "day5-resource-run"],
-        points: current.points + 10,
       };
-      let toasts = [
-        createToast("points", "+10 resource run", "This is the best time to explore support: before you desperately need it.", {
-          points: 10,
-        }),
-      ];
-      const badgeResult = maybeAwardBadge(nextProgress, "first-resource-exploration", toasts);
-      nextProgress = badgeResult.nextProgress;
-      toasts = badgeResult.toasts;
-
       const completed = maybeCompleteDay(nextProgress, "day-5");
       nextProgress = completed.nextProgress;
-      toasts = [...toasts, ...completed.toasts];
 
       queueMicrotask(() => {
-        onLaunchResourceWorld(worldId);
+        onOpenResourceMap();
       });
 
       return {
         nextProgress,
-        toasts,
-        badgeId: badgeResult.badgeId ?? completed.badgeId,
       };
     });
   }
 
-  function finishSaturdayReset(eventId: string) {
-    applyProgressUpdate((current) => {
-      if (current.completedEventIds.includes(eventId)) {
-        return { nextProgress: current };
-      }
+  function goToNextPage() {
+    if (!nextNavigation) {
+      return;
+    }
 
-      let nextProgress: WeekSimulatorProgress = {
-        ...current,
-        completedEventIds: [...current.completedEventIds, eventId],
-        points: current.points + 10,
-      };
-      let toasts = [
-        createToast("points", "+10 reset locked in", "A calmer Saturday makes Sunday feel smaller.", {
-          points: 10,
-        }),
-      ];
-      const completed = maybeCompleteDay(nextProgress, "day-6");
-      nextProgress = completed.nextProgress;
-      toasts = [...toasts, ...completed.toasts];
-
-      return {
-        nextProgress,
-        toasts,
-        badgeId: completed.badgeId,
-      };
-    });
+    setActiveEventId(nextNavigation.eventId);
+    setProgress((current) => ({
+      ...current,
+      selectedDayId: nextNavigation.dayId,
+      openedEventIds: current.openedEventIds.includes(nextNavigation.eventId)
+        ? current.openedEventIds
+        : [...current.openedEventIds, nextNavigation.eventId],
+    }));
   }
 
   function submitHomework() {
@@ -657,21 +628,12 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
         completedEventIds: current.completedEventIds.includes("day7-submit-homework")
           ? current.completedEventIds
           : [...current.completedEventIds, "day7-submit-homework"],
-        points: current.points + 20,
       };
-      let toasts = [
-        createToast("points", "+20 assignment submitted", "You used the reminder system the way it is supposed to work.", {
-          points: 20,
-        }),
-      ];
       const completed = maybeCompleteDay(nextProgress, "day-7");
       nextProgress = completed.nextProgress;
-      toasts = [...toasts, ...completed.toasts];
 
       return {
         nextProgress,
-        toasts,
-        badgeId: completed.badgeId,
       };
     });
   }
@@ -695,25 +657,31 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
         items={toasts}
         onDismiss={(id) => setToasts((current) => current.filter((item) => item.id !== id))}
       />
-      <BadgeEarnedModal badgeId={latestBadgeId} onClose={() => setLatestBadgeId(null)} />
 
       <ProgressTracker
         completedDays={completedDays}
         totalDays={weekSimulatorDays.length}
-        points={progress.points}
-        badges={progress.earnedBadgeIds.length}
       />
 
       <section className="rounded-[1.7rem] border border-[#f0dbc6] bg-[#fff8ef] p-3 shadow-[0_16px_36px_rgba(44,17,22,0.08)] sm:p-4">
         <div className="flex items-center gap-2.5">
           <CharacterAvatar expression="happy" size="md" framed={false} />
-          <div>
-            <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-              Sparky note
-            </p>
-            <p className="mt-1 text-sm leading-5 text-[#6f4a4e]">
-              Every day is open for demo use, so you can jump around instead of unlocking the week one step at a time.
-            </p>
+          <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                Sparky note
+              </p>
+              <p className="mt-1 text-sm leading-5 text-[#6f4a4e]">
+                Every day is open for demo use, so you can jump around instead of unlocking the week one step at a time.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onReloadProgress}
+              className="inline-flex items-center justify-center rounded-full border border-[#e4c79f] bg-white px-4 py-2 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#8c1d40]"
+            >
+              Reload progress
+            </button>
           </div>
         </div>
 
@@ -747,7 +715,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
             </p>
           </div>
 
-          {selectedDay.events.map((event) => {
+          {selectedDayEvents.map((event) => {
             const eventReminder = reminders.find((reminder) => reminder.sourceEventId === event.id);
 
             return (
@@ -762,29 +730,6 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
             );
           })}
 
-          {selectedDay.id === "day-1" && getDayComplete(progress, "day-1") ? (
-            <div className="rounded-[1.6rem] border border-[#f0dbc6] bg-[linear-gradient(135deg,#fff0c8,#fff7e8)] p-4 shadow-[0_16px_36px_rgba(44,17,22,0.08)]">
-              <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-                Extra peek
-              </p>
-              <p className="mt-2 font-[var(--font-sim-display)] text-[1.15rem] leading-none text-[#2c1116]">
-                Advising tomorrow at 10:00 AM
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
-                Before then, campus resources are worth exploring while the pressure is low.
-              </p>
-              <div className="mt-4 grid gap-2">
-                {["Upcoming walk path", "Upcoming resource side quest", "Upcoming planner unlock"].map((label) => (
-                  <div
-                    key={label}
-                    className="rounded-[1.1rem] border border-dashed border-[#e4c79f] bg-white/60 px-4 py-3 text-sm font-medium text-[#8c6b52]"
-                  >
-                    🔒 {label}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
         </aside>
 
         <div className="grid content-start gap-4 self-start">
@@ -817,6 +762,85 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                 onViewPanorama={() => markPanoramaViewed(activeEvent.id)}
                 onReadNotice={() => markNoticeRead(activeEvent.id)}
               />
+            ) : activeEvent?.type === "advising-preview" ? (
+              <div className="rounded-[1.8rem] border border-[#f0dbc6] bg-[linear-gradient(135deg,#fff0c8,#fff8ea)] p-4 shadow-[0_16px_44px_rgba(44,17,22,0.08)] sm:p-5">
+                <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                  Monday advising preview
+                </p>
+                <h3 className="mt-2 font-[var(--font-sim-display)] text-[1.75rem] leading-none text-[#2c1116]">
+                  Academic advising is next
+                </h3>
+                <p className="mt-4 text-sm leading-7 text-[#6f4a4e]">
+                  {activeEvent.whatItsFor}
+                </p>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <div className="rounded-[1.15rem] border border-dashed border-[#e4c79f] bg-white/75 px-4 py-3">
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                      Date
+                    </p>
+                    <p className="mt-2 font-[var(--font-sim-display)] text-[1.2rem] leading-none text-[#2c1116]">
+                      {activeEvent.appointmentDayLabel}
+                    </p>
+                  </div>
+                  <div className="rounded-[1.15rem] border border-dashed border-[#e4c79f] bg-white/75 px-4 py-3">
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                      Time
+                    </p>
+                    <p className="mt-2 font-[var(--font-sim-display)] text-[1.2rem] leading-none text-[#2c1116]">
+                      {activeEvent.time}
+                    </p>
+                  </div>
+                  <div className="rounded-[1.15rem] border border-dashed border-[#e4c79f] bg-white/75 px-4 py-3">
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                      Location
+                    </p>
+                    <p className="mt-2 text-base font-medium text-[#2c1116]">
+                      {activeEvent.location}
+                    </p>
+                    {activeEvent.linkedResource ? (
+                      <a
+                        href={activeEvent.linkedResource}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex items-center justify-center rounded-full bg-[#8c1d40] px-4 py-2 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
+                      >
+                        Open in maps
+                      </a>
+                    ) : null}
+                  </div>
+                  <div className="rounded-[1.15rem] border border-dashed border-[#e4c79f] bg-white/75 px-4 py-3">
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                      Advisor
+                    </p>
+                    <p className="mt-2 text-base font-medium text-[#2c1116]">
+                      {activeEvent.advisorName}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                  <div className="rounded-[1.2rem] border border-dashed border-[#e4c79f] bg-white/75 p-4">
+                    <p className="mt-2 font-[var(--font-sim-display)] text-[1.15rem] leading-none text-[#2c1116]">
+                      How advising works
+                    </p>
+                    <AdvisingPreviewVideo
+                      mp4Src="/advising-advisor-intro.mp4"
+                      fallbackText="Your browser does not support the advisor intro video."
+                      showPlaybackButton
+                    />
+                  </div>
+
+                  <div className="rounded-[1.2rem] border border-dashed border-[#e4c79f] bg-white/75 p-4">
+                    <p className="mt-2 font-[var(--font-sim-display)] text-[1.15rem] leading-none text-[#2c1116]">
+                      Office and room preview
+                    </p>
+                    <AdvisingPreviewVideo
+                      mp4Src="/advising-room-sim.mp4"
+                      quicktimeSrc="/advising-room-sim.mov"
+                      fallbackText="Your browser does not support the advising room preview video."
+                    />
+                  </div>
+                </div>
+              </div>
             ) : activeEvent?.type === "advising" ? (
               <AdvisorCard
                 event={activeEvent}
@@ -832,32 +856,23 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                   Put MAT101 on the calendar
                 </h3>
                 <p className="mt-4 text-sm leading-7 text-[#6f4a4e]">
-                  The assignment is due Sunday at {activeEvent.dueTime}. Check the calendar first, then claim a Thursday slot while the week still has room.
+                  The assignment is due Sunday at {activeEvent.dueTime}. Check the calendar first, then claim a Thursday, Friday, or Saturday slot while the week still has room.
                 </p>
 
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={openCalendar}
-                    className="rounded-full bg-[#8c1d40] px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
-                  >
-                    {progress.calendarOpened ? "Calendar open" : "Open calendar"}
-                  </button>
                   {progress.scheduledHomeworkSlot ? (
                     <span className="rounded-full bg-[#16a34a] px-4 py-2 text-sm font-black text-white">
-                      Thursday · {progress.scheduledHomeworkSlot.timeRange}
+                      {progress.scheduledHomeworkSlot.dateLabel} · {progress.scheduledHomeworkSlot.timeLabel}
                     </span>
                   ) : null}
                 </div>
 
-                {progress.calendarOpened ? (
-                  <div className="mt-4">
-                    <CalendarPicker
-                      selectedSlot={progress.scheduledHomeworkSlot}
-                      onSelect={scheduleHomework}
-                    />
-                  </div>
-                ) : null}
+                <div className="mt-4">
+                  <CalendarPicker
+                    selectedSlot={progress.scheduledHomeworkSlot}
+                    onSelect={scheduleHomework}
+                  />
+                </div>
               </div>
             ) : activeEvent?.type === "homework" && activeEvent.id === "day4-homework-session" ? (
               <div className="rounded-[1.8rem] border border-[#f0dbc6] bg-[#fff8ef] p-4 shadow-[0_16px_44px_rgba(44,17,22,0.08)] sm:p-5">
@@ -868,7 +883,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                   Math homework today
                 </h3>
                 <p className="mt-4 text-sm leading-7 text-[#6f4a4e]">
-                  Your saved slot is {progress.scheduledHomeworkSlot?.timeRange ?? "Thursday"}. The point here is that the reminder lands on something real, not just guilt.
+                  Your saved slot is {progress.scheduledHomeworkSlot ? `${progress.scheduledHomeworkSlot.dateLabel} at ${progress.scheduledHomeworkSlot.timeLabel}` : "not set yet"}. The point here is that the reminder lands on something real, not just guilt.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <button
@@ -891,7 +906,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                 sent={progress.professorMessageSent}
                 onChange={updateProfessorDraft}
                 onUseTemplate={updateProfessorDraft}
-                onSend={sendProfessorMessage}
+                onSend={() => sendProfessorMessage(activeEvent)}
               />
             ) : activeEvent?.type === "resource" ? (
               <div className="rounded-[1.8rem] border border-[#f0dbc6] bg-[#fff8ef] p-4 shadow-[0_16px_44px_rgba(44,17,22,0.08)] sm:p-5">
@@ -899,74 +914,20 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                   Free Day Resource Explorer
                 </p>
                 <h3 className="mt-2 font-[var(--font-sim-display)] text-[1.75rem] leading-none text-[#2c1116]">
-                  Pick one support world and explore it
+                  Open the resource map
                 </h3>
                 <p className="mt-4 text-sm leading-7 text-[#6f4a4e]">
-                  Friday is a great moment to explore support without an immediate crisis attached. Tap any world below to jump into the simulation you already have.
+                  Friday is a great moment to explore support without an immediate crisis attached. Jump to the resource map and pick whichever support world feels most useful today.
                 </p>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  {weekResourceQuestIds.map((worldId) => {
-                    const world = resourceWorlds.find((entry) => entry.id === worldId);
-                    if (!world) {
-                      return null;
-                    }
-
-                    const explored = progress.exploredResourceWorldIds.includes(worldId);
-
-                    return (
-                      <button
-                        key={worldId}
-                        type="button"
-                        onClick={() => launchResource(worldId)}
-                        className={`rounded-[1.4rem] border p-4 text-left transition ${
-                          explored
-                            ? "border-[#b9dfc2] bg-[#f3fff5]"
-                            : "border-[#ecd7c0] bg-white hover:-translate-y-0.5 hover:border-[#e4bb73]"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-                              Resource sim
-                            </p>
-                            <p className="mt-2 font-[var(--font-sim-display)] text-[1.1rem] leading-none text-[#2c1116]">
-                              {world.title}
-                            </p>
-                          </div>
-                          <span className="text-2xl">{world.icon}</span>
-                        </div>
-                        <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">{world.teaser}</p>
-                        <div className="mt-3 inline-flex rounded-full bg-[#fff5df] px-3 py-1 text-xs font-bold text-[#8c1d40]">
-                          {explored ? "Launched" : "Launch world"}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : activeEvent?.type === "free-day" ? (
-              <div className="rounded-[1.8rem] border border-[#f0dbc6] bg-[#fff8ef] p-4 shadow-[0_16px_44px_rgba(44,17,22,0.08)] sm:p-5">
-                <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-                  Saturday reset
-                </p>
-                <h3 className="mt-2 font-[var(--font-sim-display)] text-[1.75rem] leading-none text-[#2c1116]">
-                  Choose the tone of the day
-                </h3>
-                <p className="mt-4 text-sm leading-7 text-[#6f4a4e]">
-                  Neither of these is a trap. The point is learning that calm prep and intentional rest both count as good college habits.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  {activeEvent.choices.map((choice) => (
-                    <button
-                      key={choice.id}
-                      type="button"
-                      onClick={() => finishSaturdayReset(activeEvent.id)}
-                      className="rounded-full border border-[#e8c9a3] bg-white px-4 py-3 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5"
-                    >
-                      {choice.text}
-                    </button>
-                  ))}
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={openResourceMap}
+                    className="inline-flex items-center justify-center rounded-full bg-[#8c1d40] px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
+                  >
+                    Go to resource map
+                  </button>
                 </div>
               </div>
             ) : activeEvent?.type === "deadline" ? (
@@ -990,6 +951,26 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                     className="rounded-full bg-[#ffc627] px-5 py-3 text-sm font-black text-[#2c1116] transition hover:-translate-y-0.5 hover:bg-[#f4bb14]"
                   >
                     Submit assignment
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            {nextNavigation ? (
+              <div className="rounded-[1.45rem] border border-[#f0dbc6] bg-white px-4 py-4 shadow-[0_12px_30px_rgba(44,17,22,0.08)]">
+                <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                  Next page
+                </p>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm leading-6 text-[#6f4a4e]">
+                    Continue to <span className="font-black text-[#2c1116]">{nextNavigation.label}</span>.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={goToNextPage}
+                    className="inline-flex items-center justify-center rounded-full bg-[#ffc627] px-5 py-3 text-sm font-black text-[#2c1116] transition hover:-translate-y-0.5 hover:bg-[#f4bb14]"
+                  >
+                    Next
                   </button>
                 </div>
               </div>
@@ -1023,10 +1004,6 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                     <p className="mt-3 text-sm leading-7 text-[#6f4a4e]">
                       The week feels less intimidating when the rooms, reminders, calendar habits, and help-seeking moves already feel familiar.
                     </p>
-                    <div className="mt-4 flex flex-wrap gap-2 text-sm font-bold text-[#7d565b]">
-                      <span className="rounded-full bg-white px-3 py-1">🔱 {progress.points} points</span>
-                      <span className="rounded-full bg-white px-3 py-1">🏅 {progress.earnedBadgeIds.length} badges</span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1034,6 +1011,55 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
           </div>
         </div>
       </div>
+
+      {homeworkReadyPopupOpen ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-[rgba(23,8,12,0.58)] p-4 backdrop-blur-sm">
+          <div className="resource-ready-modal relative w-[min(92vw,31rem)] overflow-hidden rounded-[2rem] border border-[#f0dbc6] bg-[#fff8ef] p-6 shadow-[0_26px_90px_rgba(44,17,22,0.26)]">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-28 overflow-hidden">
+              {homeworkConfettiPieces.map((piece, index) => (
+                <span
+                  key={`${piece.left}-${index}`}
+                  className="resource-confetti-piece"
+                  style={{
+                    left: piece.left,
+                    backgroundColor: piece.color,
+                    animationDelay: piece.delay,
+                    animationDuration: piece.duration,
+                    transform: `rotate(${piece.rotate})`,
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="relative flex items-center gap-4">
+              <CharacterAvatar expression="happy" size="md" pulse />
+              <div>
+                <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                  Homework slot saved
+                </p>
+                <p className="mt-2 font-[var(--font-sim-display)] text-[1.55rem] leading-[1.02] text-[#2c1116]">
+                  Yey, all the best!
+                </p>
+                <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
+                  {progress.scheduledHomeworkSlot
+                    ? `${progress.scheduledHomeworkSlot.dateLabel} at ${progress.scheduledHomeworkSlot.timeLabel} is now on your plan.`
+                    : "Your homework time is now saved."}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setHomeworkReadyPopupOpen(false)}
+                className="inline-flex items-center justify-center rounded-full bg-[#8c1d40] px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

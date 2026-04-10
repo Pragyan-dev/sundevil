@@ -31,10 +31,21 @@ export function ClassCard({
               {event.courseCode}
             </h3>
           </div>
-          <div className="flex flex-wrap gap-2 text-xs font-bold text-[#7d565b]">
-            <span className="rounded-full bg-white px-3 py-1">{event.time}</span>
-            <span className="rounded-full bg-white px-3 py-1">{event.location}</span>
-            <span className="rounded-full bg-white px-3 py-1">{event.facultyName}</span>
+        <div className="flex flex-wrap gap-2 text-xs font-bold text-[#7d565b]">
+            <span className="rounded-full bg-white px-3 py-1">Time · {event.time}</span>
+            {event.linkedResource ? (
+              <a
+                href={event.linkedResource}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full bg-white px-3 py-1 transition hover:-translate-y-0.5 hover:text-[#8c1d40]"
+              >
+                Location · {event.location}
+              </a>
+            ) : (
+              <span className="rounded-full bg-white px-3 py-1">Location · {event.location}</span>
+            )}
+            <span className="rounded-full bg-white px-3 py-1">Faculty · {event.facultyName}</span>
           </div>
         </div>
 
@@ -42,8 +53,10 @@ export function ClassCard({
 
         <div className="mt-4 grid items-stretch gap-4 lg:grid-cols-2">
           <PanoramaPreview
+            key={event.id}
             title={event.panoramaLabel}
             location={event.location}
+            videoSrc={event.panoramaVideoSrc}
             viewed={panoramaViewed}
             onViewed={onViewPanorama}
           />

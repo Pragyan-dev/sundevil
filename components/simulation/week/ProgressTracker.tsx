@@ -3,15 +3,11 @@
 interface ProgressTrackerProps {
   completedDays: number;
   totalDays: number;
-  points: number;
-  badges: number;
 }
 
 export function ProgressTracker({
   completedDays,
   totalDays,
-  points,
-  badges,
 }: ProgressTrackerProps) {
   const value = totalDays ? Math.round((completedDays / totalDays) * 100) : 0;
 
@@ -25,14 +21,6 @@ export function ProgressTracker({
           <p className="mt-2 font-[var(--font-sim-display)] text-[1.5rem] leading-none">
             {completedDays}/{totalDays} days cleared
           </p>
-        </div>
-        <div className="flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full bg-white/12 px-3 py-2 font-bold text-white">
-            🔱 {points} points
-          </span>
-          <span className="rounded-full bg-white/12 px-3 py-2 font-bold text-white">
-            🏅 {badges} badges
-          </span>
         </div>
       </div>
       <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/12">

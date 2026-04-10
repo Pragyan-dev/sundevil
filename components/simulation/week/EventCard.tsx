@@ -17,6 +17,7 @@ function getEventExpression(event: WeekEvent): MascotExpression {
     case "class":
       return "happy";
     case "advising":
+    case "advising-preview":
       return "idea";
     case "homework":
       return "confused";
@@ -69,14 +70,14 @@ export function EventCard({
               : "bg-[#fff2dc] text-[#8c1d40]"
           }`}
         >
-          {completed ? "Done" : event.type.replace("-", " ")}
+          {completed ? "Done" : event.type === "advising-preview" ? "preview" : event.type.replace("-", " ")}
         </span>
       </div>
 
       <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">{event.description}</p>
 
       <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold text-[#7e5a5f]">
-        <span className="rounded-full bg-[#fff8ef] px-3 py-1">{event.location}</span>
+        <span className="rounded-full bg-[#fff8ef] px-3 py-1">Location · {event.location}</span>
         {reminderLabel ? (
           <span className="rounded-full bg-[#8c1d40] px-3 py-1 text-white">{reminderLabel}</span>
         ) : null}
