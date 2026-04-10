@@ -46,18 +46,18 @@ export function MapNode({
       } ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
     >
       <div
-        className={`relative flex h-24 w-24 items-center justify-center rounded-[2rem] border text-3xl shadow-[0_18px_48px_rgba(44,17,22,0.2)] transition duration-200 md:h-28 md:w-28 ${
+        className={`relative flex h-20 w-20 items-center justify-center rounded-[2rem] border text-[2rem] shadow-[0_22px_54px_rgba(44,17,22,0.24)] transition duration-200 md:h-[6.6rem] md:w-[6.6rem] md:text-[2.15rem] ${
           isLocked
-            ? "border-white/12 bg-white/10 text-white/45"
+            ? "border-white/10 bg-[rgba(255,255,255,0.08)] text-white/45"
             : isCompleted
-              ? "border-[#fff2c9] bg-[linear-gradient(135deg,var(--node-from),var(--node-to))] text-[#2c1116] resource-node-complete"
-              : "border-white/30 bg-[linear-gradient(135deg,var(--node-from),var(--node-to))] text-[#2c1116] group-hover:-translate-y-1 group-hover:shadow-[0_24px_60px_rgba(44,17,22,0.24)]"
+              ? "border-[rgba(255,246,223,0.85)] bg-[linear-gradient(180deg,var(--node-from),var(--node-to))] text-[#2c1116] resource-node-complete"
+              : "border-[rgba(255,247,231,0.38)] bg-[linear-gradient(180deg,var(--node-from),var(--node-to))] text-[#2c1116] group-hover:-translate-y-1 group-hover:shadow-[0_28px_64px_rgba(44,17,22,0.26)]"
         }`}
       >
         <span className="drop-shadow-[0_2px_6px_rgba(255,255,255,0.24)]">{world.icon}</span>
 
         {isCompleted ? (
-          <span className="absolute -right-1 -top-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#16a34a] text-sm text-white shadow-lg">
+          <span className="absolute -right-1.5 -top-1.5 flex h-8 w-8 items-center justify-center rounded-full border-[3px] border-white bg-[#18a34a] text-sm text-white shadow-[0_10px_22px_rgba(22,163,74,0.28)]">
             ✓
           </span>
         ) : null}
@@ -70,7 +70,7 @@ export function MapNode({
       </div>
 
       <div className="mt-3 text-center">
-        <div className="font-[var(--font-sim-display)] text-[1rem] leading-none text-white md:text-[1.08rem]">
+        <div className="font-[var(--font-sim-display)] text-[0.95rem] leading-none text-white md:text-[1.1rem]">
           {world.mapLabel}
         </div>
       </div>

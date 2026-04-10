@@ -77,6 +77,7 @@ export const weekSimulatorDays: WeekDay[] = [
         courseCode: "MAT101",
         facultyName: "Prof. Elena Chavez",
         panoramaLabel: "Math hall panorama",
+        panoramaVideoSrc: "/mat101-preview.mp4",
         noticeText:
           "Welcome to MAT101. Bring a notebook, check Canvas every Sunday night, and do not wait until the day homework is due to start it.",
         canvasLinkLabel: "Read professor notice",
@@ -93,6 +94,7 @@ export const weekSimulatorDays: WeekDay[] = [
         courseCode: "CHEM101",
         facultyName: "Dr. Priya Raman",
         panoramaLabel: "Chem lecture preview",
+        panoramaVideoSrc: "/chem101-preview.mp4",
         noticeText:
           "CHEM101 moves quickly. Review slides after class and bring at least one question to office hours if a concept stays fuzzy.",
         canvasLinkLabel: "Read professor notice",
@@ -109,6 +111,7 @@ export const weekSimulatorDays: WeekDay[] = [
         courseCode: "PYTHON",
         facultyName: "Instructor Malik Gomez",
         panoramaLabel: "Python lab preview",
+        panoramaVideoSrc: "/python-preview.mp4",
         noticeText:
           "For PYTHON, practice beats panic. Small daily check-ins with the material are better than one giant cram session.",
         canvasLinkLabel: "Read professor notice",
@@ -138,6 +141,12 @@ export const weekSimulatorDays: WeekDay[] = [
         reminderLabel: "Appointment today at 10:00 AM",
         whatItsFor:
           "Advising helps with understanding degree progress, planning next semester, and catching issues before registration feels chaotic.",
+        resources: [
+          "Degree planning",
+          "DARS help",
+          "Registration questions",
+          "Next-step referrals",
+        ],
         conversation: {
           intro:
             "You made it. What feels most helpful to ask first: class planning, what DARS means, or how to avoid hidden problems later?",
@@ -189,6 +198,7 @@ export const weekSimulatorDays: WeekDay[] = [
         courseCode: "MAT101",
         facultyName: "Prof. Elena Chavez",
         panoramaLabel: "Math hall panorama",
+        panoramaVideoSrc: "/mat101-preview.mp4",
         noticeText:
           "Homework 1 is now posted on Canvas and is due Sunday at 11:59 PM. Start before the weekend gets crowded.",
         canvasLinkLabel: "View homework",
@@ -205,6 +215,7 @@ export const weekSimulatorDays: WeekDay[] = [
         courseCode: "CHEM101",
         facultyName: "Dr. Priya Raman",
         panoramaLabel: "Chem lecture preview",
+        panoramaVideoSrc: "/chem101-preview.mp4",
         noticeText:
           "Office hours are next Tuesday from 1:00 PM to 3:00 PM. If you want to talk through lecture questions, send a short message first.",
         canvasLinkLabel: "Read office-hours note",
@@ -221,6 +232,7 @@ export const weekSimulatorDays: WeekDay[] = [
         courseCode: "PYTHON",
         facultyName: "Instructor Malik Gomez",
         panoramaLabel: "Python lab preview",
+        panoramaVideoSrc: "/python-preview.mp4",
         noticeText:
           "Tiny practice blocks help most in PYTHON. Keep a note of one thing you understood today and one thing you want to ask later.",
         canvasLinkLabel: "Read professor notice",
@@ -444,9 +456,9 @@ export function getWeekReminders(progress: WeekSimulatorProgress): WeekReminder[
   if (progress.scheduledHomeworkSlot) {
     reminders.push({
       id: "day4-homework-today",
-      dayId: "day-4",
-      time: progress.scheduledHomeworkSlot.timeRange,
-      message: `Math homework today at ${progress.scheduledHomeworkSlot.timeRange}.`,
+      dayId: progress.scheduledHomeworkSlot.dayId,
+      time: progress.scheduledHomeworkSlot.timeLabel,
+      message: `Math homework on ${progress.scheduledHomeworkSlot.dateLabel} at ${progress.scheduledHomeworkSlot.timeLabel}.`,
       sourceEventId: "day4-homework-session",
       actionLabel: "Open homework plan",
     });

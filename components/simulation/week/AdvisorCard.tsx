@@ -34,6 +34,17 @@ export function AdvisorCard({ event, completed, onComplete }: AdvisorCardProps) 
 
         <p className="mt-4 text-sm leading-7 text-[#6f4a4e]">{event.whatItsFor}</p>
 
+        <div className="mt-4 flex flex-wrap gap-2">
+          {event.resources.map((resource) => (
+            <span
+              key={resource}
+              className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#7d565b]"
+            >
+              {resource}
+            </span>
+          ))}
+        </div>
+
         <div className="mt-4 rounded-[1.5rem] border border-[#ecd6be] bg-white p-4">
           <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
             Walk-in moment

@@ -42,8 +42,10 @@ export function ClassCard({
 
         <div className="mt-4 grid items-stretch gap-4 lg:grid-cols-2">
           <PanoramaPreview
+            key={event.id}
             title={event.panoramaLabel}
             location={event.location}
+            videoSrc={event.panoramaVideoSrc}
             viewed={panoramaViewed}
             onViewed={onViewPanorama}
           />
