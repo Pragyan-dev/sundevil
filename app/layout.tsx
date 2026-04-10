@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
 import { AccessibilitySettingsProvider } from "@/components/AccessibilitySettingsProvider";
-import { FloatingChatWidget } from "@/components/FloatingChatWidget";
-import { Navbar } from "@/components/Navbar";
+import { AppChrome } from "@/components/AppChrome";
 
 import "./globals.css";
 
@@ -29,11 +28,7 @@ export default function RootLayout({
     >
       <body className="min-h-full" suppressHydrationWarning>
         <AccessibilitySettingsProvider>
-          <div className="app-shell">
-            <Navbar />
-            <main>{children}</main>
-            <FloatingChatWidget />
-          </div>
+          <AppChrome>{children}</AppChrome>
         </AccessibilitySettingsProvider>
       </body>
     </html>

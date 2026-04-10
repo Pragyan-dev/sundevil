@@ -7,7 +7,18 @@ import { usePathname } from "next/navigation";
 import { ChatWindow } from "@/components/ChatWindow";
 
 function shouldShowFloatingChat(pathname: string) {
-  return pathname === "/" || pathname.startsWith("/finder") || pathname.startsWith("/scholarships");
+  if (pathname === "/chat" || pathname.startsWith("/chat/") || pathname === "/myasu") {
+    return false;
+  }
+
+  return (
+    pathname === "/" ||
+    pathname.startsWith("/finder") ||
+    pathname.startsWith("/scholarships") ||
+    pathname.startsWith("/simulate") ||
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/rewards")
+  );
 }
 
 export function FloatingChatWidget() {
