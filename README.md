@@ -96,6 +96,7 @@ npm run dev
 Open:
 
 - `http://localhost:3000`
+- production host: `https://sundevil.vercel.app`
 
 ## Environment variables
 
@@ -113,9 +114,12 @@ Used by:
 Variables:
 
 ```bash
+APP_URL=https://sundevil.vercel.app
 OPENROUTER_API_KEY=
 OPENROUTER_MODEL=qwen/qwen3.6-plus:free
 ```
+
+`APP_URL` is used by server-side AI routes to identify the app origin when calling upstream services. In production it should be set to `https://sundevil.vercel.app`. For local development you can override it with your local app origin if needed.
 
 Behavior without `OPENROUTER_API_KEY`:
 
@@ -181,6 +185,8 @@ npm run scrape   # scrape/update ASU resource data
   - standalone campus experience
 - `/chat`
   - SunDevil Guide
+- `/chat/embed`
+  - compact embedded chat surface used by the MyASU SPARKY overlay
 - `/myasu`
   - MyASU-inspired page
 - `/scholarships`

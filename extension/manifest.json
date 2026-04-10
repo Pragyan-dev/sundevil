@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "My Student Life Nav Link",
+  "description": "Adds My Student Life, Faculty Dashboard, rewards, and Sparky chat entry points to supported ASU navigation bars.",
+  "version": "1.1.0",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://webapp4.asu.edu/*",
+        "https://my.asu.edu/*"
+      ],
+      "js": [
+        "config.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
