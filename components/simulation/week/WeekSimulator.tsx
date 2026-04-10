@@ -117,6 +117,8 @@ function getResolvedDayEvents(day: (typeof weekSimulatorDays)[number], progress:
       ...event,
       dayId: progress.scheduledHomeworkSlot.dayId,
       time: progress.scheduledHomeworkSlot.timeLabel,
+      dueDayId: event.dueDayId,
+      dueTime: event.dueTime,
       description: `Use the saved ${progress.scheduledHomeworkSlot.dateLabel} slot to make real progress on the assignment.`,
     };
 
@@ -399,7 +401,7 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
     });
   }
 
-function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
+  function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
     if (current.completedDayIds.includes(dayId) || !getDayComplete(current, dayId)) {
       return { nextProgress: current };
     }
@@ -696,6 +698,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                     day={day}
                     selected={progress.selectedDayId === day.id}
                     unlocked
+                    demoUnlockable={false}
                     completed={getDayComplete(progress, day.id)}
                     reminderCount={reminderCount}
                     onClick={() => openDay(day.id)}
