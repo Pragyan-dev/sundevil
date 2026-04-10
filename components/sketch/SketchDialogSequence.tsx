@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { CharacterAvatar } from "@/components/SketchCharacters";
 import { SketchDialogBubble } from "@/components/sketch/SketchDialogBubble";
 import { SketchProgressDots } from "@/components/sketch/SketchProgressDots";
-import type { CharacterId, DialogLine } from "@/lib/types";
+import { useDialogTtsPlayback } from "@/components/sketch/useDialogTtsPlayback";
+import type { ArchetypeId, CharacterId, DialogLine } from "@/lib/types";
 
 interface SketchDialogSequenceProps {
   lines: DialogLine[];
@@ -23,6 +24,8 @@ interface SketchDialogSequenceProps {
     line: DialogLine,
   ) => { label: string; onClick: () => void } | null;
   archetypeClassName?: string;
+  sceneId?: string;
+  archetypeId?: ArchetypeId | null;
 }
 
 export function SketchDialogSequence({
@@ -38,14 +41,11 @@ export function SketchDialogSequence({
   onInteract,
   getSecondaryAction,
   archetypeClassName,
+  sceneId,
+  archetypeId,
 }: SketchDialogSequenceProps) {
   const previousSpeakerRef = useRef<CharacterId | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioUrlRef = useRef<string | null>(null);
   const lineIndex = initialLineIndex;
-  const [audioUnlocked, setAudioUnlocked] = useState(
-    () => typeof navigator !== "undefined" && Boolean(navigator.userActivation?.hasBeenActive),
-  );
 
   useEffect(() => {
     const current = lines[lineIndex];
@@ -64,6 +64,17 @@ export function SketchDialogSequence({
   const currentLine = lines[lineIndex];
   const speakerType = currentLine?.speakerType ?? ("you" satisfies CharacterId);
   const secondaryAction = currentLine ? getSecondaryAction?.(currentLine) ?? null : null;
+  const currentLineKey = useMemo(() => {
+    if (!currentLine) {
+      return null;
+    }
+
+    if (sceneId) {
+      return `scene:${sceneId}:${currentLine.id}:${archetypeId ?? "default"}`;
+    }
+
+    return `dialog:${currentLine.speakerType}:${currentLine.id}:${currentLine.text}`;
+  }, [archetypeId, currentLine, sceneId]);
   const avatarClassName = useMemo(() => {
     if (speakerType !== "you" || !archetypeClassName) {
       return "sketch-sequence-avatar";
@@ -71,84 +82,33 @@ export function SketchDialogSequence({
 
     return `sketch-sequence-avatar ${archetypeClassName}`;
   }, [archetypeClassName, speakerType]);
-  const stopAudio = useEffectEvent(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
-      audioRef.current = null;
+  const ttsRequest = useMemo(() => {
+    if (!currentLine || !currentLineKey) {
+      return null;
     }
 
-    if (audioUrlRef.current) {
-      URL.revokeObjectURL(audioUrlRef.current);
-      audioUrlRef.current = null;
+    if (sceneId) {
+      return {
+        kind: "scene" as const,
+        cacheKey: currentLineKey,
+        sceneId,
+        lineId: currentLine.id,
+        archetypeId,
+        isThought: currentLine.isThought,
+      };
     }
+
+    return {
+      kind: "speaker" as const,
+      cacheKey: currentLineKey,
+      text: currentLine.text,
+      speakerId: currentLine.speakerType,
+      isThought: currentLine.isThought,
+    };
+  }, [archetypeId, currentLine, currentLineKey, sceneId]);
+  const { cancelPendingPlayback } = useDialogTtsPlayback({
+    request: ttsRequest,
   });
-  const playCurrentLine = useEffectEvent(async (line: DialogLine) => {
-    stopAudio();
-
-    try {
-      const response = await fetch("/api/tts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: line.text,
-          speakerId: line.speakerType,
-        }),
-      });
-
-      if (!response.ok) {
-        return;
-      }
-
-      const audioBlob = await response.blob();
-      if (!audioBlob.size) {
-        return;
-      }
-
-      const objectUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(objectUrl);
-      audio.preload = "auto";
-      audioUrlRef.current = objectUrl;
-      audioRef.current = audio;
-      await audio.play().catch(() => undefined);
-    } catch {
-      stopAudio();
-    }
-  });
-
-  useEffect(() => {
-    function unlockAudio() {
-      setAudioUnlocked(true);
-    }
-
-    window.addEventListener("pointerdown", unlockAudio, { once: true });
-    window.addEventListener("keydown", unlockAudio, { once: true });
-
-    return () => {
-      window.removeEventListener("pointerdown", unlockAudio);
-      window.removeEventListener("keydown", unlockAudio);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!currentLine || !audioUnlocked) {
-      return;
-    }
-
-    void playCurrentLine(currentLine);
-
-    return () => {
-      stopAudio();
-    };
-  }, [audioUnlocked, currentLine]);
-
-  useEffect(() => {
-    return () => {
-      stopAudio();
-    };
-  }, []);
 
   if (!currentLine) {
     return null;
@@ -158,6 +118,7 @@ export function SketchDialogSequence({
     onInteract?.();
 
     if (lineIndex >= lines.length - 1) {
+      cancelPendingPlayback();
       onSequenceComplete();
       return;
     }

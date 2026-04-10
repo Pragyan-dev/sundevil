@@ -68,7 +68,7 @@ export function RewardToast({ items, onDismiss }: RewardToastProps) {
                   <button
                     type="button"
                     onClick={() => onDismiss(item.id)}
-                    aria-label="Close reminder"
+                    aria-label="Dismiss toast"
                     className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#ecd7c0] bg-[#fff8ef] text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#8c1d40]"
                   >
                     ×

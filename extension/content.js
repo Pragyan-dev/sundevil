@@ -12,7 +12,7 @@
 
   const markers = {
     myStudentLife: "data-my-student-life-link",
-    facultyDashboard: "data-my-student-life-faculty",
+    dashboard: "data-my-student-life-dashboard",
     rewardsButton: "data-my-student-life-rewards",
     sparkyRoot: "data-my-student-life-sparky",
     sparkyStyle: "data-my-student-life-style",
@@ -40,7 +40,7 @@
   const urls = {
     app: appBaseUrl.toString(),
     simulate: new URL("/simulate", appBaseUrl).toString(),
-    faculty: new URL("/dashboard/faculty", appBaseUrl).toString(),
+    dashboard: new URL("/dashboard", appBaseUrl).toString(),
     rewards: new URL("/rewards", appBaseUrl).toString(),
     chat: new URL("/chat", appBaseUrl).toString(),
     chatEmbed: new URL("/chat/embed", appBaseUrl).toString(),
@@ -372,20 +372,20 @@
     }
   }
 
-  function injectFacultyDashboardLink() {
+  function injectDashboardLink() {
     const utilityNav = document.querySelector(selectors.utilityNav);
     const loginStatus = document.querySelector(selectors.loginStatus);
 
     if (
       !utilityNav ||
       !loginStatus ||
-      utilityNav.querySelector(`[${markers.facultyDashboard}="true"]`)
+      utilityNav.querySelector(`[${markers.dashboard}="true"]`)
     ) {
       return;
     }
 
     const alreadyPresent = Array.from(utilityNav.querySelectorAll("a")).some((anchor) => {
-      return anchor.textContent?.trim() === "Faculty Dashboard" || anchor.getAttribute("href") === urls.faculty;
+      return anchor.textContent?.trim() === "Dashboard" || anchor.getAttribute("href") === urls.dashboard;
     });
 
     if (alreadyPresent) {
@@ -393,13 +393,13 @@
     }
 
     const link = document.createElement("a");
-    link.href = urls.faculty;
-    link.textContent = "Faculty Dashboard";
+    link.href = urls.dashboard;
+    link.textContent = "Dashboard";
     link.className = "msl-utility-link";
-    link.setAttribute(markers.facultyDashboard, "true");
+    link.setAttribute(markers.dashboard, "true");
     link.addEventListener("click", (event) => {
       event.preventDefault();
-      assignLocation(urls.faculty);
+      assignLocation(urls.dashboard);
     });
 
     utilityNav.insertBefore(link, loginStatus);
@@ -542,7 +542,7 @@
   function injectEverything() {
     ensureStyles();
     injectPrimaryNavLink();
-    injectFacultyDashboardLink();
+    injectDashboardLink();
     injectRewardsButton();
     injectSparkyWidget();
   }

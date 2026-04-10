@@ -680,7 +680,7 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
             <button
               type="button"
               onClick={onReloadProgress}
-              className="inline-flex items-center justify-center rounded-full border border-[#e4c79f] bg-white px-4 py-2 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#8c1d40]"
+              className="inline-flex items-center justify-center rounded-full border border-[#e4c79f] bg-white px-4 py-2 text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#8c1d40]"
             >
               Reload progress
             </button>

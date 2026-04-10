@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { ChatMessage } from "@/lib/types";
 
@@ -26,6 +26,112 @@ const initialMessages: ChatEntry[] = [
 
 function buildId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function renderInlineMarkdown(text: string, keyPrefix: string): ReactNode[] {
+  const tokens: ReactNode[] = [];
+  const pattern = /(\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\))/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null = pattern.exec(text);
+
+  while (match) {
+    if (match.index > lastIndex) {
+      tokens.push(text.slice(lastIndex, match.index));
+    }
+
+    if (match[2]) {
+      tokens.push(
+        <strong key={`${keyPrefix}-bold-${match.index}`} className="font-semibold text-current">
+          {match[2]}
+        </strong>,
+      );
+    } else if (match[3] && match[4]) {
+      tokens.push(
+        <a
+          key={`${keyPrefix}-link-${match.index}`}
+          href={match[4]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-[var(--asu-maroon)] underline underline-offset-4"
+        >
+          {match[3]}
+        </a>,
+      );
+    }
+
+    lastIndex = pattern.lastIndex;
+    match = pattern.exec(text);
+  }
+
+  if (lastIndex < text.length) {
+    tokens.push(text.slice(lastIndex));
+  }
+
+  return tokens;
+}
+
+function renderParagraphLines(text: string, keyPrefix: string) {
+  return text.split("\n").map((line, index, lines) => (
+    <Fragment key={`${keyPrefix}-line-${index}`}>
+      {renderInlineMarkdown(line, `${keyPrefix}-${index}`)}
+      {index < lines.length - 1 ? <br /> : null}
+    </Fragment>
+  ));
+}
+
+function renderAssistantMessage(content: string) {
+  const blocks = content
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  return blocks.map((block, blockIndex) => {
+    const lines = block
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const unorderedItems = lines
+      .map((line) => line.match(/^[-*]\s+(.*)$/)?.[1] ?? null);
+    const orderedItems = lines
+      .map((line) => line.match(/^\d+\.\s+(.*)$/)?.[1] ?? null);
+
+    if (unorderedItems.every(Boolean)) {
+      return (
+        <ul
+          key={`assistant-block-${blockIndex}`}
+          className="ml-5 list-disc space-y-2"
+        >
+          {unorderedItems.map((item, itemIndex) => (
+            <li key={`assistant-ul-${blockIndex}-${itemIndex}`}>
+              {renderInlineMarkdown(item ?? "", `assistant-ul-${blockIndex}-${itemIndex}`)}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    if (orderedItems.every(Boolean)) {
+      return (
+        <ol
+          key={`assistant-block-${blockIndex}`}
+          className="ml-5 list-decimal space-y-2"
+        >
+          {orderedItems.map((item, itemIndex) => (
+            <li key={`assistant-ol-${blockIndex}-${itemIndex}`}>
+              {renderInlineMarkdown(item ?? "", `assistant-ol-${blockIndex}-${itemIndex}`)}
+            </li>
+          ))}
+        </ol>
+      );
+    }
+
+    return (
+      <p key={`assistant-block-${blockIndex}`}>
+        {renderParagraphLines(block, `assistant-block-${blockIndex}`)}
+      </p>
+    );
+  });
 }
 
 export function ChatWindowInner({
@@ -169,7 +275,13 @@ export function ChatWindowInner({
                     : "bg-white text-[var(--ink)]"
               }`}
             >
-              {message.content}
+              {message.role === "assistant" ? (
+                <div className="space-y-3 break-words">
+                  {renderAssistantMessage(message.content)}
+                </div>
+              ) : (
+                <div className="whitespace-pre-wrap break-words">{message.content}</div>
+              )}
             </div>
           </div>
         ))}
