@@ -103,7 +103,7 @@ export function ChatWindowInner({
 
   return (
     <div
-      className={`flex flex-col overflow-hidden p-0 ${
+      className={`chat-window-root ${isFloating ? "chat-window-floating" : "chat-window-page"} flex flex-col overflow-hidden p-0 ${
         isFloating ? "min-h-0 flex-1 bg-transparent" : "paper-card min-h-[44rem]"
       }`}
     >

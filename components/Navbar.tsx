@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { SettingsMenu } from "@/components/SettingsMenu";
+
 const primaryLinks = [
   { href: "/", label: "Home" },
   { href: "/finder", label: "Find Resources" },
@@ -30,10 +32,10 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[rgba(0,0,0,0.08)] bg-white shadow-[0_10px_24px_rgba(0,0,0,0.05)]">
+    <header className="app-navbar sticky top-0 z-40 border-b border-[rgba(0,0,0,0.08)] bg-white shadow-[0_10px_24px_rgba(0,0,0,0.05)]">
       <div className="h-2 bg-[#2f2f2f]" />
 
-      <div className="border-b border-[rgba(0,0,0,0.08)] bg-[#e9e7e4]">
+      <div className="app-navbar-utility border-b border-[rgba(0,0,0,0.08)] bg-[#e9e7e4]">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-end gap-6 overflow-x-auto px-4 py-2 text-[0.82rem] text-[#3f3f3f] sm:px-6 lg:px-8">
           {utilityLinks.map((link) => (
             link.external ? (
@@ -42,7 +44,7 @@ export function Navbar() {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="whitespace-nowrap transition hover:text-[var(--asu-maroon)]"
+                className="app-navbar-utility-link whitespace-nowrap transition hover:text-[var(--asu-maroon)]"
               >
                 {link.label}
               </a>
@@ -50,7 +52,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="whitespace-nowrap transition hover:text-[var(--asu-maroon)]"
+                className="app-navbar-utility-link whitespace-nowrap transition hover:text-[var(--asu-maroon)]"
               >
                 {link.label}
               </Link>
@@ -59,7 +61,7 @@ export function Navbar() {
         </div>
       </div>
 
-      <div className="bg-white">
+      <div className="app-navbar-brand bg-white">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-4 py-5 sm:px-6 lg:px-8">
           <Link href="/" className="flex min-w-0 items-center gap-5">
             <Image
@@ -81,22 +83,25 @@ export function Navbar() {
             </div>
           </Link>
 
-          <Link
-            href="/dashboard"
-            className="hidden rounded-full border border-[rgba(0,0,0,0.12)] bg-white px-4 py-2 text-sm font-medium text-[#191919] transition hover:border-[var(--asu-gold)] hover:bg-[rgba(255,198,39,0.12)] md:inline-flex"
-          >
-            Faculty Dashboard
-          </Link>
+          <div className="app-navbar-actions flex items-center gap-3">
+            <SettingsMenu />
+            <Link
+              href="/dashboard"
+              className="app-navbar-dashboard-link hidden rounded-full border border-[rgba(0,0,0,0.12)] bg-white px-4 py-2 text-sm font-medium text-[#191919] transition hover:border-[var(--asu-gold)] hover:bg-[rgba(255,198,39,0.12)] md:inline-flex"
+            >
+              Faculty Dashboard
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-[rgba(0,0,0,0.08)] bg-white">
+      <div className="app-navbar-primary border-t border-[rgba(0,0,0,0.08)] bg-white">
         <div className="mx-auto flex w-full max-w-7xl items-center gap-1 overflow-x-auto px-4 sm:px-6 lg:px-8">
           {primaryLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`border-b-[5px] px-4 py-4 text-[0.97rem] font-medium transition ${
+              className={`app-navbar-primary-link border-b-[5px] px-4 py-4 text-[0.97rem] font-medium transition ${
                 isActive(pathname, link.href)
                   ? "border-[var(--asu-gold)] text-[#191919]"
                   : "border-transparent text-[#2f2f2f] hover:border-[rgba(255,198,39,0.65)] hover:bg-[rgba(0,0,0,0.02)]"
@@ -108,7 +113,7 @@ export function Navbar() {
 
           <Link
             href="/dashboard"
-            className="ml-auto inline-flex whitespace-nowrap rounded-full border border-[rgba(0,0,0,0.12)] px-4 py-2 text-sm font-medium text-[#191919] transition hover:border-[var(--asu-gold)] hover:bg-[rgba(255,198,39,0.12)] md:hidden"
+            className="app-navbar-dashboard-link ml-auto inline-flex whitespace-nowrap rounded-full border border-[rgba(0,0,0,0.12)] px-4 py-2 text-sm font-medium text-[#191919] transition hover:border-[var(--asu-gold)] hover:bg-[rgba(255,198,39,0.12)] md:hidden"
           >
             Faculty Dashboard
           </Link>

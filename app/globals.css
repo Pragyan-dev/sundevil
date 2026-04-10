@@ -27,6 +27,7 @@
 
 html {
   background: var(--paper);
+  font-size: 16px;
 }
 
 body {
@@ -75,6 +76,115 @@ main {
 
 .app-shell {
   min-height: 100vh;
+}
+
+.settings-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  padding: 0.78rem 1.05rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.settings-menu-trigger:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 198, 39, 0.9);
+  background: rgba(255, 198, 39, 0.12);
+}
+
+.settings-menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 54;
+  background: rgba(17, 12, 8, 0.18);
+  backdrop-filter: blur(2px);
+}
+
+.settings-menu-panel {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 55;
+  max-height: min(38rem, calc(100dvh - 2rem));
+  overflow-y: auto;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 1.45rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 243, 234, 0.98)),
+    rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 60px rgba(18, 12, 8, 0.2);
+  padding: 1.15rem;
+}
+
+.settings-menu-section {
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.9rem 1rem;
+}
+
+.settings-menu-choice {
+  border: 1px solid rgba(140, 29, 64, 0.14);
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  min-height: 2.65rem;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease;
+}
+
+.settings-menu-choice:hover {
+  transform: translateY(-1px);
+  border-color: rgba(140, 29, 64, 0.26);
+}
+
+.settings-menu-choice[data-active="true"] {
+  border-color: rgba(255, 198, 39, 0.48);
+  background: linear-gradient(145deg, rgba(140, 29, 64, 0.96), rgba(107, 21, 48, 0.96));
+  box-shadow: 0 14px 28px rgba(140, 29, 64, 0.18);
+  color: var(--warm-white);
+}
+
+.settings-menu-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  background: white;
+  color: var(--ink);
+  font-size: 1.35rem;
+  line-height: 1;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.settings-menu-close:hover {
+  border-color: rgba(255, 198, 39, 0.9);
+  background: rgba(255, 198, 39, 0.12);
 }
 
 .page-shell {
@@ -259,6 +369,153 @@ main {
   margin-top: 0.3rem;
   font-size: 0.87rem;
   color: var(--muted-ink);
+}
+
+@media (min-width: 640px) {
+  .settings-menu-scrim {
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .settings-menu-panel {
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: calc(100% + 0.55rem);
+    bottom: auto;
+    width: min(31rem, calc(100vw - 2rem));
+    max-height: min(31rem, calc(100dvh - 8rem));
+    padding: 1.1rem;
+  }
+}
+
+html[data-accessibility-scope="active"][data-text-size="large"] {
+  font-size: 17.5px;
+}
+
+html[data-accessibility-scope="active"][data-text-size="x-large"] {
+  font-size: 19px;
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] {
+  --paper: #efeade;
+  --paper-strong: #ffffff;
+  --ink: #111111;
+  --muted-ink: #313131;
+  --line: rgba(0, 0, 0, 0.22);
+  --shadow: 0 20px 48px rgba(0, 0, 0, 0.14);
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] body {
+  background:
+    radial-gradient(circle at top left, rgba(255, 198, 39, 0.2), transparent 24%),
+    linear-gradient(180deg, #ece7d8 0%, #ffffff 4.5rem, #ffffff 100%);
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] .paper-card,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-panel,
+html[data-accessibility-scope="active"][data-contrast="high"] .floating-chat-panel {
+  border-color: rgba(0, 0, 0, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(255, 255, 255, 0.99)),
+    rgba(255, 255, 255, 0.99);
+  box-shadow: 0 20px 52px rgba(0, 0, 0, 0.16);
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] .paper-card-featured {
+  border-color: rgba(140, 29, 64, 0.32);
+  background:
+    linear-gradient(145deg, rgba(255, 198, 39, 0.16), rgba(255, 255, 255, 0.98)),
+    rgba(255, 255, 255, 0.98);
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] .maroon-panel,
+html[data-accessibility-scope="active"][data-contrast="high"] .button-primary,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-choice[data-active="true"] {
+  background:
+    linear-gradient(160deg, rgba(255, 198, 39, 0.16), transparent 24%),
+    linear-gradient(140deg, #6d1531 0%, #441021 100%);
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] .button-secondary,
+html[data-accessibility-scope="active"][data-contrast="high"] .button-gold,
+html[data-accessibility-scope="active"][data-contrast="high"] .button-ghost-light,
+html[data-accessibility-scope="active"][data-contrast="high"] .pill,
+html[data-accessibility-scope="active"][data-contrast="high"] .field-shell,
+html[data-accessibility-scope="active"][data-contrast="high"] .choice-pill,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-trigger,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-close,
+html[data-accessibility-scope="active"][data-contrast="high"] .floating-chat-launcher,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-section,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-choice,
+html[data-accessibility-scope="active"][data-contrast="high"] .app-navbar-dashboard-link {
+  border-color: rgba(0, 0, 0, 0.22);
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] .field-shell,
+html[data-accessibility-scope="active"][data-contrast="high"] .choice-pill,
+html[data-accessibility-scope="active"][data-contrast="high"] .pill,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-trigger,
+html[data-accessibility-scope="active"][data-contrast="high"] .floating-chat-launcher,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-section,
+html[data-accessibility-scope="active"][data-contrast="high"] .settings-menu-choice {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] .field-shell::placeholder {
+  color: #666666;
+}
+
+html[data-accessibility-scope="active"][data-contrast="high"] .app-navbar,
+html[data-accessibility-scope="active"][data-contrast="high"] .app-navbar-utility,
+html[data-accessibility-scope="active"][data-contrast="high"] .app-navbar-brand,
+html[data-accessibility-scope="active"][data-contrast="high"] .app-navbar-primary,
+html[data-accessibility-scope="active"][data-contrast="high"] .floating-chat-header {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+html[data-accessibility-scope="active"][data-motion="reduced"] {
+  scroll-behavior: auto !important;
+}
+
+html[data-accessibility-scope="active"][data-motion="reduced"] *,
+html[data-accessibility-scope="active"][data-motion="reduced"] *::before,
+html[data-accessibility-scope="active"][data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html[data-accessibility-scope="active"][data-motion="reduced"] .button-primary:hover,
+html[data-accessibility-scope="active"][data-motion="reduced"] .button-secondary:hover,
+html[data-accessibility-scope="active"][data-motion="reduced"] .button-gold:hover,
+html[data-accessibility-scope="active"][data-motion="reduced"] .button-ghost-light:hover,
+html[data-accessibility-scope="active"][data-motion="reduced"] .choice-pill:hover,
+html[data-accessibility-scope="active"][data-motion="reduced"] .settings-menu-trigger:hover,
+html[data-accessibility-scope="active"][data-motion="reduced"] .settings-menu-choice:hover,
+html[data-accessibility-scope="active"][data-motion="reduced"] .floating-chat-launcher:hover {
+  transform: none !important;
+}
+
+html[data-accessibility-scope="active"][data-focus-mode="enhanced"] :is(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    [role="button"],
+    summary
+  ):focus-visible {
+  outline: 3px solid var(--asu-gold);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(140, 29, 64, 0.16);
+}
+
+html[data-accessibility-scope="active"][data-focus-mode="enhanced"] .field-shell:focus,
+html[data-accessibility-scope="active"][data-focus-mode="enhanced"] .field-shell:focus-visible {
+  border-color: rgba(140, 29, 64, 0.48);
+  box-shadow: 0 0 0 5px rgba(140, 29, 64, 0.14);
 }
 
 .progress-shell {

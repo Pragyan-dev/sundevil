@@ -38,6 +38,17 @@ export type GpaRange = "under-2.5" | "2.5-2.99" | "3.0-3.49" | "3.5-4.0";
 export type FirstGenStatus = "yes" | "no" | "not-sure";
 export type ResidencyStatus = "in-state" | "out-of-state" | "international";
 export type AidStatus = "fafsa-filed" | "not-filed" | "not-sure";
+export type AccessibilityTextSize = "default" | "large" | "x-large";
+export type AccessibilityContrastMode = "default" | "high";
+export type AccessibilityMotionMode = "default" | "reduced";
+export type AccessibilityFocusMode = "default" | "enhanced";
+
+export interface AccessibilitySettings {
+  textSize: AccessibilityTextSize;
+  contrast: AccessibilityContrastMode;
+  motion: AccessibilityMotionMode;
+  focusMode: AccessibilityFocusMode;
+}
 
 export interface ResourceFlowStep {
   title: string;

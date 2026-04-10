@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AccessibilitySettingsProvider } from "@/components/AccessibilitySettingsProvider";
 import { FloatingChatWidget } from "@/components/FloatingChatWidget";
 import { Navbar } from "@/components/Navbar";
 
@@ -27,11 +28,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full" suppressHydrationWarning>
-        <div className="app-shell">
-          <Navbar />
-          <main>{children}</main>
-          <FloatingChatWidget />
-        </div>
+        <AccessibilitySettingsProvider>
+          <div className="app-shell">
+            <Navbar />
+            <main>{children}</main>
+            <FloatingChatWidget />
+          </div>
+        </AccessibilitySettingsProvider>
       </body>
     </html>
   );
