@@ -13,12 +13,14 @@ export function AppChrome({
 }>) {
   const pathname = usePathname();
   const isEmbeddedChat = pathname === "/chat/embed";
+  const isRewardsPage = pathname === "/rewards";
+  const showSharedChrome = !isEmbeddedChat && !isRewardsPage;
 
   return (
     <div className="app-shell">
-      {!isEmbeddedChat ? <Navbar /> : null}
+      {showSharedChrome ? <Navbar /> : null}
       <main>{children}</main>
-      {!isEmbeddedChat ? <FloatingChatWidget /> : null}
+      {showSharedChrome ? <FloatingChatWidget /> : null}
     </div>
   );
 }
