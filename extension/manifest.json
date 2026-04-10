@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "My Student Life Nav Link",
-  "description": "Adds My Student Life, Faculty Dashboard, rewards, and Sparky chat entry points to supported ASU navigation bars.",
+  "description": "Adds My Student Life, Dashboard, rewards, and Sparky chat entry points to supported ASU navigation bars.",
   "version": "1.1.0",
   "content_scripts": [
     {
