@@ -17,6 +17,7 @@ interface SuccessCoachScreenProps {
 
 const COACH_VIDEO_URL = "https://www.youtube.com/watch?v=Xhn8BYdKvW8";
 const FIND_COACH_URL = "https://success.asu.edu/success-resources/first-generation-students";
+const SCAI_ADVISING_CALENDAR_URL = "https://fultonapps.asu.edu/advising/calendar/";
 
 const coachProfiles = [
   {
@@ -384,6 +385,37 @@ function PlaceholderCoachScreen({
                 Open advising scheduler
               </a>
             </div>
+
+            <div className="relative mt-4 rounded-[1.6rem] border border-[#d8b486] bg-[#fff1a9] px-5 py-5 text-[#5c3a19] shadow-[0_16px_32px_rgba(92,58,25,0.16)]">
+              <div className="absolute right-5 top-4 h-4 w-4 rounded-full bg-[#8c1d40]/20" />
+              <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                Sticky note
+              </p>
+              <p className="mt-3 text-sm font-bold text-[#2c1116]">Check availability on:</p>
+              <a
+                href={SCAI_ADVISING_CALENDAR_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-flex text-sm font-bold text-[#8c1d40] underline decoration-[#8c1d40]/40 underline-offset-4 transition hover:text-[#731736]"
+              >
+                fultonapps.asu.edu/advising/calendar/
+              </a>
+
+              <div className="mt-4 grid gap-2 text-sm leading-6">
+                <div className="rounded-[1rem] bg-white/55 px-3 py-2">
+                  30-min Appointment (Zoom)
+                </div>
+                <div className="rounded-[1rem] bg-white/55 px-3 py-2">
+                  Express Advising (15 min, Zoom)
+                </div>
+                <div className="rounded-[1rem] bg-white/55 px-3 py-2">
+                  Flash Advising (15 min, Zoom)
+                </div>
+                <div className="rounded-[1rem] bg-white/55 px-3 py-2">
+                  Slack Advising: join <span className="font-bold">#scai-masters-express-advising</span>
+                </div>
+              </div>
+            </div>
           </article>
 
           <article className="rounded-[2rem] border border-[#f0dbc6] bg-[#fff8ef] p-5 shadow-[0_24px_80px_rgba(44,17,22,0.18)]">
@@ -391,7 +423,7 @@ function PlaceholderCoachScreen({
               Section 2
             </p>
             <h2 className="mt-3 font-[var(--font-sim-display)] text-[1.55rem] leading-[0.96] text-[#2c1116]">
-              Advisor person video
+              How advising works
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#6f4a4e]">
               This advisor intro clip can help students see who they are meeting and what the tone of advising feels like before they walk in.

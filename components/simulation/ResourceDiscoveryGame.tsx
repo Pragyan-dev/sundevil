@@ -18,7 +18,10 @@ import {
 import { ChatScreen } from "@/components/simulation/ChatScreen";
 import { MapScreen } from "@/components/simulation/MapScreen";
 import { SuccessCoachScreen } from "@/components/simulation/SuccessCoachScreen";
-import { WeekSimulator } from "@/components/simulation/week/WeekSimulator";
+import {
+  WeekSimulator,
+  WEEK_SIMULATOR_STORAGE_KEY,
+} from "@/components/simulation/week/WeekSimulator";
 import type {
   ChatChoice,
   RenderedChatMessage,
@@ -35,6 +38,7 @@ interface ResourceDiscoveryGameProps {
 
 const STORAGE_KEY = "resource-discovery-map-sim-v2";
 const SESSION_STORAGE_KEY = "resource-discovery-map-sim-session-v1";
+const FEATURE_MODE_STORAGE_KEY = "resource-discovery-feature-mode-v1";
 
 interface ResourceDiscoverySession {
   screen: "chat" | "success-coach";
@@ -172,6 +176,9 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
     const campusReturnSession = !previewWorldId ? readCampusStorySession() : null;
+    const savedFeatureMode = !previewWorldId
+      ? window.sessionStorage.getItem(FEATURE_MODE_STORAGE_KEY)
+      : null;
     let frameId = 0;
     let parsedProgress: ResourceDiscoveryProgress | null = null;
     let parsedSession: ResourceDiscoverySession | null = null;
@@ -202,6 +209,9 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       if (parsedProgress) {
         setProgress(parsedProgress);
       }
+      if (savedFeatureMode === "resource-map" || savedFeatureMode === "week-sim") {
+        setFeatureMode(savedFeatureMode);
+      }
       if (parsedSession) {
         savedSessionRef.current = parsedSession;
         setScreen(parsedSession.screen);
@@ -220,6 +230,14 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
       window.cancelAnimationFrame(frameId);
     };
   }, [previewWorldId]);
+
+  useEffect(() => {
+    if (previewWorldId) {
+      return;
+    }
+
+    window.sessionStorage.setItem(FEATURE_MODE_STORAGE_KEY, featureMode);
+  }, [featureMode, previewWorldId]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -294,6 +312,20 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
   ) => {
     setProgress((current) => updater(current));
   }, []);
+
+  const reloadCurrentMode = useCallback(() => {
+    if (!previewWorldId) {
+      window.sessionStorage.setItem(FEATURE_MODE_STORAGE_KEY, featureMode);
+    }
+
+    clearCampusStorySession();
+    savedSessionRef.current = null;
+    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    window.localStorage.removeItem(WEEK_SIMULATOR_STORAGE_KEY);
+
+    window.location.reload();
+  }, [featureMode, previewWorldId]);
 
   useEffect(() => {
     if (!isHydrated || previewWorldId || !pendingCampusReturn?.returnRequested) {
@@ -749,7 +781,10 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
         </div>
 
         {!previewWorldId && featureMode === "week-sim" ? (
-          <WeekSimulator onOpenResourceMap={handleOpenResourceMapFromWeek} />
+          <WeekSimulator
+            onOpenResourceMap={handleOpenResourceMapFromWeek}
+            onReloadProgress={reloadCurrentMode}
+          />
         ) : screen === "map" || !activeWorld || !activeScenario ? (
           <MapScreen
             worlds={visibleWorlds}
@@ -759,6 +794,7 @@ export function ResourceDiscoveryGame({ previewSlug }: ResourceDiscoveryGameProp
             zoomingWorldId={zoomingWorldId}
             onOpenWorld={openWorldFromMap}
             onHoverWorld={setHoveredWorldId}
+            onReloadProgress={reloadCurrentMode}
           />
         ) : screen === "success-coach" ? (
           <SuccessCoachScreen

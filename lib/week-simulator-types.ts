@@ -105,6 +105,7 @@ export interface WeekHomeworkEvent extends WeekEventBase {
 export interface WeekMessageEvent extends WeekEventBase {
   type: "message";
   facultyName: string;
+  recipientEmail: string;
   suggestedTemplates: string[];
 }
 

@@ -57,6 +57,12 @@ export const weekResourceQuestIds = [
 
 const advisingMapsLink =
   "http://google.com/maps/dir//SCAI+Academic+Advising+Center,+Centerpoint,+660,+S+Mill+Ave+%23+105,+Tempe,+AZ+85281/@33.4197423,-111.9164779,15z/data=!4m8!4m7!1m0!1m5!1m1!1s0x872b08d82de94275:0xe31b4d9750935d51!2m2!1d-111.9405982!2d33.4237895?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+const mat101MapsLink =
+  "https://www.google.com/maps/dir/?api=1&destination=PSH+153+Arizona+State+University+Tempe+AZ";
+const chem101MapsLink =
+  "https://www.google.com/maps/dir/?api=1&destination=ISTB4+110+Arizona+State+University+Tempe+AZ";
+const pythonMapsLink =
+  "https://www.google.com/maps/dir/?api=1&destination=COOR+174+Arizona+State+University+Tempe+AZ";
 
 export const weekSimulatorDays: WeekDay[] = [
   {
@@ -77,6 +83,7 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "9:00 AM",
         description: "Intro math class. You mostly need the room, the professor cadence, and the notice board.",
         location: "PSH 153",
+        linkedResource: mat101MapsLink,
         courseCode: "MAT101",
         facultyName: "Prof. Elena Chavez",
         panoramaLabel: "Math hall panorama",
@@ -94,6 +101,7 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "11:15 AM",
         description: "Lecture plus lab expectations. This one feels more manageable once you know the room and pace.",
         location: "ISTB4 110",
+        linkedResource: chem101MapsLink,
         courseCode: "CHEM101",
         facultyName: "Dr. Priya Raman",
         panoramaLabel: "Chem lecture preview",
@@ -111,6 +119,7 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "2:00 PM",
         description: "Your coding class. Expect demos, debugging, and a room full of laptops.",
         location: "COOR 174",
+        linkedResource: pythonMapsLink,
         courseCode: "PYTHON",
         facultyName: "Instructor Malik Gomez",
         panoramaLabel: "Python lab preview",
@@ -221,6 +230,7 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "9:00 AM",
         description: "Second meeting of the week. The room already feels less intimidating.",
         location: "PSH 153",
+        linkedResource: mat101MapsLink,
         courseCode: "MAT101",
         facultyName: "Prof. Elena Chavez",
         panoramaLabel: "Math hall panorama",
@@ -238,6 +248,7 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "11:15 AM",
         description: "A quick lecture day. You hear the office-hours reminder at the end.",
         location: "ISTB4 110",
+        linkedResource: chem101MapsLink,
         courseCode: "CHEM101",
         facultyName: "Dr. Priya Raman",
         panoramaLabel: "Chem lecture preview",
@@ -255,6 +266,7 @@ export const weekSimulatorDays: WeekDay[] = [
         time: "2:00 PM",
         description: "Another coding class, this time with less guesswork about where to sit and what to expect.",
         location: "COOR 174",
+        linkedResource: pythonMapsLink,
         courseCode: "PYTHON",
         facultyName: "Instructor Malik Gomez",
         panoramaLabel: "Python lab preview",
@@ -287,6 +299,7 @@ export const weekSimulatorDays: WeekDay[] = [
         description: "Ask politely about next Tuesday's office hours so the visit feels easy instead of awkward.",
         location: "Draft message",
         facultyName: "Dr. Priya Raman",
+        recipientEmail: "priya.raman@asu.edu",
         suggestedTemplates: [
           "Hi Dr. Raman, I am in CHEM101 and would love to stop by office hours next Tuesday to ask about this week's material. Would that be okay?",
           "Hello Dr. Raman, I am reviewing lecture notes and have a couple of questions. May I come to your office hours next Tuesday?",

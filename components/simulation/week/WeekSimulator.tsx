@@ -25,15 +25,17 @@ import type {
   WeekDayId,
   WeekEvent,
   WeekHomeworkEvent,
+  WeekMessageEvent,
   WeekRewardToast,
   WeekSimulatorProgress,
 } from "@/lib/week-simulator-types";
 
 interface WeekSimulatorProps {
   onOpenResourceMap: () => void;
+  onReloadProgress: () => void;
 }
 
-const STORAGE_KEY = "asu-week-simulator-v1";
+export const WEEK_SIMULATOR_STORAGE_KEY = "asu-week-simulator-v1";
 const homeworkConfettiPieces = [
   { left: "8%", delay: "0ms", duration: "2300ms", color: "#ffc627", rotate: "-18deg" },
   { left: "20%", delay: "110ms", duration: "2500ms", color: "#8c1d40", rotate: "16deg" },
@@ -193,10 +195,12 @@ function AdvisingPreviewVideo({
   mp4Src,
   quicktimeSrc,
   fallbackText,
+  showPlaybackButton = false,
 }: {
   mp4Src: string;
   quicktimeSrc?: string;
   fallbackText: string;
+  showPlaybackButton?: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -222,27 +226,39 @@ function AdvisingPreviewVideo({
   }
 
   return (
-    <button
-      type="button"
-      onClick={togglePlayback}
-      aria-pressed={isPlaying}
-      className="mt-3 block w-full overflow-hidden rounded-[1rem] border border-[#ead7c4] bg-[#2c1116] text-left shadow-[0_16px_36px_rgba(44,17,22,0.12)] transition hover:-translate-y-0.5"
-    >
-      <video
-        ref={videoRef}
-        className="aspect-video w-full bg-[#2c1116] object-cover"
-        playsInline
-        preload="metadata"
+    <div className="mt-3">
+      <button
+        type="button"
+        onClick={togglePlayback}
+        aria-pressed={isPlaying}
+        className="block w-full overflow-hidden rounded-[1rem] border border-[#ead7c4] bg-[#2c1116] text-left shadow-[0_16px_36px_rgba(44,17,22,0.12)] transition hover:-translate-y-0.5"
       >
-        <source src={mp4Src} type="video/mp4" />
-        {quicktimeSrc ? <source src={quicktimeSrc} type="video/quicktime" /> : null}
-        {fallbackText}
-      </video>
-    </button>
+        <video
+          ref={videoRef}
+          className="aspect-video w-full bg-[#2c1116] object-cover"
+          playsInline
+          preload="metadata"
+        >
+          <source src={mp4Src} type="video/mp4" />
+          {quicktimeSrc ? <source src={quicktimeSrc} type="video/quicktime" /> : null}
+          {fallbackText}
+        </video>
+      </button>
+
+      {showPlaybackButton ? (
+        <button
+          type="button"
+          onClick={togglePlayback}
+          className="mt-3 inline-flex items-center justify-center rounded-full bg-[#8c1d40] px-4 py-2 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+      ) : null}
+    </div>
   );
 }
 
-export function WeekSimulator({ onOpenResourceMap }: WeekSimulatorProps) {
+export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimulatorProps) {
   const [isHydrated, setIsHydrated] = useState(false);
   const [progress, setProgress] = useState<WeekSimulatorProgress>(createWeekSimulatorProgress);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
@@ -250,7 +266,7 @@ export function WeekSimulator({ onOpenResourceMap }: WeekSimulatorProps) {
   const [homeworkReadyPopupOpen, setHomeworkReadyPopupOpen] = useState(false);
 
   useEffect(() => {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(WEEK_SIMULATOR_STORAGE_KEY);
     let frameId = 0;
     let nextProgress: WeekSimulatorProgress | null = null;
 
@@ -261,7 +277,7 @@ export function WeekSimulator({ onOpenResourceMap }: WeekSimulatorProps) {
           nextProgress = { ...createWeekSimulatorProgress(), ...parsed };
         }
       } catch {
-        window.localStorage.removeItem(STORAGE_KEY);
+        window.localStorage.removeItem(WEEK_SIMULATOR_STORAGE_KEY);
       }
     }
 
@@ -284,7 +300,7 @@ export function WeekSimulator({ onOpenResourceMap }: WeekSimulatorProps) {
       return;
     }
 
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    window.localStorage.setItem(WEEK_SIMULATOR_STORAGE_KEY, JSON.stringify(progress));
   }, [isHydrated, progress]);
 
   const reminders = useMemo(() => getWeekReminders(progress), [progress]);
@@ -529,7 +545,15 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
     setProgress((current) => ({ ...current, professorMessageDraft: value }));
   }
 
-  function sendProfessorMessage() {
+  function sendProfessorMessage(event: WeekMessageEvent) {
+    const trimmedDraft = progress.professorMessageDraft.trim();
+
+    if (trimmedDraft.length < 35) {
+      return;
+    }
+
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(event.recipientEmail)}&su=${encodeURIComponent(`CHEM101 office hours request for ${event.facultyName}`)}&body=${encodeURIComponent(trimmedDraft)}`;
+
     applyProgressUpdate((current) => {
       if (current.professorMessageSent || current.professorMessageDraft.trim().length < 35) {
         return { nextProgress: current };
@@ -550,6 +574,10 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
         nextProgress,
       };
     });
+
+    window.setTimeout(() => {
+      window.location.assign(gmailComposeUrl);
+    }, 120);
   }
 
   function openResourceMap() {
@@ -638,13 +666,22 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
       <section className="rounded-[1.7rem] border border-[#f0dbc6] bg-[#fff8ef] p-3 shadow-[0_16px_36px_rgba(44,17,22,0.08)] sm:p-4">
         <div className="flex items-center gap-2.5">
           <CharacterAvatar expression="happy" size="md" framed={false} />
-          <div>
-            <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-              Sparky note
-            </p>
-            <p className="mt-1 text-sm leading-5 text-[#6f4a4e]">
-              Every day is open for demo use, so you can jump around instead of unlocking the week one step at a time.
-            </p>
+          <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                Sparky note
+              </p>
+              <p className="mt-1 text-sm leading-5 text-[#6f4a4e]">
+                Every day is open for demo use, so you can jump around instead of unlocking the week one step at a time.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onReloadProgress}
+              className="inline-flex items-center justify-center rounded-full border border-[#e4c79f] bg-white px-4 py-2 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#8c1d40]"
+            >
+              Reload progress
+            </button>
           </div>
         </div>
 
@@ -788,6 +825,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                     <AdvisingPreviewVideo
                       mp4Src="/advising-advisor-intro.mp4"
                       fallbackText="Your browser does not support the advisor intro video."
+                      showPlaybackButton
                     />
                   </div>
 
@@ -868,7 +906,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                 sent={progress.professorMessageSent}
                 onChange={updateProfessorDraft}
                 onUseTemplate={updateProfessorDraft}
-                onSend={sendProfessorMessage}
+                onSend={() => sendProfessorMessage(activeEvent)}
               />
             ) : activeEvent?.type === "resource" ? (
               <div className="rounded-[1.8rem] border border-[#f0dbc6] bg-[#fff8ef] p-4 shadow-[0_16px_44px_rgba(44,17,22,0.08)] sm:p-5">

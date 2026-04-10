@@ -20,6 +20,7 @@ interface MapScreenProps {
   zoomingWorldId: ResourceWorldId | null;
   onOpenWorld: (worldId: ResourceWorldId) => void;
   onHoverWorld: (worldId: ResourceWorldId | null) => void;
+  onReloadProgress: () => void;
 }
 
 interface MapCurve {
@@ -102,6 +103,7 @@ export function MapScreen({
   zoomingWorldId,
   onOpenWorld,
   onHoverWorld,
+  onReloadProgress,
 }: MapScreenProps) {
   const [mapMinimized, setMapMinimized] = useState(false);
   const visibleCompletedCount = worlds.filter((world) =>
@@ -139,6 +141,13 @@ export function MapScreen({
               <div className="rounded-full border border-white/14 bg-white/10 px-3 py-2 text-sm font-bold text-white">
                 {visibleCompletedCount}/{worlds.length} explored
               </div>
+              <button
+                type="button"
+                onClick={onReloadProgress}
+                className="inline-flex items-center justify-center rounded-full border border-white/14 bg-white/10 px-3 py-2 text-sm font-bold text-white transition hover:border-[#ffc627] hover:text-[#ffc627]"
+              >
+                Reload
+              </button>
               <button
                 type="button"
                 onClick={() => setMapMinimized((current) => !current)}
