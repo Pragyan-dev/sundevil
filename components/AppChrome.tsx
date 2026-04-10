@@ -19,7 +19,7 @@ export function AppChrome({
   return (
     <div className="app-shell">
       {showSharedChrome ? <Navbar /> : null}
-      <main>{children}</main>
+      <main className={isRewardsPage ? "h-[100dvh] overflow-hidden" : undefined}>{children}</main>
       {showSharedChrome ? <FloatingChatWidget /> : null}
     </div>
   );

@@ -162,7 +162,6 @@ function buildCompletionPopup(reward: ResourceCompletionRewardDefinition): Rewar
     title: reward.popupTitle,
     detail: reward.popupDetail,
     badgeId: reward.badgeId,
-    mysteryBoxes: 1,
     points: WORLD_COMPLETION_PITCHFORK_REWARD,
   };
 }

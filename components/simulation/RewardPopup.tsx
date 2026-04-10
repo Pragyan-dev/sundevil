@@ -74,11 +74,6 @@ export function RewardPopup({ items, onDismiss }: RewardPopupProps) {
                         +{item.points} pitchforks
                       </span>
                     ) : null}
-                    {item.mysteryBoxes ? (
-                      <span className="rounded-full bg-[#2c1116] px-2.5 py-1 text-[0.72rem] font-black text-white">
-                        +{item.mysteryBoxes} mystery box
-                      </span>
-                    ) : null}
                   </div>
                 </div>
 

@@ -1,4 +1,4 @@
-import type { RewardsBadgeId } from "@/lib/rewards-types";
+import type { RewardsBadgeId } from "./rewards-types.ts";
 
 export type MascotExpression =
   | "happy"
@@ -123,5 +123,4 @@ export interface RewardPopupItem {
   detail: string;
   points?: number;
   badgeId?: RewardsBadgeId;
-  mysteryBoxes?: number;
 }

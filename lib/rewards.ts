@@ -1,18 +1,18 @@
 "use client";
 
-import type { ResourceWorldId } from "@/lib/resource-discovery-types";
+import type { ResourceWorldId } from "./resource-discovery-types.ts";
 import {
   DAY_ENTRY_PITCHFORK_REWARD,
   DEMO_PITCHFORK_INCREMENT,
-  SPARKYCOIN_REDEMPTION_COST,
+  rewardsRedemptionCatalog,
   WORLD_COMPLETION_PITCHFORK_REWARD,
-} from "@/lib/rewards-data";
+} from "./rewards-data.ts";
 import type {
-  OwnedFigurineRecord,
   RewardsBadgeId,
   RewardsProfile,
+  RewardsRedemptionResult,
   WorldCompletionRewardResult,
-} from "@/lib/rewards-types";
+} from "./rewards-types.ts";
 
 export const REWARDS_STORAGE_KEY = "sundevilconnect-rewards-v1";
 export const REWARDS_UPDATED_EVENT = "sundevilconnect:rewards-updated";
@@ -23,10 +23,7 @@ export function createDefaultRewardsProfile(): RewardsProfile {
     claimedDayEntryIds: [],
     claimedWorldRewardIds: [],
     obtainedBadgeIds: [],
-    mysteryBoxCount: 0,
-    openedMysteryBoxIds: [],
-    connectedWalletAddress: null,
-    figurineMetadataByTokenId: {},
+    redemptionHistory: [],
   };
 }
 
@@ -59,21 +56,21 @@ export function normalizeRewardsProfile(value: unknown): RewardsProfile {
     obtainedBadgeIds: Array.isArray(candidate.obtainedBadgeIds)
       ? dedupe(candidate.obtainedBadgeIds.filter((item): item is RewardsBadgeId => typeof item === "string"))
       : defaults.obtainedBadgeIds,
-    mysteryBoxCount:
-      typeof candidate.mysteryBoxCount === "number" && Number.isFinite(candidate.mysteryBoxCount)
-        ? candidate.mysteryBoxCount
-        : defaults.mysteryBoxCount,
-    openedMysteryBoxIds: Array.isArray(candidate.openedMysteryBoxIds)
-      ? dedupe(candidate.openedMysteryBoxIds.filter((item): item is string => typeof item === "string"))
-      : defaults.openedMysteryBoxIds,
-    connectedWalletAddress:
-      typeof candidate.connectedWalletAddress === "string" && candidate.connectedWalletAddress.trim()
-        ? candidate.connectedWalletAddress
-        : null,
-    figurineMetadataByTokenId:
-      typeof candidate.figurineMetadataByTokenId === "object" && candidate.figurineMetadataByTokenId !== null
-        ? (candidate.figurineMetadataByTokenId as Record<string, OwnedFigurineRecord>)
-        : defaults.figurineMetadataByTokenId,
+    redemptionHistory: Array.isArray(candidate.redemptionHistory)
+      ? candidate.redemptionHistory
+          .filter((item): item is { rewardId: string; redeemedAt: string } => {
+            return (
+              typeof item === "object" &&
+              item !== null &&
+              typeof item.rewardId === "string" &&
+              typeof item.redeemedAt === "string"
+            );
+          })
+          .map((item) => ({
+            rewardId: item.rewardId,
+            redeemedAt: item.redeemedAt,
+          }))
+      : defaults.redemptionHistory,
   };
 }
 
@@ -159,7 +156,6 @@ export function claimWorldCompletionBundle(
     return {
       ...current,
       pitchforkBalance: current.pitchforkBalance + WORLD_COMPLETION_PITCHFORK_REWARD,
-      mysteryBoxCount: current.mysteryBoxCount + 1,
       claimedWorldRewardIds: [...current.claimedWorldRewardIds, worldId],
       obtainedBadgeIds: dedupe([...current.obtainedBadgeIds, badgeId]),
     };
@@ -168,7 +164,6 @@ export function claimWorldCompletionBundle(
   return {
     awarded,
     pitchforksAwarded: WORLD_COMPLETION_PITCHFORK_REWARD,
-    mysteryBoxesAwarded: 1,
     badgeId,
     profile,
   };
@@ -199,41 +194,43 @@ export function spendPitchforks(amount: number) {
   return { success, profile };
 }
 
-export function setConnectedWalletAddress(address: string | null) {
-  return updateRewardsProfile((current) => ({
-    ...current,
-    connectedWalletAddress: address?.trim() || null,
-  }));
-}
+export function redeemPitchforkReward(rewardId: string): RewardsRedemptionResult {
+  const reward = rewardsRedemptionCatalog.find((entry) => entry.id === rewardId);
 
-export function recordMintedFigurine(record: OwnedFigurineRecord) {
-  return updateRewardsProfile((current) => ({
-    ...current,
-    figurineMetadataByTokenId: {
-      ...current.figurineMetadataByTokenId,
-      [record.tokenId]: record,
-    },
-  }));
-}
+  if (!reward) {
+    return {
+      success: false,
+      rewardId,
+      profile: readRewardsProfile(),
+    };
+  }
 
-export function consumeMysteryBox(openedMysteryBoxId: string) {
   let success = false;
 
   const profile = updateRewardsProfile((current) => {
-    if (current.mysteryBoxCount <= 0 || current.openedMysteryBoxIds.includes(openedMysteryBoxId)) {
+    if (current.pitchforkBalance < reward.cost) {
       return current;
     }
 
     success = true;
-
     return {
       ...current,
-      mysteryBoxCount: current.mysteryBoxCount - 1,
-      openedMysteryBoxIds: [...current.openedMysteryBoxIds, openedMysteryBoxId],
+      pitchforkBalance: current.pitchforkBalance - reward.cost,
+      redemptionHistory: [
+        {
+          rewardId: reward.id,
+          redeemedAt: new Date().toISOString(),
+        },
+        ...current.redemptionHistory,
+      ],
     };
   });
 
-  return { success, profile };
+  return {
+    success,
+    rewardId,
+    profile,
+  };
 }
 
 export function getDayEntryRewardId(dayNumber: number) {
@@ -242,14 +239,4 @@ export function getDayEntryRewardId(dayNumber: number) {
 
 export function formatPitchforks(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
-}
-
-export function formatSparkyCoins(value: bigint) {
-  const base = BigInt(10) ** BigInt(18);
-  const whole = value / base;
-  return new Intl.NumberFormat("en-US").format(Number(whole));
-}
-
-export function getRedeemCostLabel() {
-  return `${SPARKYCOIN_REDEMPTION_COST} SparkyCoins`;
 }

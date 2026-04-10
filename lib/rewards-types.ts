@@ -1,4 +1,4 @@
-import type { ResourceWorldId } from "@/lib/resource-discovery-types";
+import type { ResourceWorldId } from "./resource-discovery-types.ts";
 
 export type RewardsBadgeId =
   | "student-success-spark"
@@ -12,10 +12,6 @@ export type RewardsBadgeId =
 export type RewardsMissionId =
   | "resource-day-1-login"
   | `badge-${RewardsBadgeId}`;
-
-export type FigurineSource = "mystery-box" | "sparkycoin-redemption";
-
-export type FigurineRarity = "Common" | "Rare" | "Epic" | "Legendary";
 
 export interface RewardsBadgeDefinition {
   id: RewardsBadgeId;
@@ -35,6 +31,14 @@ export interface RewardsMissionDefinition {
   linkedBadgeId?: RewardsBadgeId;
 }
 
+export interface RewardsRedemptionDefinition {
+  id: string;
+  title: string;
+  cost: number;
+  description: string;
+  category: string;
+}
+
 export interface ResourceCompletionRewardDefinition {
   worldId: ResourceWorldId;
   badgeId: RewardsBadgeId;
@@ -43,24 +47,9 @@ export interface ResourceCompletionRewardDefinition {
   popupDetail: string;
 }
 
-export interface SparkyFigurineDefinition {
-  id: string;
-  name: string;
-  rarity: FigurineRarity;
-  vibe: string;
-  accentFrom: string;
-  accentTo: string;
-  glyph: string;
-}
-
-export interface OwnedFigurineRecord {
-  tokenId: string;
-  figurineId: string;
-  name: string;
-  rarity: FigurineRarity;
-  source: FigurineSource;
-  receivedAt: string;
-  tokenUri?: string;
+export interface RewardsRedemptionRecord {
+  rewardId: string;
+  redeemedAt: string;
 }
 
 export interface RewardsProfile {
@@ -68,10 +57,7 @@ export interface RewardsProfile {
   claimedDayEntryIds: string[];
   claimedWorldRewardIds: ResourceWorldId[];
   obtainedBadgeIds: RewardsBadgeId[];
-  mysteryBoxCount: number;
-  openedMysteryBoxIds: string[];
-  connectedWalletAddress: string | null;
-  figurineMetadataByTokenId: Record<string, OwnedFigurineRecord>;
+  redemptionHistory: RewardsRedemptionRecord[];
 }
 
 export interface DayEntryRewardResult {
@@ -83,7 +69,12 @@ export interface DayEntryRewardResult {
 export interface WorldCompletionRewardResult {
   awarded: boolean;
   pitchforksAwarded: number;
-  mysteryBoxesAwarded: number;
   badgeId: RewardsBadgeId;
+  profile: RewardsProfile;
+}
+
+export interface RewardsRedemptionResult {
+  success: boolean;
+  rewardId: string;
   profile: RewardsProfile;
 }

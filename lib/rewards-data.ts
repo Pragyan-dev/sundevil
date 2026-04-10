@@ -2,12 +2,11 @@ import type {
   ResourceCompletionRewardDefinition,
   RewardsBadgeDefinition,
   RewardsMissionDefinition,
-  SparkyFigurineDefinition,
-} from "@/lib/rewards-types";
+  RewardsRedemptionDefinition,
+} from "./rewards-types.ts";
 
 export const DAY_ENTRY_PITCHFORK_REWARD = 20;
 export const WORLD_COMPLETION_PITCHFORK_REWARD = 100;
-export const SPARKYCOIN_REDEMPTION_COST = 100;
 export const DEMO_PITCHFORK_INCREMENT = 250;
 
 export const rewardsBadgeCatalog: RewardsBadgeDefinition[] = [
@@ -43,23 +42,23 @@ export const rewardsBadgeCatalog: RewardsBadgeDefinition[] = [
   },
   {
     id: "campus-walker-2km",
-    title: "Campus Walker 2km",
+    title: "Campus Walker 1 Mile",
     description: "A distance-based campus badge for future GPS or step tracking demos.",
-    unlockHint: "Walk 2km in the campus experience. This is a locked future demo badge right now.",
+    unlockHint: "Walk 1 mile in the campus experience. This is a locked future demo badge right now.",
     icon: "👟",
     silhouetteLabel: "Walking badge silhouette",
     obtainableNow: false,
-    missionTitle: "Walk 2km in campus",
+    missionTitle: "Walk 1 mile in campus",
   },
   {
     id: "campus-walker-10km",
-    title: "Campus Walker 10km",
+    title: "Campus Walker 6 Miles",
     description: "A long-haul campus roaming badge for a future movement-tracking milestone.",
-    unlockHint: "Walk 10km in the campus experience. This is a locked future demo badge right now.",
+    unlockHint: "Walk 6 miles in the campus experience. This is a locked future demo badge right now.",
     icon: "🏃",
     silhouetteLabel: "Distance badge silhouette",
     obtainableNow: false,
-    missionTitle: "Walk 10km in campus",
+    missionTitle: "Walk 6 miles in campus",
   },
   {
     id: "login-streak-10",
@@ -97,65 +96,71 @@ export const rewardsMissionCatalog: RewardsMissionDefinition[] = [
   })),
 ];
 
+export const rewardsRedemptionCatalog: RewardsRedemptionDefinition[] = [
+  {
+    id: "athletics-ticket",
+    title: "Athletics Ticket",
+    cost: 150,
+    description: "Trade pitchforks for entry to a Sun Devil athletics event.",
+    category: "Tickets",
+  },
+  {
+    id: "arts-event-ticket",
+    title: "Arts Event Ticket",
+    cost: 150,
+    description: "Redeem for a music, theater, or arts event around ASU.",
+    category: "Tickets",
+  },
+  {
+    id: "sun-devil-merchandise",
+    title: "Sun Devil Merchandise",
+    cost: 300,
+    description: "Put your pitchforks toward maroon-and-gold gear.",
+    category: "Merch",
+  },
+  {
+    id: "local-attraction-pass",
+    title: "Local Attraction Pass",
+    cost: 450,
+    description: "Swap points for a local attraction or partner experience.",
+    category: "Experiences",
+  },
+  {
+    id: "autographed-item",
+    title: "Autographed Item",
+    cost: 600,
+    description: "Redeem for signed ASU memorabilia and collector drops.",
+    category: "Exclusive",
+  },
+  {
+    id: "exclusive-asu-experience",
+    title: "Exclusive ASU Experience",
+    cost: 900,
+    description: "Save up for a one-of-a-kind Sun Devil experience.",
+    category: "Exclusive",
+  },
+];
+
 export const resourceCompletionRewards: ResourceCompletionRewardDefinition[] = [
   {
     worldId: "first-gen-support",
     badgeId: "student-success-spark",
     badgeTitle: "Student Success Spark",
     popupTitle: "Student Success rewards unlocked",
-    popupDetail: "Badge earned, a mystery Sparky figurine box was added, and 100 pitchforks dropped into your balance.",
+    popupDetail: "Badge earned and 100 pitchforks dropped into your balance.",
   },
   {
     worldId: "academic-advising",
     badgeId: "advising-pathfinder",
     badgeTitle: "Advising Pathfinder",
     popupTitle: "Advising rewards unlocked",
-    popupDetail: "Badge earned, a mystery Sparky figurine box was added, and 100 pitchforks dropped into your balance.",
+    popupDetail: "Badge earned and 100 pitchforks dropped into your balance.",
   },
   {
     worldId: "explore-asu",
     badgeId: "explore-asu-trailblazer",
     badgeTitle: "Explore ASU Trailblazer",
     popupTitle: "Explore ASU rewards unlocked",
-    popupDetail: "Badge earned, a mystery Sparky figurine box was added, and 100 pitchforks dropped into your balance.",
-  },
-];
-
-export const sparkyFigurineCatalog: SparkyFigurineDefinition[] = [
-  {
-    id: "glitch-guide",
-    name: "Glitch Guide Sparky",
-    rarity: "Common",
-    vibe: "A campus helper figurine with a debug-happy grin and notebook glow.",
-    accentFrom: "#8c1d40",
-    accentTo: "#ffc627",
-    glyph: "GG",
-  },
-  {
-    id: "quest-runner",
-    name: "Quest Runner Sparky",
-    rarity: "Rare",
-    vibe: "A faster, sharper figurine variant built for map-clearing demo runs.",
-    accentFrom: "#f59e0b",
-    accentTo: "#8c1d40",
-    glyph: "QR",
-  },
-  {
-    id: "chain-caster",
-    name: "Chain Caster Sparky",
-    rarity: "Epic",
-    vibe: "A wallet-connected Sparky with coin rings, scan lines, and maroon lightning.",
-    accentFrom: "#2c1116",
-    accentTo: "#d6657e",
-    glyph: "CC",
-  },
-  {
-    id: "sun-forge",
-    name: "Sun Forge Sparky",
-    rarity: "Legendary",
-    vibe: "A rare molten-gold figurine that looks like it dropped out of a glitched sunrise.",
-    accentFrom: "#ffc627",
-    accentTo: "#f97316",
-    glyph: "SF",
+    popupDetail: "Badge earned and 100 pitchforks dropped into your balance.",
   },
 ];
