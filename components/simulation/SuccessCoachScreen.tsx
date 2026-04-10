@@ -155,7 +155,7 @@ function evaluateEmailDraft(draft: string, coachName: string | null): Evaluation
   const mentionsCoach = coachName ? lowered.includes(coachName.toLowerCase()) : false;
   const mentionsAsu = /\basu\b/i.test(trimmed);
   const mentionsNeed = /(help|guidance|support|advice|coaching|coach)/i.test(trimmed);
-  const hasSpecificDetail = /(computer science|psychology|arts|schedule|organized|overwhelmed|first-gen|first generation|classes|semester|routine)/i.test(trimmed);
+  const hasSpecificDetail = /(computer science|psychology|arts|schedule|organized|overwhelmed|student success|success coach|classes|semester|routine)/i.test(trimmed);
   const hasQuestion = trimmed.includes("?");
   const hasClosing = /(thank you|thanks|sincerely|best)/i.test(trimmed);
   const lengthOkay = trimmed.split(/\s+/).filter(Boolean).length >= 35;
@@ -544,7 +544,7 @@ function PlaceholderCoachScreen({
   );
 }
 
-function FirstGenCoachScreen({
+function StudentSuccessCoachScreen({
   world,
   scenario,
   onBack,
@@ -575,9 +575,9 @@ function FirstGenCoachScreen({
 
     return `Hi ${selectedCoach.name},
 
-I am an ASU student and I am looking for success coaching support. I am interested in ${selectedCoach.track.toLowerCase()}, and I want help building a better routine so I can stay on top of classes and feel less overwhelmed.
+I am an ASU student and I am looking for Student Success coaching support. I am interested in ${selectedCoach.track.toLowerCase()}, and I want help building a better routine so I can stay on top of classes and feel less overwhelmed.
 
-Could you let me know the best next step for connecting with a success coach?
+Could you let me know the best next step for connecting with a Student Success coach?
 
 Thank you,
 [Your Name]`;
@@ -611,7 +611,7 @@ Thank you,
             Coach Connection Lab
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[#f6dde3]">
-            {scenario.title} now turns into action: watch how success coaching works, then build your own coach outreach plan.
+            {scenario.title} now turns into action: watch how Student Success coaching works, then build your own outreach plan.
           </p>
         </div>
 
@@ -634,10 +634,10 @@ Thank you,
               Box 1
             </p>
             <h2 className="mt-3 font-[var(--font-sim-display)] text-[1.8rem] leading-[0.95] text-[#2c1116]">
-              Watch a quick ASU coach intro
+              Watch a quick ASU Student Success intro
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#6f4a4e]">
-              This uses an official ASU video so students can see that success coaching is normal, friendly, and not some scary academic penalty box.
+              This uses an official ASU video so students can see that Student Success coaching is normal, friendly, and not some scary academic penalty box.
             </p>
 
             <div className="mt-5 rounded-[1.6rem] border border-[#f4d8ab] bg-[linear-gradient(135deg,#fff2cc,#fffaf2)] p-4">
@@ -648,7 +648,7 @@ Thank you,
                 First-Year Success Center at ASU
               </p>
               <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
-                A short Arizona State University YouTube video featuring success coaching and what students actually get out of it.
+                A short Arizona State University YouTube video featuring Student Success coaching and what students actually get out of it.
               </p>
 
               <div className="mt-4 overflow-hidden rounded-[1.35rem] border border-[#ead7bd] bg-[#2c1116] shadow-[0_16px_36px_rgba(44,17,22,0.18)]">
@@ -686,7 +686,7 @@ Thank you,
               Find a coach, write the email, get feedback
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#6f4a4e]">
-              This mission gives you three sample coach backgrounds, a real email drafting box, and an AI-style evaluator before you jump to the real success coach page.
+              This mission gives you three sample coach backgrounds, a real email drafting box, and an AI-style evaluator before you jump to the real Student Success page.
             </p>
 
             {!simulationStarted ? (
@@ -736,9 +736,9 @@ Thank you,
                   <p className="text-[0.7rem] font-black uppercase tracking-[0.16em] text-[#8c1d40]">
                     2. Draft your email
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
-                    {selectedCoach
-                      ? `Write to ${selectedCoach.name}. Mention that you are an ASU student, what you need help with, and one clear question.`
+                    <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
+                      {selectedCoach
+                        ? `Write to ${selectedCoach.name}. Mention that you are an ASU student, what you need help with, and one clear question.`
                       : "Choose one of the three coaches above first, then write your message here."}
                   </p>
                   <textarea
@@ -754,7 +754,7 @@ Thank you,
                   />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                     <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#9b6f76]">
-                      Subject: Asking about success coaching support
+                      Subject: Asking about Student Success coaching support
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {sampleEmail ? (
@@ -920,5 +920,5 @@ export function SuccessCoachScreen(props: SuccessCoachScreenProps) {
     return <PlaceholderCoachScreen {...props} />;
   }
 
-  return <FirstGenCoachScreen {...props} />;
+  return <StudentSuccessCoachScreen {...props} />;
 }

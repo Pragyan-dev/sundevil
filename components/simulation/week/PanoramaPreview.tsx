@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 interface PanoramaPreviewProps {
   title: string;
   location: string;
+  videoSrc: string;
   viewed: boolean;
   onViewed: () => void;
 }
@@ -12,33 +13,35 @@ interface PanoramaPreviewProps {
 export function PanoramaPreview({
   title,
   location,
+  videoSrc,
   viewed,
   onViewed,
 }: PanoramaPreviewProps) {
-  const [offset, setOffset] = useState(0);
-  const draggingRef = useRef(false);
-  const lastXRef = useRef(0);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  function beginDrag(clientX: number) {
-    draggingRef.current = true;
-    lastXRef.current = clientX;
-    if (!viewed) {
-      onViewed();
-    }
-  }
-
-  function moveDrag(clientX: number) {
-    if (!draggingRef.current) {
+  async function togglePlayback() {
+    const video = videoRef.current;
+    if (!video) {
       return;
     }
 
-    const delta = clientX - lastXRef.current;
-    lastXRef.current = clientX;
-    setOffset((current) => Math.max(-50, Math.min(50, current + delta * 0.25)));
-  }
+    if (!viewed) {
+      onViewed();
+    }
 
-  function endDrag() {
-    draggingRef.current = false;
+    if (video.paused) {
+      try {
+        await video.play();
+        setIsPlaying(true);
+      } catch {
+        setIsPlaying(false);
+      }
+      return;
+    }
+
+    video.pause();
+    setIsPlaying(false);
   }
 
   return (
@@ -57,48 +60,47 @@ export function PanoramaPreview({
         </span>
       </div>
 
-      <div
-        className="mt-4 overflow-hidden rounded-[1.4rem] border border-[#e4c7a4] bg-[#2c1116]"
-        onMouseDown={(event) => beginDrag(event.clientX)}
-        onMouseMove={(event) => moveDrag(event.clientX)}
-        onMouseUp={endDrag}
-        onMouseLeave={endDrag}
-        onTouchStart={(event) => beginDrag(event.touches[0]?.clientX ?? 0)}
-        onTouchMove={(event) => moveDrag(event.touches[0]?.clientX ?? 0)}
-        onTouchEnd={endDrag}
-        role="presentation"
+      <button
+        type="button"
+        onClick={togglePlayback}
+        aria-pressed={isPlaying}
+        className="group mt-4 block overflow-hidden rounded-[1.4rem] border border-[#e4c7a4] bg-[#2c1116] text-left shadow-[0_16px_36px_rgba(44,17,22,0.18)] transition hover:-translate-y-0.5"
       >
-        <div
-          className="h-48 w-full transition-transform duration-150 sm:h-56"
-          style={{
-            background: `linear-gradient(90deg,#3d1b22 ${18 + offset * 0.2}%,#7c3e3b ${
-              42 + offset * 0.15
-            }%,#d7815d 62%,#f6d8a6 82%)`,
-            transform: `translateX(${offset * 0.3}px)`,
-          }}
-        >
-          <div className="flex h-full w-full items-end justify-between px-4 pb-4">
-            <div className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white">
-              drag to look around
-            </div>
-            <div className="grid gap-2 sm:grid-cols-3">
+        <div className="relative">
+          <video
+            ref={videoRef}
+            className="aspect-video w-full bg-[#2c1116] object-cover"
+            playsInline
+            muted
+            loop
+            preload="metadata"
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between px-4 pb-4">
+            <span className="rounded-full bg-[rgba(44,17,22,0.46)] px-3 py-1 text-xs font-bold text-white">
+              tap to {isPlaying ? "pause" : "play"}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full bg-white/14 px-3 py-1 text-xs font-bold text-white">
+                room
+              </span>
               <span className="rounded-full bg-white/14 px-3 py-1 text-xs font-bold text-white">
                 seats
               </span>
               <span className="rounded-full bg-white/14 px-3 py-1 text-xs font-bold text-white">
-                board
-              </span>
-              <span className="rounded-full bg-white/14 px-3 py-1 text-xs font-bold text-white">
-                exit
+                front
               </span>
             </div>
           </div>
         </div>
-      </div>
+      </button>
 
       <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">
-        The goal is not realism-perfect graphics. It is helping the room feel familiar before you
-        walk in.
+        The goal is helping the room feel familiar before you walk in, so math, chem, and Python
+        feel less abstract on day one.
       </p>
     </div>
   );

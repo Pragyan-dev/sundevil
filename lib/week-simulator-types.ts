@@ -68,6 +68,7 @@ export interface WeekClassEvent extends WeekEventBase {
   noticeText: string;
   canvasLinkLabel: string;
   panoramaLabel: string;
+  panoramaVideoSrc: string;
 }
 
 export interface WeekAdvisingEvent extends WeekEventBase {
@@ -75,6 +76,7 @@ export interface WeekAdvisingEvent extends WeekEventBase {
   advisorName: string;
   reminderLabel: string;
   whatItsFor: string;
+  resources: string[];
   conversation: {
     intro: string;
     followUp: string;
@@ -134,8 +136,10 @@ export interface WeekDay {
 
 export interface ScheduledHomeworkSlot {
   dayId: WeekDayId;
-  label: string;
-  timeRange: string;
+  dateLabel: string;
+  dateValue: string;
+  timeLabel: string;
+  timeValue: string;
 }
 
 export interface WeekSimulatorProgress {

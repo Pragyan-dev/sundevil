@@ -35,19 +35,19 @@ export const resourceDiscoveryBadges: BadgeDefinition[] = [
 export const resourceDiscoveryWorldOrder: ResourceWorldId[] = [
   "first-gen-support",
   "academic-advising",
-  "tutoring",
   "explore-asu",
+  "tutoring",
   "financial-aid",
-  "career-services",
   "counseling",
+  "career-services",
   "office-hours",
 ];
 
 export const resourceDiscoveryVisibleMapWorldIds: ResourceWorldId[] = [
   "first-gen-support",
   "academic-advising",
-  "tutoring",
   "explore-asu",
+  "tutoring",
   "financial-aid",
   "counseling",
 ];
@@ -62,8 +62,8 @@ export const previewWorldBySlug: Record<ResourcePreviewSlug, ResourceWorldId> = 
 export const resourceWorlds: ResourceWorld[] = [
   {
     id: "first-gen-support",
-    title: "First-Gen Center",
-    mapLabel: "First-Gen",
+    title: "Student Success",
+    mapLabel: "Student Success",
     icon: "🌱",
     teaser: "Nobody explained the hidden rules and now campus words sound fake.",
     summary: "Best when college feels full of rules nobody taught out loud.",
@@ -93,7 +93,7 @@ export const resourceWorlds: ResourceWorld[] = [
           {
             id: "reassure",
             expression: "happy",
-            text: "That is a very normal first-gen moment. Nothing is wrong with you. Sometimes campus language gets treated like common knowledge when it really is not.",
+            text: "That is a very normal Student Success moment. Nothing is wrong with you. Sometimes campus language gets treated like common knowledge when it really is not.",
             autoNextStepId: "decision",
           },
           {
@@ -108,7 +108,7 @@ export const resourceWorlds: ResourceWorld[] = [
               },
               {
                 id: "coach",
-                text: "ask a first-gen or success coach to translate it",
+                text: "ask a Student Success coach to translate it",
                 nextStepId: "coach-outcome",
                 reward: { helpful: true },
               },
@@ -140,11 +140,11 @@ export const resourceWorlds: ResourceWorld[] = [
           {
             id: "resource",
             expression: "idea",
-            text: "This is the real move from here. Open the coach connection lab, watch a quick intro, then find a success coach and draft the email before this turns back into vague intentions.",
+            text: "This is the real move from here. Open the coach connection lab, watch a quick intro, then find a Student Success coach and draft the email before this turns back into vague intentions.",
             experience: {
               kind: "success-coach",
               title: "Coach Connection Lab",
-              body: "Next page: one box for a success coach video, one box for a guided find-and-email simulation, then the real coach link at the end.",
+              body: "Next page: one box for a Student Success video, one box for a guided find-and-email simulation, then the real Student Success link at the end.",
               ctaLabel: "Open coach lab",
             },
             complete: true,
@@ -160,7 +160,7 @@ export const resourceWorlds: ResourceWorld[] = [
     icon: "🧭",
     teaser: "DARS looks like it was built to start arguments.",
     summary: "Best when schedules, requirements, holds, or degree plans stop feeling clear.",
-    lockedHint: "Unlock this by completing First-Gen Center.",
+    lockedHint: "Unlock this by completing Student Success.",
     accentFrom: "#8c1d40",
     accentTo: "#d6657e",
     position: { x: 39, y: 27, mobileX: 28, mobileY: 25 },
