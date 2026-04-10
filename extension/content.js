@@ -537,10 +537,11 @@
 
   function injectRewardsButton() {
     const userInfoButton = document.querySelector(selectors.userInfoButton);
+    const userNameHost =
+      userInfoButton?.closest(".user-name") || document.querySelector(selectors.userNameHost);
     const userName = document.querySelector(selectors.userName);
-    const anchor = userInfoButton || userName;
 
-    if (!anchor || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
+    if ((!userNameHost && !userName) || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
       return;
     }
 
@@ -558,7 +559,19 @@
       assignLocation(getRewardsDestinationUrl());
     });
 
-    anchor.insertAdjacentElement("afterend", button);
+    if (userNameHost instanceof HTMLElement) {
+      userNameHost.setAttribute(markers.rewardsHost, "true");
+
+      if (userInfoButton && userNameHost.contains(userInfoButton)) {
+        userNameHost.insertBefore(button, userInfoButton);
+        return;
+      }
+
+      userNameHost.prepend(button);
+      return;
+    }
+
+    userName.insertAdjacentElement("afterend", button);
   }
 
   function getBuddyStageImage(stage) {
