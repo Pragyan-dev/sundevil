@@ -15,11 +15,14 @@ import { RewardToast } from "@/components/simulation/week/RewardToast";
 import { CharacterAvatar } from "@/components/simulation/CharacterAvatar";
 import {
   createWeekSimulatorProgress,
+  getDayUnlockState,
   getWeekDay,
   getWeekReminders,
   isWeekSimulatorProgress,
   weekSimulatorDays,
 } from "@/data/week-simulator";
+import { DAY_ENTRY_PITCHFORK_REWARD } from "@/lib/rewards-data";
+import { claimDayEntryPitchforks, getDayEntryRewardId } from "@/lib/rewards";
 import type {
   ScheduledHomeworkSlot,
   WeekDayId,
@@ -45,6 +48,14 @@ const homeworkConfettiPieces = [
   { left: "76%", delay: "170ms", duration: "2500ms", color: "#8c1d40", rotate: "12deg" },
   { left: "89%", delay: "70ms", duration: "2350ms", color: "#ffe9ba", rotate: "-16deg" },
 ] as const;
+
+function clampDemoUnlockedThroughDay(value: number) {
+  return Math.min(Math.max(Math.floor(value), 1), weekSimulatorDays.length);
+}
+
+function getDayNumber(dayId: WeekDayId) {
+  return getWeekDay(dayId)?.number ?? 1;
+}
 
 function createToast(
   kind: WeekRewardToast["kind"],
@@ -276,7 +287,18 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
       try {
         const parsed = JSON.parse(raw) as unknown;
         if (isWeekSimulatorProgress(parsed)) {
-          nextProgress = { ...createWeekSimulatorProgress(), ...parsed };
+          const mergedProgress = { ...createWeekSimulatorProgress(), ...parsed };
+          const demoUnlockedThroughDay = clampDemoUnlockedThroughDay(mergedProgress.demoUnlockedThroughDay);
+          const selectedDayNumber = getDayNumber(mergedProgress.selectedDayId);
+
+          nextProgress = {
+            ...mergedProgress,
+            demoUnlockedThroughDay,
+            selectedDayId:
+              selectedDayNumber <= demoUnlockedThroughDay
+                ? mergedProgress.selectedDayId
+                : "day-1",
+          };
         }
       } catch {
         window.localStorage.removeItem(WEEK_SIMULATOR_STORAGE_KEY);
@@ -351,6 +373,36 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
   }
 
   useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    const dayEntryResult = claimDayEntryPitchforks(getDayEntryRewardId(selectedDay.number));
+
+    if (!dayEntryResult.awarded) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      setToasts((current) => [
+        {
+          ...createToast(
+            "points",
+            `${DAY_ENTRY_PITCHFORK_REWARD} pitchforks earned`,
+            "You earned 20 pitchforks for starting a new day.",
+          ),
+          points: DAY_ENTRY_PITCHFORK_REWARD,
+        },
+        ...current,
+      ].slice(0, 4));
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [isHydrated, selectedDay.number]);
+
+  useEffect(() => {
     const unseenReminder = dayReminders.find(
       (reminder) => !progress.acknowledgedReminderIds.includes(reminder.id),
     );
@@ -416,7 +468,25 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
   }
 
   function openDay(dayId: WeekDayId) {
-    setProgress((current) => ({ ...current, selectedDayId: dayId }));
+    setProgress((current) => {
+      const dayNumber = getDayNumber(dayId);
+      const unlocked = getDayUnlockState(current, dayId);
+      const demoUnlockable = dayNumber === current.demoUnlockedThroughDay + 1;
+
+      if (unlocked) {
+        return { ...current, selectedDayId: dayId };
+      }
+
+      if (demoUnlockable) {
+        return {
+          ...current,
+          selectedDayId: dayId,
+          demoUnlockedThroughDay: dayNumber,
+        };
+      }
+
+      return current;
+    });
   }
 
   function openEvent(eventId: string) {
@@ -609,13 +679,24 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
     }
 
     setActiveEventId(nextNavigation.eventId);
-    setProgress((current) => ({
-      ...current,
-      selectedDayId: nextNavigation.dayId,
-      openedEventIds: current.openedEventIds.includes(nextNavigation.eventId)
-        ? current.openedEventIds
-        : [...current.openedEventIds, nextNavigation.eventId],
-    }));
+    setProgress((current) => {
+      const dayNumber = getDayNumber(nextNavigation.dayId);
+      const unlocked = getDayUnlockState(current, nextNavigation.dayId);
+      const demoUnlockable = dayNumber === current.demoUnlockedThroughDay + 1;
+
+      if (!unlocked && !demoUnlockable) {
+        return current;
+      }
+
+      return {
+        ...current,
+        selectedDayId: nextNavigation.dayId,
+        demoUnlockedThroughDay: demoUnlockable ? dayNumber : current.demoUnlockedThroughDay,
+        openedEventIds: current.openedEventIds.includes(nextNavigation.eventId)
+          ? current.openedEventIds
+          : [...current.openedEventIds, nextNavigation.eventId],
+      };
+    });
   }
 
   function submitHomework() {
@@ -674,7 +755,7 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
                 Sparky note
               </p>
               <p className="mt-1 text-sm leading-5 text-[#6f4a4e]">
-                Every day is open for demo use, so you can jump around instead of unlocking the week one step at a time.
+                Day 1 starts unlocked. Open the next locked day when you want to move the week forward and collect that day-start reward.
               </p>
             </div>
             <button
@@ -690,15 +771,19 @@ export function WeekSimulator({ onOpenResourceMap, onReloadProgress }: WeekSimul
         <div className="mt-3 overflow-x-auto pb-1">
           <div className="grid min-w-max grid-flow-col auto-cols-[12.2rem] items-stretch gap-2 lg:min-w-0 lg:grid-flow-row lg:grid-cols-7 lg:auto-cols-auto lg:gap-2">
             {weekSimulatorDays.map((day) => {
-              const reminderCount = reminders.filter((reminder) => reminder.dayId === day.id).length;
+              const unlocked = getDayUnlockState(progress, day.id);
+              const demoUnlockable = day.number === progress.demoUnlockedThroughDay + 1;
+              const reminderCount = unlocked
+                ? reminders.filter((reminder) => reminder.dayId === day.id).length
+                : 0;
 
               return (
                 <div key={day.id} className="h-full lg:min-w-0">
                   <DayCard
                     day={day}
                     selected={progress.selectedDayId === day.id}
-                    unlocked
-                    demoUnlockable={false}
+                    unlocked={unlocked}
+                    demoUnlockable={demoUnlockable}
                     completed={getDayComplete(progress, day.id)}
                     reminderCount={reminderCount}
                     onClick={() => openDay(day.id)}
