@@ -99,7 +99,7 @@ function getDayComplete(progress: WeekSimulatorProgress, dayId: WeekDayId) {
 
 function getResolvedDayEvents(day: (typeof weekSimulatorDays)[number], progress: WeekSimulatorProgress) {
   return day.events.flatMap((event) => {
-    if (event.id !== "day4-homework-session") {
+    if (event.id !== "day4-homework-session" || event.type !== "homework") {
       return [event];
     }
 
@@ -783,7 +783,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                 <div className="mt-4 grid gap-3 lg:grid-cols-2">
                   <div className="rounded-[1.2rem] border border-dashed border-[#e4c79f] bg-white/75 p-4">
                     <p className="mt-2 font-[var(--font-sim-display)] text-[1.15rem] leading-none text-[#2c1116]">
-                      Advisor intro video
+                      How advising works
                     </p>
                     <AdvisingPreviewVideo
                       mp4Src="/advising-advisor-intro.mp4"
@@ -793,7 +793,7 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
 
                   <div className="rounded-[1.2rem] border border-dashed border-[#e4c79f] bg-white/75 p-4">
                     <p className="mt-2 font-[var(--font-sim-display)] text-[1.15rem] leading-none text-[#2c1116]">
-                      How advising works video
+                      Office and room preview
                     </p>
                     <AdvisingPreviewVideo
                       mp4Src="/advising-room-sim.mp4"
