@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { CharacterGuide } from "@/components/simulation/week/CharacterGuide";
 import { ProgressTracker } from "@/components/simulation/week/ProgressTracker";
@@ -21,7 +21,6 @@ import {
   weekSimulatorDays,
 } from "@/data/week-simulator";
 import type {
-  WeekAdvisingEvent,
   ScheduledHomeworkSlot,
   WeekDayId,
   WeekEvent,
@@ -61,6 +60,10 @@ function createToast(
 function getEventComplete(progress: WeekSimulatorProgress, event: WeekEvent) {
   if (event.type === "class") {
     return progress.readNoticeIds.includes(event.id);
+  }
+
+  if (event.type === "advising-preview") {
+    return progress.openedEventIds.includes(event.id);
   }
 
   if (event.type === "message") {
@@ -141,6 +144,12 @@ function getEventGuideCopy(event: WeekEvent | null) {
         title: "Advising walkthrough",
         message: "This is just a supportive conversation. Bring the confusing part into the room and let the appointment do its job.",
       };
+    case "advising-preview":
+      return {
+        expression: "idea" as const,
+        title: "Advising preview",
+        message: "This is the calm before the appointment. Get the day, time, location, and support topics in your head before you walk in.",
+      };
     case "homework":
       return {
         expression: "idea" as const,
@@ -178,6 +187,59 @@ function getEventGuideCopy(event: WeekEvent | null) {
         message: "Open the task and take it one move at a time.",
       };
   }
+}
+
+function AdvisingPreviewVideo({
+  mp4Src,
+  quicktimeSrc,
+  fallbackText,
+}: {
+  mp4Src: string;
+  quicktimeSrc?: string;
+  fallbackText: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  async function togglePlayback() {
+    const video = videoRef.current;
+    if (!video) {
+      return;
+    }
+
+    if (video.paused) {
+      try {
+        await video.play();
+        setIsPlaying(true);
+      } catch {
+        setIsPlaying(false);
+      }
+      return;
+    }
+
+    video.pause();
+    setIsPlaying(false);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={togglePlayback}
+      aria-pressed={isPlaying}
+      className="mt-3 block w-full overflow-hidden rounded-[1rem] border border-[#ead7c4] bg-[#2c1116] text-left shadow-[0_16px_36px_rgba(44,17,22,0.12)] transition hover:-translate-y-0.5"
+    >
+      <video
+        ref={videoRef}
+        className="aspect-video w-full bg-[#2c1116] object-cover"
+        playsInline
+        preload="metadata"
+      >
+        <source src={mp4Src} type="video/mp4" />
+        {quicktimeSrc ? <source src={quicktimeSrc} type="video/quicktime" /> : null}
+        {fallbackText}
+      </video>
+    </button>
+  );
 }
 
 export function WeekSimulator({ onOpenResourceMap }: WeekSimulatorProps) {
@@ -234,20 +296,41 @@ export function WeekSimulator({ onOpenResourceMap }: WeekSimulatorProps) {
   const dayReminders = reminders.filter((reminder) => reminder.dayId === selectedDay.id);
   const completedDays = weekSimulatorDays.filter((day) => getDayComplete(progress, day.id)).length;
   const finishedWeek = completedDays === weekSimulatorDays.length;
-  const advisingPreviewEvent = useMemo(() => {
-    const advisingDay = getWeekDay("day-2");
-    return (
-      advisingDay?.events.find(
-        (event): event is WeekAdvisingEvent => event.type === "advising",
-      ) ?? null
-    );
-  }, []);
   const activeEvent =
     selectedDayEvents.find((event) => event.id === activeEventId) ??
     selectedDayEvents.find((event) => !getEventComplete(progress, event)) ??
     selectedDayEvents[0] ??
     null;
   const eventGuide = getEventGuideCopy(activeEvent);
+  let nextNavigation: { dayId: WeekDayId; eventId: string; label: string } | null = null;
+
+  if (activeEvent) {
+    const activeIndex = selectedDayEvents.findIndex((event) => event.id === activeEvent.id);
+    if (activeIndex !== -1 && activeIndex < selectedDayEvents.length - 1) {
+      const nextEvent = selectedDayEvents[activeIndex + 1];
+      nextNavigation = {
+        dayId: selectedDay.id,
+        eventId: nextEvent.id,
+        label: nextEvent.title,
+      };
+    } else {
+      const selectedDayIndex = weekSimulatorDays.findIndex((day) => day.id === selectedDay.id);
+      for (let nextDayIndex = selectedDayIndex + 1; nextDayIndex < weekSimulatorDays.length; nextDayIndex += 1) {
+        const nextDay = weekSimulatorDays[nextDayIndex];
+        const nextDayEvents = getResolvedDayEvents(nextDay, progress);
+        if (!nextDayEvents.length) {
+          continue;
+        }
+
+        nextNavigation = {
+          dayId: nextDay.id,
+          eventId: nextDayEvents[0].id,
+          label: nextDayEvents[0].title,
+        };
+        break;
+      }
+    }
+  }
 
   useEffect(() => {
     const unseenReminder = dayReminders.find(
@@ -490,18 +573,18 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
     });
   }
 
-  function openAdvisingPreview() {
-    if (!advisingPreviewEvent) {
+  function goToNextPage() {
+    if (!nextNavigation) {
       return;
     }
 
-    setActiveEventId(advisingPreviewEvent.id);
+    setActiveEventId(nextNavigation.eventId);
     setProgress((current) => ({
       ...current,
-      selectedDayId: "day-2",
-      openedEventIds: current.openedEventIds.includes(advisingPreviewEvent.id)
+      selectedDayId: nextNavigation.dayId,
+      openedEventIds: current.openedEventIds.includes(nextNavigation.eventId)
         ? current.openedEventIds
-        : [...current.openedEventIds, advisingPreviewEvent.id],
+        : [...current.openedEventIds, nextNavigation.eventId],
     }));
   }
 
@@ -610,53 +693,6 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
             );
           })}
 
-          {selectedDay.id === "day-1" && getDayComplete(progress, "day-1") && advisingPreviewEvent ? (
-            <div className="rounded-[1.6rem] border border-[#f0dbc6] bg-[linear-gradient(135deg,#fff0c8,#fff7e8)] p-4 shadow-[0_16px_36px_rgba(44,17,22,0.08)]">
-              <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
-                Advising preview
-              </p>
-              <p className="mt-2 font-[var(--font-sim-display)] text-[1.15rem] leading-none text-[#2c1116]">
-                Academic advising is next
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[#6f4a4e]">
-                Here is the appointment before tomorrow gets here, so the advising page already feels familiar.
-              </p>
-              <div className="mt-4 grid gap-2 text-sm text-[#6f4a4e]">
-                <div className="rounded-[1.1rem] border border-dashed border-[#e4c79f] bg-white/70 px-4 py-3">
-                  <span className="font-black uppercase tracking-[0.12em] text-[#8c1d40]">Day</span>
-                  <p className="mt-1 font-medium text-[#2c1116]">Tuesday</p>
-                </div>
-                <div className="rounded-[1.1rem] border border-dashed border-[#e4c79f] bg-white/70 px-4 py-3">
-                  <span className="font-black uppercase tracking-[0.12em] text-[#8c1d40]">Time</span>
-                  <p className="mt-1 font-medium text-[#2c1116]">{advisingPreviewEvent.time}</p>
-                </div>
-                <div className="rounded-[1.1rem] border border-dashed border-[#e4c79f] bg-white/70 px-4 py-3">
-                  <span className="font-black uppercase tracking-[0.12em] text-[#8c1d40]">Location</span>
-                  <p className="mt-1 font-medium text-[#2c1116]">{advisingPreviewEvent.location}</p>
-                </div>
-                <div className="rounded-[1.1rem] border border-dashed border-[#e4c79f] bg-white/70 px-4 py-3">
-                  <span className="font-black uppercase tracking-[0.12em] text-[#8c1d40]">Resources</span>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {advisingPreviewEvent.resources.map((resource) => (
-                      <span
-                        key={resource}
-                        className="rounded-full bg-[#fff8ef] px-3 py-1 text-xs font-bold text-[#7d565b]"
-                      >
-                        {resource}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={openAdvisingPreview}
-                className="mt-4 inline-flex items-center justify-center rounded-full bg-[#8c1d40] px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
-              >
-                Open advising page
-              </button>
-            </div>
-          ) : null}
         </aside>
 
         <div className="grid content-start gap-4 self-start">
@@ -689,6 +725,84 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                 onViewPanorama={() => markPanoramaViewed(activeEvent.id)}
                 onReadNotice={() => markNoticeRead(activeEvent.id)}
               />
+            ) : activeEvent?.type === "advising-preview" ? (
+              <div className="rounded-[1.8rem] border border-[#f0dbc6] bg-[linear-gradient(135deg,#fff0c8,#fff8ea)] p-4 shadow-[0_16px_44px_rgba(44,17,22,0.08)] sm:p-5">
+                <p className="text-[0.72rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                  Monday advising preview
+                </p>
+                <h3 className="mt-2 font-[var(--font-sim-display)] text-[1.75rem] leading-none text-[#2c1116]">
+                  Academic advising is next
+                </h3>
+                <p className="mt-4 text-sm leading-7 text-[#6f4a4e]">
+                  {activeEvent.whatItsFor}
+                </p>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <div className="rounded-[1.15rem] border border-dashed border-[#e4c79f] bg-white/75 px-4 py-3">
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                      Date
+                    </p>
+                    <p className="mt-2 font-[var(--font-sim-display)] text-[1.2rem] leading-none text-[#2c1116]">
+                      {activeEvent.appointmentDayLabel}
+                    </p>
+                  </div>
+                  <div className="rounded-[1.15rem] border border-dashed border-[#e4c79f] bg-white/75 px-4 py-3">
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                      Time
+                    </p>
+                    <p className="mt-2 font-[var(--font-sim-display)] text-[1.2rem] leading-none text-[#2c1116]">
+                      {activeEvent.time}
+                    </p>
+                  </div>
+                  <div className="rounded-[1.15rem] border border-dashed border-[#e4c79f] bg-white/75 px-4 py-3">
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                      Location
+                    </p>
+                    <p className="mt-2 text-base font-medium text-[#2c1116]">
+                      {activeEvent.location}
+                    </p>
+                    {activeEvent.linkedResource ? (
+                      <a
+                        href={activeEvent.linkedResource}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex items-center justify-center rounded-full bg-[#8c1d40] px-4 py-2 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
+                      >
+                        Open in maps
+                      </a>
+                    ) : null}
+                  </div>
+                  <div className="rounded-[1.15rem] border border-dashed border-[#e4c79f] bg-white/75 px-4 py-3">
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                      Advisor
+                    </p>
+                    <p className="mt-2 text-base font-medium text-[#2c1116]">
+                      {activeEvent.advisorName}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                  <div className="rounded-[1.2rem] border border-dashed border-[#e4c79f] bg-white/75 p-4">
+                    <p className="mt-2 font-[var(--font-sim-display)] text-[1.15rem] leading-none text-[#2c1116]">
+                      Advisor intro video
+                    </p>
+                    <AdvisingPreviewVideo
+                      mp4Src="/advising-advisor-intro.mp4"
+                      fallbackText="Your browser does not support the advisor intro video."
+                    />
+                  </div>
+
+                  <div className="rounded-[1.2rem] border border-dashed border-[#e4c79f] bg-white/75 p-4">
+                    <p className="mt-2 font-[var(--font-sim-display)] text-[1.15rem] leading-none text-[#2c1116]">
+                      How advising works video
+                    </p>
+                    <AdvisingPreviewVideo
+                      mp4Src="/advising-room-sim.mp4"
+                      quicktimeSrc="/advising-room-sim.mov"
+                      fallbackText="Your browser does not support the advising room preview video."
+                    />
+                  </div>
+                </div>
+              </div>
             ) : activeEvent?.type === "advising" ? (
               <AdvisorCard
                 event={activeEvent}
@@ -799,6 +913,26 @@ function maybeCompleteDay(current: WeekSimulatorProgress, dayId: WeekDayId) {
                     className="rounded-full bg-[#ffc627] px-5 py-3 text-sm font-black text-[#2c1116] transition hover:-translate-y-0.5 hover:bg-[#f4bb14]"
                   >
                     Submit assignment
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            {nextNavigation ? (
+              <div className="rounded-[1.45rem] border border-[#f0dbc6] bg-white px-4 py-4 shadow-[0_12px_30px_rgba(44,17,22,0.08)]">
+                <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
+                  Next page
+                </p>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm leading-6 text-[#6f4a4e]">
+                    Continue to <span className="font-black text-[#2c1116]">{nextNavigation.label}</span>.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={goToNextPage}
+                    className="inline-flex items-center justify-center rounded-full bg-[#ffc627] px-5 py-3 text-sm font-black text-[#2c1116] transition hover:-translate-y-0.5 hover:bg-[#f4bb14]"
+                  >
+                    Next
                   </button>
                 </div>
               </div>

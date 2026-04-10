@@ -287,7 +287,7 @@ export const resourceWorlds: ResourceWorld[] = [
     lockedHint: "Unlock this by clearing Advising Office.",
     accentFrom: "#ffc627",
     accentTo: "#ff8f5a",
-    position: { x: 69, y: 21, mobileX: 72, mobileY: 31 },
+    position: { x: 83, y: 45, mobileX: 76, mobileY: 46 },
     guideExpression: "smirk",
     guideLine: "This is where 'I studied forever' becomes 'ohhhh, that is what was wrong.'",
     scenarios: [
@@ -437,7 +437,7 @@ export const resourceWorlds: ResourceWorld[] = [
     lockedHint: "Unlock this by clearing Tutoring Center.",
     accentFrom: "#38bdf8",
     accentTo: "#22c55e",
-    position: { x: 83, y: 45, mobileX: 76, mobileY: 46 },
+    position: { x: 69, y: 21, mobileX: 72, mobileY: 31 },
     guideExpression: "idea",
     guideLine: "Use this before the first real support visit so the doors, desks, and front rooms stop feeling abstract.",
     scenarios: [

@@ -55,6 +55,9 @@ export const weekResourceQuestIds = [
   "office-hours",
 ] as const;
 
+const advisingMapsLink =
+  "http://google.com/maps/dir//SCAI+Academic+Advising+Center,+Centerpoint,+660,+S+Mill+Ave+%23+105,+Tempe,+AZ+85281/@33.4197423,-111.9164779,15z/data=!4m8!4m7!1m0!1m5!1m1!1s0x872b08d82de94275:0xe31b4d9750935d51!2m2!1d-111.9405982!2d33.4237895?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+
 export const weekSimulatorDays: WeekDay[] = [
   {
     id: "day-1",
@@ -117,6 +120,28 @@ export const weekSimulatorDays: WeekDay[] = [
         canvasLinkLabel: "Read professor notice",
         completionCondition: "Open the class and read the professor notice.",
       },
+      {
+        id: "day1-advising-preview",
+        dayId: "day-1",
+        title: "Academic advising preview",
+        type: "advising-preview",
+        time: "10:00 AM",
+        description: "See tomorrow's advising details now so the appointment already feels familiar.",
+        location: "SCAI Academic Advising Center",
+        linkedResource: advisingMapsLink,
+        appointmentDayLabel: "April 14, 2026",
+        advisorName: "Advisor Rivera",
+        reminderLabel: "Appointment tomorrow at 10:00 AM",
+        whatItsFor:
+          "Advising helps with degree planning, translating DARS, and catching next-step questions before they turn stressful.",
+        resources: [
+          "Degree planning",
+          "DARS help",
+          "Registration questions",
+          "Next-step referrals",
+        ],
+        completionCondition: "Open the advising preview after your Monday classes.",
+      },
     ],
   },
   {
@@ -136,7 +161,8 @@ export const weekSimulatorDays: WeekDay[] = [
         type: "advising",
         time: "10:00 AM",
         description: "Check in, sit down, and learn what advising actually helps with.",
-        location: "Centerpoint, Suite 105",
+        location: "SCAI Academic Advising Center",
+        linkedResource: advisingMapsLink,
         advisorName: "Advisor Rivera",
         reminderLabel: "Appointment today at 10:00 AM",
         whatItsFor:

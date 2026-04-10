@@ -394,24 +394,19 @@ function PlaceholderCoachScreen({
               Advisor person video
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#6f4a4e]">
-              Placeholder for the advisor/person video you will generate later. This can introduce the advisor and explain what happens in a meeting.
+              This advisor intro clip can help students see who they are meeting and what the tone of advising feels like before they walk in.
             </p>
 
-            <div className="mt-4 rounded-[1.5rem] border border-[#ead7c4] bg-white p-5">
-              <div className="flex items-start gap-4">
-                <CharacterAvatar expression="happy" size="md" pulse />
-                <div>
-                  <p className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#8c1d40]">
-                    Coming soon
-                  </p>
-                  <p className="mt-2 font-[var(--font-sim-display)] text-[1.25rem] leading-none text-[#2c1116]">
-                    Advisor intro video slot
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-[#6f4a4e]">
-                    Add the advisor clip here once your new video is ready.
-                  </p>
-                </div>
-              </div>
+            <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-[#ead7c4] bg-[#2c1116] shadow-[0_16px_36px_rgba(44,17,22,0.18)]">
+              <video
+                className="aspect-video w-full bg-[#2c1116]"
+                controls
+                playsInline
+                preload="metadata"
+              >
+                <source src="/advising-advisor-intro.mp4" type="video/mp4" />
+                Your browser does not support the advisor intro video.
+              </video>
             </div>
           </article>
 
@@ -558,6 +553,7 @@ function StudentSuccessCoachScreen({
   const [evaluationRequested, setEvaluationRequested] = useState(false);
   const [readyPopupOpen, setReadyPopupOpen] = useState(false);
   const [readyPopupShown, setReadyPopupShown] = useState(false);
+  const [sampleCopied, setSampleCopied] = useState(false);
 
   const selectedCoach = coachProfiles.find((coach) => coach.id === selectedCoachId) ?? null;
   const evaluation = useMemo(
@@ -590,6 +586,22 @@ Thank you,
     if (selectedCoach && result.ready && !readyPopupShown) {
       setReadyPopupOpen(true);
       setReadyPopupShown(true);
+    }
+  }
+
+  async function handleCopySampleEmail() {
+    if (!sampleEmail) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(sampleEmail);
+      setSampleCopied(true);
+      window.setTimeout(() => {
+        setSampleCopied(false);
+      }, 1800);
+    } catch {
+      setSampleCopied(false);
     }
   }
 
@@ -891,6 +903,15 @@ Thank you,
             </div>
 
             <div className="mt-5 flex flex-wrap gap-3">
+              {sampleEmail ? (
+                <button
+                  type="button"
+                  onClick={handleCopySampleEmail}
+                  className="inline-flex items-center justify-center rounded-full border border-[#d6b37e] bg-white px-5 py-3 text-sm font-black text-[#8c1d40] transition hover:-translate-y-0.5 hover:border-[#8c1d40]"
+                >
+                  {sampleCopied ? "Copied email" : "Copy email"}
+                </button>
+              ) : null}
               <a
                 href={FIND_COACH_URL}
                 target="_blank"

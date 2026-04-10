@@ -45,6 +45,19 @@ export function AdvisorCard({ event, completed, onComplete }: AdvisorCardProps) 
           ))}
         </div>
 
+        {event.linkedResource ? (
+          <div className="mt-4">
+            <a
+              href={event.linkedResource}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center rounded-full bg-[#8c1d40] px-4 py-2 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#731736]"
+            >
+              Open location in maps
+            </a>
+          </div>
+        ) : null}
+
         <div className="mt-4 rounded-[1.5rem] border border-[#ecd6be] bg-white p-4">
           <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#8c1d40]">
             Walk-in moment

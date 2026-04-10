@@ -12,6 +12,7 @@ export type WeekDayId =
 export type WeekEventType =
   | "class"
   | "advising"
+  | "advising-preview"
   | "homework"
   | "message"
   | "resource"
@@ -84,6 +85,15 @@ export interface WeekAdvisingEvent extends WeekEventBase {
   };
 }
 
+export interface WeekAdvisingPreviewEvent extends WeekEventBase {
+  type: "advising-preview";
+  appointmentDayLabel: string;
+  advisorName: string;
+  reminderLabel: string;
+  whatItsFor: string;
+  resources: string[];
+}
+
 export interface WeekHomeworkEvent extends WeekEventBase {
   type: "homework";
   courseCode: string;
@@ -117,6 +127,7 @@ export interface WeekDeadlineEvent extends WeekEventBase {
 export type WeekEvent =
   | WeekClassEvent
   | WeekAdvisingEvent
+  | WeekAdvisingPreviewEvent
   | WeekHomeworkEvent
   | WeekMessageEvent
   | WeekResourceEvent

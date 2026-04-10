@@ -17,6 +17,7 @@ function getEventExpression(event: WeekEvent): MascotExpression {
     case "class":
       return "happy";
     case "advising":
+    case "advising-preview":
       return "idea";
     case "homework":
       return "confused";
@@ -69,7 +70,7 @@ export function EventCard({
               : "bg-[#fff2dc] text-[#8c1d40]"
           }`}
         >
-          {completed ? "Done" : event.type.replace("-", " ")}
+          {completed ? "Done" : event.type === "advising-preview" ? "preview" : event.type.replace("-", " ")}
         </span>
       </div>
 
