@@ -7,6 +7,7 @@
     utilityNav: ".universal-nav .nav-grid",
     loginStatus: ".universal-nav .nav-grid .login-status",
     userName: ".universal-nav .nav-grid .login-status .name, .user-name",
+    userNameHost: ".universal-nav .nav-grid .login-status .user-name, .user-name",
     userInfoButton: "#user-info-popup",
   };
 
@@ -14,6 +15,7 @@
     myStudentLife: "data-my-student-life-link",
     dashboard: "data-my-student-life-dashboard",
     rewardsButton: "data-my-student-life-rewards",
+    rewardsHost: "data-my-student-life-rewards-host",
     sparkyRoot: "data-my-student-life-sparky",
     sparkyStyle: "data-my-student-life-style",
   };
@@ -91,13 +93,19 @@
         justify-content: center;
         width: 2rem;
         height: 2rem;
-        margin-left: 0.55rem;
         border: 1px solid rgba(140, 29, 64, 0.16);
         border-radius: 999px;
         background: #fff;
         color: #8c1d40;
+        flex-shrink: 0;
         cursor: pointer;
         transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+      }
+
+      [data-my-student-life-rewards-host="true"] {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
       }
 
       .msl-rewards-link:hover,
@@ -406,9 +414,12 @@
   }
 
   function injectRewardsButton() {
+    const userInfoButton = document.querySelector(selectors.userInfoButton);
+    const userNameHost =
+      userInfoButton?.closest(".user-name") || document.querySelector(selectors.userNameHost);
     const userName = document.querySelector(selectors.userName);
 
-    if (!userName || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
+    if ((!userNameHost && !userName) || document.querySelector(`[${markers.rewardsButton}="true"]`)) {
       return;
     }
 
@@ -421,6 +432,18 @@
     button.addEventListener("click", () => {
       assignLocation(getRewardsDestinationUrl());
     });
+
+    if (userNameHost instanceof HTMLElement) {
+      userNameHost.setAttribute(markers.rewardsHost, "true");
+
+      if (userInfoButton && userNameHost.contains(userInfoButton)) {
+        userNameHost.insertBefore(button, userInfoButton);
+        return;
+      }
+
+      userNameHost.prepend(button);
+      return;
+    }
 
     userName.insertAdjacentElement("afterend", button);
   }
