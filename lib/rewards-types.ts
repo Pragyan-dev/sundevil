@@ -54,10 +54,14 @@ export interface RewardsRedemptionRecord {
 
 export interface RewardsProfile {
   pitchforkBalance: number;
+  cookieBalance: number;
   claimedDayEntryIds: string[];
   claimedWorldRewardIds: ResourceWorldId[];
   obtainedBadgeIds: RewardsBadgeId[];
   redemptionHistory: RewardsRedemptionRecord[];
+  buddyFeedCount: number;
+  buddyCarryEnabled: boolean;
+  buddyVisible: boolean;
 }
 
 export interface DayEntryRewardResult {
